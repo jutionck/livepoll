@@ -72,7 +72,9 @@ export const Presentation: React.FC<PresentationProps> = ({ code, navigate, them
     if (resultsPollRef.current) clearInterval(resultsPollRef.current);
     fetchResults(qId);
     resultsPollRef.current = setInterval(() => fetchResults(qId), 1000);
-    return () => { if (resultsPollRef.current) clearInterval(resultsPollRef.current); };
+    return () => {
+      if (resultsPollRef.current) clearInterval(resultsPollRef.current);
+    };
   }, [session?.active_question_id]);
 
   const fetchSession = async () => {
@@ -80,14 +82,20 @@ export const Presentation: React.FC<PresentationProps> = ({ code, navigate, them
       const res = await fetch(`${API_BASE_URL}/get-session?code=${code}`);
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
-      
+
       // Update page title dynamically
       if (data.title) {
         document.title = `LivePoll Presentasi | ${data.title} (${code})`;
       }
 
       setSession((prev) => {
-        if (prev && prev.active_question_id === data.active_question_id && prev.status === data.status && prev.version === data.version) return prev;
+        if (
+          prev &&
+          prev.active_question_id === data.active_question_id &&
+          prev.status === data.status &&
+          prev.version === data.version
+        )
+          return prev;
         return data;
       });
     } catch (err: any) {
@@ -100,11 +108,14 @@ export const Presentation: React.FC<PresentationProps> = ({ code, navigate, them
     abortRef.current = new AbortController();
     try {
       const res = await fetch(`${API_BASE_URL}/results?code=${code}&q=${qId}&t=${Date.now()}`, {
-        signal: abortRef.current.signal, headers: { 'Cache-Control': 'no-store' },
+        signal: abortRef.current.signal,
+        headers: { 'Cache-Control': 'no-store' },
       });
       const data = await res.json();
       if (res.ok) setResultsData(data);
-    } catch (err: any) { if (err.name !== 'AbortError') console.error(err); }
+    } catch (err: any) {
+      if (err.name !== 'AbortError') console.error(err);
+    }
   };
 
   const toggleFullscreen = () => {
@@ -120,7 +131,10 @@ export const Presentation: React.FC<PresentationProps> = ({ code, navigate, them
           <AlertCircle className="text-red-400 mx-auto mb-4" size={48} />
           <h2 className="text-base font-bold mb-2">Error</h2>
           <p className="text-xs text-slate-450 mb-6">{error}</p>
-          <button onClick={() => navigate('#/')} className="btn-primary px-6 py-2.5 rounded-lg font-semibold text-xs transition-colors">
+          <button
+            onClick={() => navigate('#/')}
+            className="btn-primary px-6 py-2.5 rounded-lg font-semibold text-xs transition-colors"
+          >
             Kembali
           </button>
         </div>
@@ -144,20 +158,30 @@ export const Presentation: React.FC<PresentationProps> = ({ code, navigate, them
   const totalVotes = resultsData?.total_votes || 0;
 
   return (
-    <div ref={containerRef} className="min-h-screen bg-dots dark:bg-dots-dark text-slate-900 dark:text-white flex flex-col justify-between font-sans select-none">
+    <div
+      ref={containerRef}
+      className="min-h-screen bg-dots dark:bg-dots-dark text-slate-900 dark:text-white flex flex-col justify-between font-sans select-none"
+    >
       {/* Top Header */}
       <header className="bg-white/80 dark:bg-slate-900/60 border-b border-slate-200 dark:border-slate-800 py-3 px-4 sm:px-6 flex items-center justify-between gap-2">
         <div className="flex items-center gap-2 min-w-0">
           <Layers size={18} className="text-slate-900 dark:text-white shrink-0" />
-          <span className="text-sm font-bold tracking-tight text-slate-900 dark:text-white truncate">{session.title}</span>
+          <span className="text-sm font-bold tracking-tight text-slate-900 dark:text-white truncate">
+            {session.title}
+          </span>
         </div>
         <div className="flex items-center gap-2 sm:gap-3 shrink-0">
           <div className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-2 sm:px-3 py-1.5 rounded-lg flex items-center gap-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300">
             <Users size={14} className="text-slate-400 shrink-0" />
-            <span>{totalVotes} <span className="hidden sm:inline">Respon</span></span>
+            <span>
+              {totalVotes} <span className="hidden sm:inline">Respon</span>
+            </span>
           </div>
           <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
-          <button onClick={toggleFullscreen} className="p-2 bg-slate-50 dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 rounded-lg transition-colors text-slate-500 dark:text-slate-400">
+          <button
+            onClick={toggleFullscreen}
+            className="p-2 bg-slate-50 dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 rounded-lg transition-colors text-slate-500 dark:text-slate-400"
+          >
             {isFullscreen ? <Minimize size={16} /> : <Maximize size={16} />}
           </button>
         </div>
@@ -165,17 +189,22 @@ export const Presentation: React.FC<PresentationProps> = ({ code, navigate, them
 
       {/* Main Grid */}
       <main className="flex-1 p-4 sm:p-6 md:p-12 lg:p-16 grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-10 items-center max-w-7xl mx-auto w-full">
-        
         {/* Left Area (Question + Chart) */}
         <div className="lg:col-span-8 space-y-6 sm:space-y-8 h-full flex flex-col justify-center">
           {activeQuestion ? (
             <>
               <div className="flex items-center justify-between gap-2">
                 <span className="inline-block text-[9px] sm:text-[10px] font-bold bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 px-2 py-0.5 rounded uppercase tracking-wider mb-3">
-                  {activeQuestion.type === 'rating' ? 'Rating 1-5' : activeQuestion.type === 'multiple_selection' ? 'Pilihan Ganda' : 'Pilihan Tunggal'}
+                  {activeQuestion.type === 'rating'
+                    ? 'Rating 1-5'
+                    : activeQuestion.type === 'multiple_selection'
+                      ? 'Pilihan Ganda'
+                      : 'Pilihan Tunggal'}
                 </span>
                 {timeLeft !== null && (
-                  <span className={`inline-block text-[9px] sm:text-[10px] font-bold px-2 py-0.5 rounded border uppercase tracking-wider mb-3 ${timeLeft > 0 ? 'bg-red-50 dark:bg-red-950/60 border-red-200 dark:border-red-900/50 text-red-700 dark:text-red-400 animate-pulse' : 'bg-slate-100 dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-400 dark:text-slate-500'}`}>
+                  <span
+                    className={`inline-block text-[9px] sm:text-[10px] font-bold px-2 py-0.5 rounded border uppercase tracking-wider mb-3 ${timeLeft > 0 ? 'bg-red-50 dark:bg-red-950/60 border-red-200 dark:border-red-900/50 text-red-700 dark:text-red-400 animate-pulse' : 'bg-slate-100 dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-400 dark:text-slate-500'}`}
+                  >
                     {timeLeft > 0 ? `${timeLeft}s` : 'Waktu Habis'}
                   </span>
                 )}
@@ -189,13 +218,22 @@ export const Presentation: React.FC<PresentationProps> = ({ code, navigate, them
                   {activeQuestion.type === 'rating' ? (
                     <div className="flex flex-col md:flex-row items-center justify-around gap-6 sm:gap-8">
                       <div className="text-center md:border-r border-slate-200 dark:border-slate-800 md:pr-12 py-3">
-                        <p className="text-4xl sm:text-5xl md:text-6xl font-black text-slate-900 dark:text-white">{resultsData?.average_rating || 0}</p>
+                        <p className="text-4xl sm:text-5xl md:text-6xl font-black text-slate-900 dark:text-white">
+                          {resultsData?.average_rating || 0}
+                        </p>
                         <div className="flex justify-center gap-0.5 my-2 text-slate-400">
                           {[1, 2, 3, 4, 5].map((s) => (
-                            <span key={s} className={`text-xl sm:text-2xl ${s <= Math.round(resultsData?.average_rating || 0) ? 'text-amber-400' : 'text-slate-200 dark:text-slate-800'}`}>★</span>
+                            <span
+                              key={s}
+                              className={`text-xl sm:text-2xl ${s <= Math.round(resultsData?.average_rating || 0) ? 'text-amber-400' : 'text-slate-200 dark:text-slate-800'}`}
+                            >
+                              ★
+                            </span>
                           ))}
                         </div>
-                        <p className="text-[9px] sm:text-[10px] font-bold text-slate-450 dark:text-slate-500 uppercase tracking-widest">Rata-rata</p>
+                        <p className="text-[9px] sm:text-[10px] font-bold text-slate-450 dark:text-slate-500 uppercase tracking-widest">
+                          Rata-rata
+                        </p>
                       </div>
 
                       <div className="flex-1 w-full space-y-2 sm:space-y-2.5">
@@ -208,9 +246,14 @@ export const Presentation: React.FC<PresentationProps> = ({ code, navigate, them
                                 {r} ★
                               </span>
                               <div className="flex-1 h-3 sm:h-4 bg-slate-100 dark:bg-slate-900 rounded-full overflow-hidden">
-                                <div className="h-full bg-slate-400 dark:bg-slate-500 rounded-full bar-animate" style={{ width: `${pct}%` }}></div>
+                                <div
+                                  className="h-full bg-slate-400 dark:bg-slate-500 rounded-full bar-animate"
+                                  style={{ width: `${pct}%` }}
+                                ></div>
                               </div>
-                              <span className="w-6 sm:w-8 text-right text-xs sm:text-sm font-black text-slate-700 dark:text-slate-350">{count}</span>
+                              <span className="w-6 sm:w-8 text-right text-xs sm:text-sm font-black text-slate-700 dark:text-slate-350">
+                                {count}
+                              </span>
                             </div>
                           );
                         })}
@@ -231,11 +274,17 @@ export const Presentation: React.FC<PresentationProps> = ({ code, navigate, them
                                 <span className="truncate">{label as string}</span>
                               </span>
                               <span className="text-sm sm:text-base font-bold text-slate-900 dark:text-white ml-2 shrink-0">
-                                {count} <span className="text-[10px] sm:text-xs font-semibold text-slate-450 dark:text-slate-500">({Math.round(pct)}%)</span>
+                                {count}{' '}
+                                <span className="text-[10px] sm:text-xs font-semibold text-slate-450 dark:text-slate-500">
+                                  ({Math.round(pct)}%)
+                                </span>
                               </span>
                             </div>
                             <div className="w-full h-3 sm:h-4 bg-slate-100 dark:bg-slate-950 rounded-full overflow-hidden">
-                              <div className="h-full bg-slate-900 dark:bg-white rounded-full bar-animate" style={{ width: `${pct}%` }}></div>
+                              <div
+                                className="h-full bg-slate-900 dark:bg-white rounded-full bar-animate"
+                                style={{ width: `${pct}%` }}
+                              ></div>
                             </div>
                           </div>
                         );
@@ -247,7 +296,9 @@ export const Presentation: React.FC<PresentationProps> = ({ code, navigate, them
             </>
           ) : (
             <div className="text-center py-12 sm:py-16">
-              <h2 className="text-base sm:text-xl font-bold text-slate-450 dark:text-slate-500">Menunggu pertanyaan ditampilkan...</h2>
+              <h2 className="text-base sm:text-xl font-bold text-slate-450 dark:text-slate-500">
+                Menunggu pertanyaan ditampilkan...
+              </h2>
             </div>
           )}
         </div>
@@ -255,20 +306,22 @@ export const Presentation: React.FC<PresentationProps> = ({ code, navigate, them
         {/* Right Area (Join instructions) */}
         <div className="lg:col-span-4 h-full flex flex-col justify-center items-center lg:border-l border-slate-200 dark:border-slate-900 lg:pl-8">
           <div className="bg-white/85 dark:bg-slate-900/20 border border-slate-200 dark:border-slate-900 p-6 rounded-2xl text-center max-w-sm w-full flex flex-col items-center">
-            <h3 className="font-bold text-sm mb-4 tracking-tight text-slate-700 dark:text-slate-300">Bergabung Polling</h3>
+            <h3 className="font-bold text-sm mb-4 tracking-tight text-slate-700 dark:text-slate-300">
+              Bergabung Polling
+            </h3>
             <div className="bg-white p-4 rounded-xl mb-5 flex items-center justify-center border border-slate-100">
               <QRCodeSVG value={joinUrl} size={150} />
             </div>
-            <p className="text-slate-450 dark:text-slate-500 text-[10px] font-bold uppercase tracking-wider mb-1">Link Bergabung</p>
+            <p className="text-slate-450 dark:text-slate-500 text-[10px] font-bold uppercase tracking-wider mb-1">
+              Link Bergabung
+            </p>
             <p className="font-mono text-slate-800 dark:text-white text-[11px] font-medium break-all select-all mb-4 px-2.5 py-1 bg-slate-50 dark:bg-slate-950 border border-slate-150 dark:border-slate-900 rounded-lg w-full">
               {window.location.host + window.location.pathname}
             </p>
             <div className="w-full border-t border-slate-200 dark:border-slate-900 pt-4">
               <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Kode Sesi</p>
               <div className="bg-slate-50 dark:bg-slate-900 border border-slate-150 dark:border-slate-800 py-2 rounded-lg w-full">
-                <p className="text-2xl font-bold tracking-widest text-slate-800 dark:text-white select-all">
-                  {code}
-                </p>
+                <p className="text-2xl font-bold tracking-widest text-slate-800 dark:text-white select-all">{code}</p>
               </div>
             </div>
           </div>

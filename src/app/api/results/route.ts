@@ -71,7 +71,7 @@ export async function GET(request: Request) {
       });
 
       const average = count > 0 ? Math.round((sum / count) * 100) / 100 : 0;
-      
+
       const sessionResult = await conn`SELECT version FROM sessions WHERE code = ${code}`;
 
       return NextResponse.json({

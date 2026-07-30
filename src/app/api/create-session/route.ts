@@ -72,13 +72,16 @@ export async function POST(request: Request) {
       }
     });
 
-    return NextResponse.json({
-      code,
-      host_token: hostToken,
-      title,
-      active_question_id: firstQId,
-      active_question_activated_at: Math.floor(Date.now() / 1000),
-    }, { status: 201 });
+    return NextResponse.json(
+      {
+        code,
+        host_token: hostToken,
+        title,
+        active_question_id: firstQId,
+        active_question_activated_at: Math.floor(Date.now() / 1000),
+      },
+      { status: 201 },
+    );
   } catch (error: any) {
     console.error(error);
     return NextResponse.json({ error: error.message || 'Terjadi kesalahan server.' }, { status: 500 });

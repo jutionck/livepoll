@@ -25,7 +25,7 @@ export default function App() {
     const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     const initialTheme = savedTheme || (systemDark ? 'dark' : 'light');
     setTheme(initialTheme);
-    
+
     if (initialTheme === 'dark') {
       document.documentElement.classList.add('dark');
     } else {
@@ -39,7 +39,7 @@ export default function App() {
     const nextTheme = theme === 'light' ? 'dark' : 'light';
     setTheme(nextTheme);
     localStorage.setItem('theme', nextTheme);
-    
+
     if (nextTheme === 'dark') {
       document.documentElement.classList.add('dark');
     } else {
@@ -54,7 +54,7 @@ export default function App() {
   if (hash === '#/' || hash === '') {
     return <Landing navigate={navigate} theme={theme} toggleTheme={toggleTheme} />;
   }
-  
+
   if (hash === '#/host/new') {
     return <HostNew navigate={navigate} theme={theme} toggleTheme={toggleTheme} />;
   }

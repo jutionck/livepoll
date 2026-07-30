@@ -49,7 +49,9 @@ const CustomSelect: React.FC<{
 
   return (
     <div className="relative" ref={ref}>
-      <label className="block text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1.5">{label}</label>
+      <label className="block text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1.5">
+        {label}
+      </label>
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
@@ -100,9 +102,7 @@ export const HostNew: React.FC<HostNewProps> = ({ navigate, theme, toggleTheme }
         /* ignore */
       }
     } else {
-      setQuestions([
-        { id: 'temp-1', type: 'multiple_choice', title: '', options: ['', ''], timer: null },
-      ]);
+      setQuestions([{ id: 'temp-1', type: 'multiple_choice', title: '', options: ['', ''], timer: null }]);
     }
   }, []);
 
@@ -113,13 +113,16 @@ export const HostNew: React.FC<HostNewProps> = ({ navigate, theme, toggleTheme }
   }, [title, questions]);
 
   const addQuestion = (type: 'multiple_choice' | 'multiple_selection' | 'rating') => {
-    setQuestions([...questions, {
-      id: `temp-${Date.now()}`,
-      type,
-      title: '',
-      options: type === 'rating' ? [] : ['', ''],
-      timer: null
-    }]);
+    setQuestions([
+      ...questions,
+      {
+        id: `temp-${Date.now()}`,
+        type,
+        title: '',
+        options: type === 'rating' ? [] : ['', ''],
+        timer: null,
+      },
+    ]);
   };
 
   const removeQuestion = (index: number) => {
@@ -168,12 +171,21 @@ export const HostNew: React.FC<HostNewProps> = ({ navigate, theme, toggleTheme }
 
   const handleLaunch = async () => {
     setError('');
-    if (!title.trim()) { setError('Judul sesi tidak boleh kosong.'); return; }
-    if (questions.length === 0) { setError('Tambahkan minimal satu pertanyaan.'); return; }
+    if (!title.trim()) {
+      setError('Judul sesi tidak boleh kosong.');
+      return;
+    }
+    if (questions.length === 0) {
+      setError('Tambahkan minimal satu pertanyaan.');
+      return;
+    }
     for (let i = 0; i < questions.length; i++) {
       const q = questions[i];
-      if (!q.title.trim()) { setError(`Pertanyaan #${i + 1} belum memiliki judul.`); return; }
-      if (q.type !== 'rating' && q.options.filter(o => o.trim()).length < 2) {
+      if (!q.title.trim()) {
+        setError(`Pertanyaan #${i + 1} belum memiliki judul.`);
+        return;
+      }
+      if (q.type !== 'rating' && q.options.filter((o) => o.trim()).length < 2) {
         setError(`Pertanyaan #${i + 1} minimal harus memiliki 2 pilihan.`);
         return;
       }
@@ -181,7 +193,7 @@ export const HostNew: React.FC<HostNewProps> = ({ navigate, theme, toggleTheme }
     setLoading(true);
     const formattedQuestions = questions.map((q) => {
       const qData: any = { type: q.type, title: q.title, timer: q.timer ?? null };
-      if (q.type !== 'rating') qData.options = q.options.filter(o => o.trim());
+      if (q.type !== 'rating') qData.options = q.options.filter((o) => o.trim());
       return qData;
     });
     try {
@@ -207,7 +219,10 @@ export const HostNew: React.FC<HostNewProps> = ({ navigate, theme, toggleTheme }
       {/* Navbar */}
       <nav className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-20">
         <div className="max-w-3xl mx-auto px-4 py-4 flex items-center justify-between">
-          <button onClick={() => navigate('#/')} className="flex items-center gap-1.5 text-slate-500 hover:text-slate-900 dark:hover:text-slate-100 font-semibold text-xs transition-colors">
+          <button
+            onClick={() => navigate('#/')}
+            className="flex items-center gap-1.5 text-slate-500 hover:text-slate-900 dark:hover:text-slate-100 font-semibold text-xs transition-colors"
+          >
             <ArrowLeft size={16} />
             <span>Kembali</span>
           </button>
@@ -249,13 +264,20 @@ export const HostNew: React.FC<HostNewProps> = ({ navigate, theme, toggleTheme }
           {questions.map((q, qIndex) => {
             const typeInfo = TYPE_LABELS[q.type];
             return (
-              <div key={q.id} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm animate-fade-in">
+              <div
+                key={q.id}
+                className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm animate-fade-in"
+              >
                 {/* Header card */}
                 <div className="bg-slate-50 dark:bg-slate-900/50 border-b border-slate-200 dark:border-slate-800 px-5 py-3 flex items-center justify-between rounded-t-xl">
                   <div className="flex items-center gap-3">
                     <GripVertical size={14} className="text-slate-350 dark:text-slate-650" />
-                    <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Q{qIndex + 1}</span>
-                    <span className={`text-[9px] font-bold px-2 py-0.5 rounded border dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700 ${typeInfo.badge}`}>
+                    <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
+                      Q{qIndex + 1}
+                    </span>
+                    <span
+                      className={`text-[9px] font-bold px-2 py-0.5 rounded border dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700 ${typeInfo.badge}`}
+                    >
                       {typeInfo.label}
                     </span>
                   </div>
@@ -271,7 +293,9 @@ export const HostNew: React.FC<HostNewProps> = ({ navigate, theme, toggleTheme }
                 <div className="p-5">
                   <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
                     <div className="md:col-span-2">
-                      <label className="block text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1.5">Pertanyaan</label>
+                      <label className="block text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1.5">
+                        Pertanyaan
+                      </label>
                       <input
                         type="text"
                         value={q.title}
@@ -280,7 +304,7 @@ export const HostNew: React.FC<HostNewProps> = ({ navigate, theme, toggleTheme }
                         className="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-lg font-medium text-sm focus:outline-none focus:border-slate-400 dark:focus:border-slate-500 bg-white dark:bg-slate-800 text-slate-900 dark:text-white transition-colors"
                       />
                     </div>
-                    
+
                     <CustomSelect
                       label="Tipe"
                       value={q.type}
@@ -288,7 +312,7 @@ export const HostNew: React.FC<HostNewProps> = ({ navigate, theme, toggleTheme }
                       options={[
                         { value: 'multiple_choice', label: 'Pilihan Tunggal' },
                         { value: 'multiple_selection', label: 'Pilihan Ganda' },
-                        { value: 'rating', label: 'Rating 1-5' }
+                        { value: 'rating', label: 'Rating 1-5' },
                       ]}
                     />
                     <CustomSelect
@@ -302,14 +326,16 @@ export const HostNew: React.FC<HostNewProps> = ({ navigate, theme, toggleTheme }
                         { value: '30', label: '30 Detik' },
                         { value: '45', label: '45 Detik' },
                         { value: '60', label: '1 Menit' },
-                        { value: '120', label: '2 Menit' }
+                        { value: '120', label: '2 Menit' },
                       ]}
                     />
                   </div>
 
                   {q.type !== 'rating' && (
                     <div className="space-y-2 mt-4">
-                      <label className="block text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-2">Pilihan Jawaban</label>
+                      <label className="block text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-2">
+                        Pilihan Jawaban
+                      </label>
                       {q.options.map((opt, optIndex) => (
                         <div key={optIndex} className="flex items-center gap-2">
                           <span className="w-6 h-6 rounded bg-slate-100 dark:bg-slate-800 text-slate-450 dark:text-slate-400 text-[10px] font-extrabold flex items-center justify-center shrink-0 uppercase border border-slate-200 dark:border-slate-700">
@@ -349,7 +375,9 @@ export const HostNew: React.FC<HostNewProps> = ({ navigate, theme, toggleTheme }
 
           {/* Add actions */}
           <div className="border border-dashed border-slate-250 dark:border-slate-800 p-4 rounded-xl flex flex-col sm:flex-row items-center justify-between gap-4">
-            <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Tambah Pertanyaan:</span>
+            <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
+              Tambah Pertanyaan:
+            </span>
             <div className="flex gap-2 w-full sm:w-auto">
               {(['multiple_choice', 'multiple_selection', 'rating'] as const).map((type) => {
                 const info = TYPE_LABELS[type];

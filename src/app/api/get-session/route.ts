@@ -27,7 +27,7 @@ export async function GET(request: Request) {
       // Get all questions
       const questionsResult = await conn`SELECT * FROM questions WHERE session_code = ${code} ORDER BY q_id ASC`;
       const questionsMap: Record<string, any> = {};
-      
+
       questionsResult.forEach((q) => {
         questionsMap[q.q_id] = {
           id: q.q_id,

@@ -23,7 +23,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Akses ditolak. Token host tidak valid.' }, { status: 403 });
     }
 
-    const qResult = await conn`SELECT id FROM questions WHERE session_code = ${code.toUpperCase()} AND q_id = ${question_id}`;
+    const qResult =
+      await conn`SELECT id FROM questions WHERE session_code = ${code.toUpperCase()} AND q_id = ${question_id}`;
     if (qResult.length === 0) {
       return NextResponse.json({ error: 'Pertanyaan tidak ditemukan.' }, { status: 404 });
     }
