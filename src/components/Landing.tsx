@@ -15,6 +15,7 @@ import {
   ChevronRight,
   Copy,
   Heart,
+  Code,
 } from 'lucide-react';
 import { ThemeToggle } from './ThemeToggle';
 import { API_BASE_URL } from '../config';
@@ -71,27 +72,27 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
           {/* Left Column: Copy */}
           <div className="lg:col-span-7 space-y-6 text-left">
             <span className="inline-block text-[10px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-650 dark:text-slate-350 border border-slate-200 dark:border-slate-700 px-2.5 py-1 rounded-md uppercase tracking-wider">
-              100% Gratis &amp; Tanpa Registrasi
+              100% Gratis • Tanpa Perlu Bikin Akun
             </span>
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tight leading-tight">
-              Libatkan Audiens Anda Secara Real-time
+              Ubah Presentasi Garing Jadi Interaktif Dalam Hitungan Detik
             </h1>
             <p className="text-slate-500 dark:text-slate-400 text-sm md:text-base leading-relaxed max-w-lg">
-              Buat presentasi interaktif untuk webinar, seminar, atau kelas dalam hitungan detik. Audiens berpartisipasi
-              langsung dari browser HP mereka tanpa perlu mengunduh aplikasi.
+              Buat polling langsung untuk webinar, seminar, atau kelas. Audiens cukup scan QR dari HP—tanpa perlu unduh
+              aplikasi, tanpa ribet.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 pt-2 w-full sm:w-auto">
               <button
                 onClick={() => navigate('#/host/new')}
                 className="w-full sm:w-auto justify-center bg-slate-900 dark:bg-slate-100 hover:bg-slate-800 dark:hover:bg-slate-200 text-white dark:text-slate-900 font-bold px-5 py-3 rounded-lg text-sm transition-all flex items-center gap-2"
               >
-                <PlusCircle size={16} /> Buat Polling Pertama Anda
+                <PlusCircle size={16} /> Buat Polling Sekarang — Gratis!
               </button>
               <a
                 href="#features"
                 className="w-full sm:w-auto justify-center border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 text-slate-650 dark:text-slate-300 font-bold px-5 py-3 rounded-lg text-sm transition-all flex items-center bg-white dark:bg-slate-900"
               >
-                Pelajari Fitur
+                Lihat Cara Kerjanya ↓
               </a>
             </div>
           </div>
@@ -105,19 +106,19 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
                   Untuk Peserta
                 </h3>
               </div>
-              <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-2 text-left">Gabung Sesi</h2>
+              <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-2 text-left">Mau Ikut Voting?</h2>
               <p className="text-xs text-slate-450 dark:text-slate-400 mb-5 leading-relaxed text-left">
-                Gunakan kode sesi yang diberikan oleh presenter untuk ikut memilih secara langsung.
+                Masukkan kode sesi dari presenter Anda di bawah ini:
               </p>
 
               <form onSubmit={handleJoin} className="space-y-3">
                 <div className="flex flex-col gap-2.5">
                   <input
                     type="text"
-                    placeholder="KODE SESI"
+                    placeholder="Masukkan Kode Sesi (Contoh: 1234)"
                     value={code}
                     onChange={(e) => setCode(e.target.value)}
-                    className="w-full px-4 py-3 border border-slate-200 dark:border-slate-700 rounded-lg text-lg uppercase font-bold text-center tracking-widest focus:outline-none focus:border-slate-400 dark:focus:border-slate-500 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
+                    className="w-full px-4 py-3 border border-slate-200 dark:border-slate-700 rounded-lg text-base font-bold text-center focus:outline-none focus:border-slate-400 dark:focus:border-slate-500 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:font-normal placeholder:text-slate-400"
                     maxLength={8}
                     required
                   />
@@ -125,7 +126,7 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
                     type="submit"
                     className="w-full bg-slate-900 dark:bg-slate-100 hover:bg-slate-800 dark:hover:bg-slate-200 text-white dark:text-slate-900 py-3 px-5 rounded-lg flex items-center justify-center gap-2 transition-colors font-bold text-sm"
                   >
-                    <span>Masuk ke Sesi</span>
+                    <span>Masuk Sesi</span>
                     <ArrowRight size={16} />
                   </button>
                 </div>
@@ -178,18 +179,18 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
             {[
               {
                 step: 1,
-                title: '1. Buat Pertanyaan Polling',
-                desc: 'Tulis pertanyaan Anda, atur opsi pilihan jawaban atau rating bintang, dan tentukan timer otomatis sesuai kebutuhan.',
+                title: '1. Buat Polling',
+                desc: 'Tulis pertanyaan, pilih jenis jawaban (pilihan ganda/rating), dan atur timernya.',
               },
               {
                 step: 2,
-                title: '2. Bagikan QR Code & Kode Sesi',
-                desc: 'Tampilkan layar presentasi. Audiens dapat memindai QR code atau mengetik kode sesi dari browser ponsel mereka untuk bergabung.',
+                title: '2. Tampilkan Kode / QR',
+                desc: 'Tayangkan di layar presentasi. Audiens tinggal scan pakai HP mereka.',
               },
               {
                 step: 3,
-                title: '3. Pantau Respon Secara Real-time',
-                desc: 'Hasil voting audiens langsung dihitung secara otomatis dan ditampilkan dalam bentuk bar chart minimalis di layar presentasi utama.',
+                title: '3. Lihat Hasil Instan',
+                desc: 'Hasil voting langsung muncul secara real-time dalam grafik yang rapi.',
               },
             ].map((item) => (
               <div
@@ -394,33 +395,33 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
             {[
               {
                 icon: Clock,
-                title: 'Real-time 1 Detik',
-                desc: 'Hasil respon ter-update otomatis pada layar presentasi setiap 1 detik tanpa refresh halaman manual.',
+                title: 'Hasil Update Instan (1 Detik)',
+                desc: 'Grafik bergerak otomatis tiap ada suara masuk, tanpa perlu refresh layar.',
               },
               {
                 icon: QrCode,
-                title: 'Akses Instan QR',
-                desc: 'Audiens cukup scan QR code atau masukkan kode sesi dari browser ponsel untuk bergabung secara instan.',
+                title: 'Scan & Vote Tanpa Ribet',
+                desc: 'Audiens cukup buka kamera HP dan scan QR code untuk langsung memilih.',
               },
               {
                 icon: Shield,
-                title: 'Keamanan Data',
-                desc: 'Vote diverifikasi menggunakan participant ID unik dan server-side validation untuk mencegah duplikasi.',
+                title: 'Bebas Spam & Vote Ganda',
+                desc: 'Sistem otomatis memvalidasi peserta agar hasil polling 100% adil dan akurat.',
               },
               {
                 icon: Tv,
-                title: 'Mode Presentasi Layar Penuh',
-                desc: 'Panel presentasi dirancang khusus untuk proyektor dan screenshare dengan latar kontras tinggi.',
+                title: 'Tampilan Layar Lebar & Jelas',
+                desc: 'Desain kontras tinggi yang siap ditayangkan indah di proyektor maupun Zoom.',
               },
               {
                 icon: Star,
-                title: 'Tipe Polling Beragam',
-                desc: 'Mendukung pilihan tunggal, pilihan ganda, dan rating bintang 1-5 yang fleksibel.',
+                title: 'Format Polling Fleksibel',
+                desc: 'Dukung pilihan ganda, skala rating 1-5, hingga multiple choice sesuai kebutuhan.',
               },
               {
                 icon: CheckCircle,
-                title: 'Tanpa Registrasi',
-                desc: 'Peserta tidak perlu membuat akun atau memasukkan email. Cukup scan dan vote.',
+                title: '100% Tanpa Login Peserta',
+                desc: 'Peserta tak perlu isi email/password. Masuk cepat, partisipasi maksimal.',
               },
             ].map((feat, idx) => (
               <div
@@ -443,29 +444,37 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
       {/* CTA section */}
       <section className="py-16 px-6 max-w-3xl mx-auto w-full text-center space-y-6">
         <h2 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
-          Siap Untuk Meningkatkan Keterlibatan Audiens?
+          Jangan Biarkan Presentasi Anda Sepi Penonton Lagi
         </h2>
         <p className="text-slate-500 dark:text-slate-400 text-xs sm:text-sm max-w-md mx-auto leading-relaxed">
-          Gunakan LivePoll sekarang secara gratis untuk webinar, seminar, presentasi kelas, atau rapat tim Anda
-          berikutnya.
+          Buat audiens tetap fokus dan aktif dari awal sampai akhir acara. Gratis selamanya, tanpa perlu daftar.
         </p>
         <div>
           <button
             onClick={() => navigate('#/host/new')}
             className="inline-flex items-center gap-2 bg-slate-900 dark:bg-slate-100 hover:bg-slate-800 dark:hover:bg-slate-200 text-white dark:text-slate-900 font-bold px-6 py-3 rounded-lg text-sm shadow transition-all hover:translate-y-[-1px]"
           >
-            Mulai Buat Polling Baru <ChevronRight size={16} />
+            Buat Polling Gratis Pertama Anda <ChevronRight size={16} />
           </button>
         </div>
       </section>
 
       {/* Footer */}
       <footer className="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 py-8 px-6">
-        <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-semibold text-slate-400">
+        <div className="max-w-5xl mx-auto flex flex-col items-center gap-4 sm:flex-row sm:justify-between text-xs font-semibold text-slate-400">
           <div className="flex items-center gap-1.5 text-slate-650 dark:text-slate-400">
             <Layers size={16} />
             <span>LivePoll</span>
           </div>
+          <a
+            href="https://github.com/jutionck/livepoll"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1.5 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors"
+          >
+            <Code size={14} />
+            <span>Open Source di GitHub</span>
+          </a>
           <div className="flex items-center gap-4">
             <a
               href="https://saweria.co/jutionck"
