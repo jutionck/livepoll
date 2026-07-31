@@ -295,7 +295,7 @@ export const HostNew: React.FC<HostNewProps> = ({ navigate, theme, toggleTheme }
                   <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
                     <div className="md:col-span-2">
                       <label className="block text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1.5">
-                        Pertanyaan
+                        {t('questionLabel')}
                       </label>
                       <input
                         type="text"
@@ -335,7 +335,7 @@ export const HostNew: React.FC<HostNewProps> = ({ navigate, theme, toggleTheme }
                   {q.type !== 'rating' && (
                     <div className="space-y-2 mt-4">
                       <label className="block text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-2">
-                        Pilihan Jawaban
+                        {t('optionsLabel')}
                       </label>
                       {q.options.map((opt, optIndex) => (
                         <div key={optIndex} className="flex items-center gap-2">
@@ -377,7 +377,7 @@ export const HostNew: React.FC<HostNewProps> = ({ navigate, theme, toggleTheme }
           {/* Add actions */}
           <div className="border border-dashed border-slate-250 dark:border-slate-800 p-4 rounded-xl flex flex-col sm:flex-row items-center justify-between gap-4">
             <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
-              Tambah Pertanyaan:
+              {t('addQuestion')}
             </span>
             <div className="flex gap-2 w-full sm:w-auto">
               {(['multiple_choice', 'multiple_selection', 'rating'] as const).map((type) => {
