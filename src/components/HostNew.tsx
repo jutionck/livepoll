@@ -173,21 +173,21 @@ export const HostNew: React.FC<HostNewProps> = ({ navigate, theme, toggleTheme }
   const handleLaunch = async () => {
     setError('');
     if (!title.trim()) {
-      setError('Judul sesi tidak boleh kosong.');
+      setError(t('errorTitle'));
       return;
     }
     if (questions.length === 0) {
-      setError('Tambahkan minimal satu pertanyaan.');
+      setError(t('errorNoQuestions'));
       return;
     }
     for (let i = 0; i < questions.length; i++) {
       const q = questions[i];
       if (!q.title.trim()) {
-        setError(`Pertanyaan #${i + 1} belum memiliki judul.`);
+        setError(t('errorNoTitle', { n: i + 1 }));
         return;
       }
       if (q.type !== 'rating' && q.options.filter((o) => o.trim()).length < 2) {
-        setError(`Pertanyaan #${i + 1} minimal harus memiliki 2 pilihan.`);
+        setError(t('errorFewOptions', { n: i + 1 }));
         return;
       }
     }

@@ -154,7 +154,7 @@ export const Presentation: React.FC<PresentationProps> = ({ code, navigate, them
           <div className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-2 sm:px-3 py-1.5 rounded-lg flex items-center gap-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300">
             <Users size={14} className="text-slate-400 shrink-0" />
             <span>
-              {totalVotes} <span className="hidden sm:inline">Respon</span>
+              {totalVotes} <span className="hidden sm:inline">{t('responses')}</span>
             </span>
           </div>
           <ThemeToggle theme={theme} toggleTheme={toggleTheme} />

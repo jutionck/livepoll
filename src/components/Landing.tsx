@@ -388,7 +388,7 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
         <div className="max-w-5xl mx-auto w-full">
           <div className="text-center mb-12">
             <h2 className="text-xl font-bold text-slate-900 dark:text-white uppercase tracking-wider mb-2">
-              Mengapa Memilih LivePoll?
+              {t('whyTitle')}
             </h2>
             <p className="text-xs text-slate-450 dark:text-slate-400">{t('whySubtitle')}</p>
           </div>

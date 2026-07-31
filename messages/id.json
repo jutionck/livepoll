@@ -141,7 +141,11 @@
     "resetConfirm": "Hapus Semua",
     "loading": "Memuat panel...",
     "errorAccess": "Akses Ditolak",
-    "errorToken": "Token Host tidak ditemukan."
+    "errorToken": "Token Host tidak ditemukan.",
+    "notifActivated": "Pertanyaan aktif berhasil diubah.",
+    "notifReset": "Semua jawaban berhasil direset.",
+    "notifVotingOpen": "Voting dibuka kembali.",
+    "notifVotingClosed": "Voting ditutup."
   },
   "presentation": {
     "title": "Layar Presentasi",

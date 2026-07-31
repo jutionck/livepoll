@@ -132,7 +132,7 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
       await apiPost('set-active-question', { code, question_id: qId });
       setSelectedQuestionId(qId);
       await queryClient.invalidateQueries({ queryKey: ['session', code] });
-      showNotification('Pertanyaan aktif berhasil diubah.', 'success');
+      showNotification(t('notifActivated'), 'success');
     } catch (err: any) {
       showNotification(err.message);
     }
@@ -142,7 +142,7 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
     try {
       await apiPost('close-session', { code, status: newStatus });
       await queryClient.invalidateQueries({ queryKey: ['session', code] });
-      showNotification(newStatus === 'active' ? 'Voting dibuka kembali.' : 'Voting ditutup.', 'success');
+      showNotification(newStatus === 'active' ? t('notifVotingOpen') : t('notifVotingClosed'), 'success');
     } catch (err: any) {
       showNotification(err.message);
     }
@@ -153,7 +153,7 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
     try {
       await apiPost('reset-votes', { code, question_id: selectedQuestionId });
       await queryClient.invalidateQueries({ queryKey: ['results', code, selectedQuestionId] });
-      showNotification('Semua jawaban berhasil direset.', 'success');
+      showNotification(t('notifReset'), 'success');
     } catch (err: any) {
       showNotification(err.message);
     }
@@ -232,7 +232,7 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
             onClick={() => window.open(`/present/${code}`, '_blank')}
             className="flex items-center gap-1 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 px-2 sm:px-3 py-1.5 rounded-lg font-semibold text-xs border border-slate-200 dark:border-slate-800 transition-colors"
           >
-            <Eye size={14} /> <span className="hidden sm:inline">Layar Presentasi</span>
+            <Eye size={14} /> <span className="hidden sm:inline">{tp('title')}</span>
           </button>
           <button
             onClick={() => setShowExitModal(true)}

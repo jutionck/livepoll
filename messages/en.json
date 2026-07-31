@@ -141,7 +141,11 @@
     "resetConfirm": "Delete All",
     "loading": "Loading panel...",
     "errorAccess": "Access Denied",
-    "errorToken": "Host token not found."
+    "errorToken": "Host token not found.",
+    "notifActivated": "Question activated successfully.",
+    "notifReset": "All answers have been reset.",
+    "notifVotingOpen": "Voting has been reopened.",
+    "notifVotingClosed": "Voting has been closed."
   },
   "presentation": {
     "title": "Presentation Screen",
