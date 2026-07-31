@@ -489,6 +489,16 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
               <span>Dukung Developer</span>
             </a>
           </div>
+          <div className="border-t border-slate-100 dark:border-slate-800 pt-3 flex items-center justify-center">
+            <a
+              href="https://mipdevp.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 transition-colors"
+            >
+              <span>Produk dari MIPDEVP</span>
+            </a>
+          </div>
         </div>
       </footer>
     </div>
