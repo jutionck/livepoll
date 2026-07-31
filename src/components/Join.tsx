@@ -29,18 +29,20 @@ export const Join: React.FC<JoinProps> = ({ navigate, theme, toggleTheme }) => {
   return (
     <div className="min-h-screen bg-dots flex flex-col justify-between font-sans">
       <header className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
-        <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between gap-2">
           <button
             onClick={() => navigate('/')}
-            className="flex items-center gap-1 text-slate-500 hover:text-slate-900 dark:hover:text-slate-100 font-semibold text-xs transition-colors"
+            className="flex items-center gap-1 text-slate-500 hover:text-slate-900 dark:hover:text-slate-100 font-semibold text-xs transition-colors shrink-0"
           >
-            <ArrowLeft size={16} /> {tn('back')}
+            <ArrowLeft size={16} /> <span className="hidden sm:inline">{tn('back')}</span>
           </button>
-          <div className="flex items-center gap-2">
-            <Layers size={18} className="text-slate-900 dark:text-white" />
-            <span className="text-sm font-bold text-slate-900 dark:text-white tracking-tight">{tn('brand')}</span>
+          <div className="flex items-center gap-2 min-w-0">
+            <Layers size={18} className="text-slate-900 dark:text-white shrink-0" />
+            <span className="text-sm font-bold text-slate-900 dark:text-white tracking-tight truncate">
+              {tn('brand')}
+            </span>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             <LanguageToggle />
             <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
           </div>

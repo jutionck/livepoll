@@ -54,19 +54,23 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
     <div className="min-h-screen bg-dots flex flex-col font-sans selection:bg-slate-200 dark:selection:bg-slate-800">
       {/* Navbar */}
       <nav className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-20">
-        <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Layers size={20} className="text-slate-900 dark:text-white" />
-            <span className="text-base font-bold text-slate-900 dark:text-white tracking-tight">{tn('brand')}</span>
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2 min-w-0">
+            <Layers size={20} className="text-slate-900 dark:text-white shrink-0" />
+            <span className="text-base font-bold text-slate-900 dark:text-white tracking-tight truncate">
+              {tn('brand')}
+            </span>
           </div>
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
             <LanguageToggle />
             <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
             <button
               onClick={() => navigate('/host/new')}
-              className="text-xs font-bold text-white dark:text-slate-900 bg-slate-900 dark:bg-slate-100 hover:bg-slate-800 dark:hover:bg-slate-200 px-4 py-2 rounded-lg transition-all"
+              className="text-xs font-bold text-white dark:text-slate-900 bg-slate-900 dark:bg-slate-100 hover:bg-slate-800 dark:hover:bg-slate-200 px-2.5 sm:px-4 py-2 rounded-lg transition-all flex items-center gap-1.5"
+              title={tn('createPoll')}
             >
-              {tn('createPoll')}
+              <PlusCircle size={16} />
+              <span className="hidden sm:inline">{tn('createPoll')}</span>
             </button>
           </div>
         </div>
@@ -463,8 +467,8 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
       </section>
 
       {/* Footer */}
-      <footer className="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 py-8 px-6">
-        <div className="max-w-5xl mx-auto flex flex-col gap-5 text-xs font-semibold text-slate-400">
+      <footer className="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 py-6 sm:py-8 px-4 sm:px-6">
+        <div className="max-w-5xl mx-auto flex flex-col gap-4 text-xs font-semibold text-slate-400">
           {/* Row 1: Brand + Language toggle */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-1.5 text-slate-650 dark:text-slate-400">
@@ -475,7 +479,7 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
           </div>
 
           {/* Row 2: Links */}
-          <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6">
+          <div className="flex items-center justify-between sm:justify-start sm:gap-6">
             <a
               href="https://github.com/jutionck/livepoll"
               target="_blank"
@@ -497,7 +501,7 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
           </div>
 
           {/* Row 3: Divider + attribution */}
-          <div className="border-t border-slate-100 dark:border-slate-800 pt-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+          <div className="border-t border-slate-100 dark:border-slate-800 pt-3 flex flex-col sm:flex-row items-center justify-between gap-1.5">
             <span>&copy; {new Date().getFullYear()} LivePoll</span>
             <a
               href="https://mipdevp.com"
