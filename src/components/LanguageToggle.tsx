@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useTransition } from 'react';
 import { useLocale } from 'next-intl';
 import { usePathname, useRouter } from '@/i18n/navigation';
 import { Globe } from 'lucide-react';
@@ -9,9 +9,13 @@ export const LanguageToggle: React.FC = () => {
   const locale = useLocale();
   const router = useRouter();
   const pathname = usePathname();
+  const [isPending, startTransition] = useTransition();
 
   const switchLocale = (next: 'id' | 'en') => {
-    router.replace(pathname, { locale: next });
+    if (next === locale || isPending) return;
+    startTransition(() => {
+      router.replace(pathname, { locale: next });
+    });
   };
 
   return (
