@@ -1,16 +1,16 @@
 import { NextResponse } from 'next/server';
-import conn from '@/lib/db';
+import prisma from '@/lib/db';
 
 export async function GET() {
   try {
-    const [sessionResult, votesResult] = await Promise.all([
-      conn`SELECT COUNT(*) as count FROM sessions`,
-      conn`SELECT COUNT(*) as count FROM votes`,
+    const [sessionCount, voteCount] = await Promise.all([
+      prisma.session.count(),
+      prisma.vote.count(),
     ]);
 
     return NextResponse.json({
-      sessions: Number(sessionResult[0]?.count || 0),
-      votes: Number(votesResult[0]?.count || 0),
+      sessions: sessionCount,
+      votes: voteCount,
     });
   } catch {
     return NextResponse.json({ sessions: 0, votes: 0 });

@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import conn from '@/lib/db';
+import prisma from '@/lib/db';
 
 export async function GET(request: Request) {
   try {
@@ -11,10 +11,9 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const result = await conn`
-      DELETE FROM sessions 
-      WHERE expires_at < CURRENT_TIMESTAMP
-    `;
+    const result = await prisma.session.deleteMany({
+      where: { expiresAt: { lt: new Date() } },
+    });
 
     return NextResponse.json({ success: true, deleted: result.count });
   } catch (error: any) {

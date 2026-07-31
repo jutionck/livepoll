@@ -1,0 +1,57 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Session {
+  code                     String     @id @db.VarChar(10)
+  title                    String     @db.VarChar(255)
+  status                   String     @default("active") @db.VarChar(20)
+  activeQuestionId         String?    @map("active_question_id") @db.VarChar(50)
+  activeQuestionActivatedAt Int?      @map("active_question_activated_at")
+  hostTokenHash            String     @map("host_token_hash") @db.VarChar(255)
+  version                  Int        @default(1)
+  createdAt                DateTime   @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt                DateTime   @updatedAt @map("updated_at") @db.Timestamptz(6)
+  expiresAt                DateTime   @map("expires_at") @db.Timestamptz(6)
+
+  questions Question[]
+  votes     Vote[]
+
+  @@map("sessions")
+}
+
+model Question {
+  id          String   @id @default(uuid()) @db.Uuid
+  sessionCode String   @map("session_code") @db.VarChar(10)
+  qId         String   @map("q_id") @db.VarChar(50)
+  type        String   @db.VarChar(50)
+  title       String   @db.Text
+  options     Json     @default("{}")
+  timer       Int?
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  session Session @relation(fields: [sessionCode], references: [code], onDelete: Cascade)
+
+  @@unique([sessionCode, qId])
+  @@map("questions")
+}
+
+model Vote {
+  id            String   @id @default(uuid()) @db.Uuid
+  sessionCode   String   @map("session_code") @db.VarChar(10)
+  questionId    String   @map("question_id") @db.VarChar(50)
+  participantId String   @map("participant_id") @db.VarChar(100)
+  vote          Json
+  updatedAt     DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  session Session @relation(fields: [sessionCode], references: [code], onDelete: Cascade)
+
+  @@unique([sessionCode, questionId, participantId])
+  @@index([sessionCode, questionId])
+  @@map("votes")
+}

@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import conn from '@/lib/db';
+import prisma from '@/lib/db';
 import crypto from 'crypto';
 
 export async function POST(request: Request) {
@@ -11,24 +11,23 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Data tidak lengkap.' }, { status: 400 });
     }
 
-    const sessionResult = await conn`SELECT * FROM sessions WHERE code = ${code.toUpperCase()}`;
-    if (sessionResult.length === 0) {
+    const session = await prisma.session.findUnique({ where: { code: code.toUpperCase() } });
+    if (!session) {
       return NextResponse.json({ error: 'Sesi tidak ditemukan.' }, { status: 404 });
     }
 
-    const session = sessionResult[0];
-
     const hash = crypto.createHash('sha256').update(tokenHeader).digest('hex');
-    if (hash !== session.host_token_hash) {
+    if (hash !== session.hostTokenHash) {
       return NextResponse.json({ error: 'Akses ditolak. Token host tidak valid.' }, { status: 403 });
     }
 
-    await conn`
-      UPDATE sessions 
-      SET status = ${status},
-          version = version + 1
-      WHERE code = ${code.toUpperCase()}
-    `;
+    await prisma.session.update({
+      where: { code: code.toUpperCase() },
+      data: {
+        status,
+        version: { increment: 1 },
+      },
+    });
 
     return NextResponse.json({ success: true, status });
   } catch (error: any) {

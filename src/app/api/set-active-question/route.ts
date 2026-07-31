@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import conn from '@/lib/db';
+import prisma from '@/lib/db';
 import crypto from 'crypto';
 
 export async function POST(request: Request) {
@@ -11,32 +11,32 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Data tidak lengkap.' }, { status: 400 });
     }
 
-    const sessionResult = await conn`SELECT * FROM sessions WHERE code = ${code.toUpperCase()}`;
-    if (sessionResult.length === 0) {
+    const session = await prisma.session.findUnique({ where: { code: code.toUpperCase() } });
+    if (!session) {
       return NextResponse.json({ error: 'Sesi tidak ditemukan.' }, { status: 404 });
     }
 
-    const session = sessionResult[0];
-
     const hash = crypto.createHash('sha256').update(tokenHeader).digest('hex');
-    if (hash !== session.host_token_hash) {
+    if (hash !== session.hostTokenHash) {
       return NextResponse.json({ error: 'Akses ditolak. Token host tidak valid.' }, { status: 403 });
     }
 
-    const qResult =
-      await conn`SELECT id FROM questions WHERE session_code = ${code.toUpperCase()} AND q_id = ${question_id}`;
-    if (qResult.length === 0) {
+    const question = await prisma.question.findUnique({
+      where: { sessionCode_qId: { sessionCode: code.toUpperCase(), qId: question_id } },
+    });
+    if (!question) {
       return NextResponse.json({ error: 'Pertanyaan tidak ditemukan.' }, { status: 404 });
     }
 
-    await conn`
-      UPDATE sessions 
-      SET active_question_id = ${question_id},
-          active_question_activated_at = ${Math.floor(Date.now() / 1000)},
-          status = 'active',
-          version = version + 1
-      WHERE code = ${code.toUpperCase()}
-    `;
+    await prisma.session.update({
+      where: { code: code.toUpperCase() },
+      data: {
+        activeQuestionId: question_id,
+        activeQuestionActivatedAt: Math.floor(Date.now() / 1000),
+        status: 'active',
+        version: { increment: 1 },
+      },
+    });
 
     return NextResponse.json({ success: true });
   } catch (error: any) {

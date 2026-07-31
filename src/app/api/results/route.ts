@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import conn from '@/lib/db';
+import prisma from '@/lib/db';
 
 export async function GET(request: Request) {
   try {
@@ -11,21 +11,19 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Data tidak lengkap.' }, { status: 400 });
     }
 
-    const qResult = await conn`
-      SELECT type, options FROM questions 
-      WHERE session_code = ${code} AND q_id = ${qId}
-    `;
-    if (qResult.length === 0) {
+    const question = await prisma.question.findUnique({
+      where: { sessionCode_qId: { sessionCode: code, qId } },
+    });
+    if (!question) {
       return NextResponse.json({ error: 'Pertanyaan tidak ditemukan.' }, { status: 404 });
     }
 
-    const question = qResult[0];
-    const votesResult = await conn`
-      SELECT vote FROM votes 
-      WHERE session_code = ${code} AND question_id = ${qId}
-    `;
+    const votes = await prisma.vote.findMany({
+      where: { sessionCode: code, questionId: qId },
+      select: { vote: true },
+    });
 
-    const totalVotes = votesResult.length;
+    const totalVotes = votes.length;
     const type = question.type;
     const results: Record<string, number> = {};
 
@@ -35,7 +33,7 @@ export async function GET(request: Request) {
         results[key] = 0;
       });
 
-      votesResult.forEach((row) => {
+      votes.forEach((row) => {
         const voteVal = row.vote;
         if (type === 'multiple_choice') {
           if (typeof voteVal === 'string' && results[voteVal] !== undefined) {
@@ -61,8 +59,8 @@ export async function GET(request: Request) {
       let sum = 0;
       let count = 0;
 
-      votesResult.forEach((row) => {
-        const rating = parseInt(row.vote, 10);
+      votes.forEach((row) => {
+        const rating = parseInt(String(row.vote), 10);
         if (!isNaN(rating) && rating >= 1 && rating <= 5) {
           results[rating]++;
           sum += rating;
@@ -72,7 +70,10 @@ export async function GET(request: Request) {
 
       const average = count > 0 ? Math.round((sum / count) * 100) / 100 : 0;
 
-      const sessionResult = await conn`SELECT version FROM sessions WHERE code = ${code}`;
+      const session = await prisma.session.findUnique({
+        where: { code },
+        select: { version: true },
+      });
 
       return NextResponse.json({
         code,
@@ -81,11 +82,14 @@ export async function GET(request: Request) {
         total_votes: totalVotes,
         results,
         average_rating: average,
-        version: sessionResult[0]?.version || 1,
+        version: session?.version || 1,
       });
     }
 
-    const sessionResult = await conn`SELECT version FROM sessions WHERE code = ${code}`;
+    const session = await prisma.session.findUnique({
+      where: { code },
+      select: { version: true },
+    });
 
     return NextResponse.json({
       code,
@@ -93,7 +97,7 @@ export async function GET(request: Request) {
       question_type: type,
       total_votes: totalVotes,
       results,
-      version: sessionResult[0]?.version || 1,
+      version: session?.version || 1,
     });
   } catch (error: any) {
     console.error(error);

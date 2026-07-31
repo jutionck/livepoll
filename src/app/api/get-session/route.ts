@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import conn from '@/lib/db';
+import prisma from '@/lib/db';
 import crypto from 'crypto';
 
 export async function GET(request: Request) {
@@ -11,26 +11,28 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Kode sesi harus diisi.' }, { status: 400 });
     }
 
-    const sessionResult = await conn`SELECT * FROM sessions WHERE code = ${code}`;
-    if (sessionResult.length === 0) {
+    const session = await prisma.session.findUnique({ where: { code } });
+    if (!session) {
       return NextResponse.json({ error: 'Sesi tidak ditemukan atau telah kedaluwarsa.' }, { status: 404 });
     }
-
-    const session = sessionResult[0];
 
     // Check host token
     const tokenHeader = request.headers.get('X-Host-Token') || searchParams.get('host_token') || '';
     const hash = crypto.createHash('sha256').update(tokenHeader).digest('hex');
-    const isHost = hash === session.host_token_hash;
+    const isHost = hash === session.hostTokenHash;
 
     if (isHost) {
       // Get all questions
-      const questionsResult = await conn`SELECT * FROM questions WHERE session_code = ${code} ORDER BY q_id ASC`;
+      const questions = await prisma.question.findMany({
+        where: { sessionCode: code },
+        orderBy: { qId: 'asc' },
+      });
+
       const questionsMap: Record<string, any> = {};
 
-      questionsResult.forEach((q) => {
-        questionsMap[q.q_id] = {
-          id: q.q_id,
+      questions.forEach((q) => {
+        questionsMap[q.qId] = {
+          id: q.qId,
           type: q.type,
           title: q.title,
           options: q.options,
@@ -42,22 +44,23 @@ export async function GET(request: Request) {
         code: session.code,
         title: session.title,
         status: session.status,
-        active_question_id: session.active_question_id,
-        active_question_activated_at: session.active_question_activated_at,
+        active_question_id: session.activeQuestionId,
+        active_question_activated_at: session.activeQuestionActivatedAt,
         questions: questionsMap,
         version: session.version,
       });
     } else {
       // Get active question only
-      const activeQId = session.active_question_id;
+      const activeQId = session.activeQuestionId;
       let activeQuestion = null;
 
       if (activeQId) {
-        const qResult = await conn`SELECT * FROM questions WHERE session_code = ${code} AND q_id = ${activeQId}`;
-        if (qResult.length > 0) {
-          const q = qResult[0];
+        const q = await prisma.question.findUnique({
+          where: { sessionCode_qId: { sessionCode: code, qId: activeQId } },
+        });
+        if (q) {
           activeQuestion = {
-            id: q.q_id,
+            id: q.qId,
             type: q.type,
             title: q.title,
             options: q.options,
@@ -72,7 +75,7 @@ export async function GET(request: Request) {
         status: session.status,
         active_question_id: activeQId,
         active_question: activeQuestion,
-        active_question_activated_at: session.active_question_activated_at,
+        active_question_activated_at: session.activeQuestionActivatedAt,
         version: session.version,
       });
     }
