@@ -10,13 +10,26 @@ Interactive polling platform for webinars, seminars, training, and presentations
 
 ## Features
 
-- Real-time polling with 1-second updates
+### Polling
+- Real-time results with 1-second updates (powered by TanStack Query)
 - Multiple Choice, Multiple Selection, Rating 1-5
-- QR Code join & session code
-- Dark Mode / Light Mode (follows system preference)
-- Automatic timer per question
-- Fullscreen presentation mode
-- No registration required for participants
+- Automatic countdown timer per question (auto-closes voting)
+- Duplicate vote prevention (unique participant ID + server validation)
+- QR Code join & session code with automatic locale in URL
+- Fullscreen presentation mode with live charts
+
+### Internationalization (i18n)
+- Full Indonesian (`/id`) and English (`/en`) support via next-intl
+- Automatic locale detection based on browser language
+- ID/EN language toggle in navbar & footer
+- Locale-aware join URLs: `/{locale}/join/{code}`
+
+### Platform
+- Path-based routing (no hash router)
+- Dark Mode / Light Mode (follows system preference, no flash on switch)
+- TanStack Query for efficient polling & caching
+- Responsive mobile-first design
+- Stats tracking (total sessions & votes)
 - Open source & free
 
 ## Tech Stack
@@ -26,6 +39,8 @@ Interactive polling platform for webinars, seminars, training, and presentations
 | **Next.js 16** | Fullstack React framework |
 | **PostgreSQL** | Database via Supabase / Neon / local |
 | **Prisma ORM** | Type-safe database client & migrations |
+| **TanStack Query** | Data fetching & polling |
+| **next-intl** | Internationalization (ID/EN) |
 | **Tailwind CSS v4** | Styling |
 | **Lucide React** | Icons |
 | **qrcode.react** | QR Code generation |
@@ -66,7 +81,7 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
-## Deploy to Vercel
+## Deployment to Vercel
 
 1. Push the repo to GitHub
 2. Import the project into [Vercel](https://vercel.com)
@@ -76,6 +91,8 @@ Open [http://localhost:3000](http://localhost:3000).
    npx prisma migrate deploy
    ```
 5. Deploy
+
+> **Note:** Passwords with special characters (`@`, `?`, etc.) in `DATABASE_URL` are automatically URL-encoded by the app, no manual encoding needed.
 
 ## Support
 
