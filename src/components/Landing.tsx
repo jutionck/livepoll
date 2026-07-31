@@ -460,22 +460,25 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
       </section>
 
       {/* Footer */}
-      <footer className="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 py-8 px-6">
-        <div className="max-w-5xl mx-auto flex flex-col items-center gap-4 sm:flex-row sm:justify-between text-xs font-semibold text-slate-400">
-          <div className="flex items-center gap-1.5 text-slate-650 dark:text-slate-400">
-            <Layers size={16} />
-            <span>LivePoll</span>
+      <footer className="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 py-6 px-6">
+        <div className="max-w-5xl mx-auto flex flex-col gap-3 text-xs font-semibold text-slate-400">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-1.5 text-slate-650 dark:text-slate-400">
+              <Layers size={16} />
+              <span>LivePoll</span>
+            </div>
+            <span>&copy; {new Date().getFullYear()} LivePoll</span>
           </div>
-          <a
-            href="https://github.com/jutionck/livepoll"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-1.5 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors"
-          >
-            <Code size={14} />
-            <span>Open Source di GitHub</span>
-          </a>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center justify-between sm:justify-start sm:gap-6">
+            <a
+              href="https://github.com/jutionck/livepoll"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors"
+            >
+              <Code size={14} />
+              <span>Open Source di GitHub</span>
+            </a>
             <a
               href="https://saweria.co/jutionck"
               target="_blank"
@@ -486,7 +489,6 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
               <span>Dukung Developer</span>
             </a>
           </div>
-          <span>&copy; {new Date().getFullYear()} LivePoll</span>
         </div>
       </footer>
     </div>
