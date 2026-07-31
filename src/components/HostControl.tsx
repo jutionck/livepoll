@@ -92,7 +92,6 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Gagal memuat sesi.');
 
-      // Update page title dynamically
       if (data.title) {
         document.title = `LivePoll Host | ${data.title} (${code})`;
       }

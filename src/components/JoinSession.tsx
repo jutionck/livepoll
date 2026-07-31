@@ -93,7 +93,6 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Sesi tidak ditemukan.');
 
-      // Update page title dynamically
       if (data.title) {
         document.title = `LivePoll | ${data.title} (${code})`;
       }

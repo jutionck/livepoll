@@ -61,7 +61,7 @@ export async function POST(request: Request) {
         const timerVal = q.timer !== undefined ? q.timer : null;
 
         // Convert array options to key-value object
-        let optionsObj: Record<string, string> = {};
+        const optionsObj: Record<string, string> = {};
         if (q.type !== 'rating' && Array.isArray(q.options)) {
           q.options.forEach((opt: string, idx: number) => {
             const trimmed = opt.trim();

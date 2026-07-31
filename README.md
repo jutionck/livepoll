@@ -1,82 +1,88 @@
-# LivePoll — Polling Interaktif Real-time
+# LivePoll — Real-time Interactive Polling
 
-Platform polling interaktif untuk webinar, seminar, training, dan presentasi. Peserta bergabung melalui QR code dari ponsel, hasil langsung tampil di layar presenter secara real-time.
+Interactive polling platform for webinars, seminars, training, and presentations. Participants join via QR code from their phones, and results appear instantly on the presenter's screen in real-time.
 
 ![Next.js](https://img.shields.io/badge/Next.js-16-000)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791)
+![Prisma](https://img.shields.io/badge/Prisma-7-2D3748)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
-## Fitur
+## Features
 
-- Polling real-time dengan update setiap 1 detik
+- Real-time polling with 1-second updates
 - Multiple Choice, Multiple Selection, Rating 1-5
-- QR Code join & kode sesi
-- Dark Mode / Light Mode (ikuti sistem)
-- Timer otomatis per pertanyaan
-- Mode presentasi layar penuh
-- Tanpa registrasi untuk peserta
-- Open source & gratis
+- QR Code join & session code
+- Dark Mode / Light Mode (follows system preference)
+- Automatic timer per question
+- Fullscreen presentation mode
+- No registration required for participants
+- Open source & free
 
 ## Tech Stack
 
-| Teknologi | Kegunaan |
-|-----------|----------|
-| **Next.js 16** | Framework React fullstack |
-| **PostgreSQL** | Database via Supabase / Neon / lokal |
+| Technology | Purpose |
+|------------|---------|
+| **Next.js 16** | Fullstack React framework |
+| **PostgreSQL** | Database via Supabase / Neon / local |
+| **Prisma ORM** | Type-safe database client & migrations |
 | **Tailwind CSS v4** | Styling |
-| **Lucide React** | Ikon |
-| **qrcode.react** | Generate QR Code |
+| **Lucide React** | Icons |
+| **qrcode.react** | QR Code generation |
 
-## Cara Install & Jalankan
+## Getting Started
 
 ### 1. Clone & Install
 
 ```bash
-git clone https://github.com/jutionck/live-polling-webinar.git
-cd live-polling-webinar
+git clone https://github.com/jutionck/livepoll.git
+cd livepoll
 npm install
 ```
 
 ### 2. Setup Database
 
-Jalankan PostgreSQL lokal atau gunakan Supabase/Neon.
+Use a local PostgreSQL or Supabase/Neon.
 
 ```bash
-# Buat database lokal
+# Create local database
 createdb livepoll
-# Jalankan migrasi
-psql -d livepoll -f db/schema.sql
+# Apply migrations
+npx prisma migrate dev
 ```
 
-### 3. Konfigurasi Environment
+### 3. Configure Environment
 
 ```bash
 cp .env.example .env.development.local
-# Sesuaikan DATABASE_URL jika perlu
+# Adjust DATABASE_URL if needed
 ```
 
-### 4. Jalankan
+### 4. Run
 
 ```bash
 npm run dev
 ```
 
-Buka [http://localhost:3000](http://localhost:3000).
+Open [http://localhost:3000](http://localhost:3000).
 
-## Deploy ke Vercel
+## Deploy to Vercel
 
-1. Push repo ke GitHub
-2. Import project ke [Vercel](https://vercel.com)
-3. Set environment variable `DATABASE_URL` di dashboard Vercel (gunakan Supabase/Neon)
-4. Deploy
+1. Push the repo to GitHub
+2. Import the project into [Vercel](https://vercel.com)
+3. Set the `DATABASE_URL` environment variable in the Vercel dashboard (use Supabase Transaction Pooler, port 6543)
+4. Run migrations against Supabase using the Session Pooler (port 5432):
+   ```bash
+   npx prisma migrate deploy
+   ```
+5. Deploy
 
-## Dukungan
+## Support
 
-Jika project ini bermanfaat, Anda bisa mendukung pengembang melalui:
+If this project is helpful to you, consider supporting the developer:
 
-[![Saweria](https://img.shields.io/badge/Saweria-Dukung%20Developer-red)](https://saweria.co/jutionck)
+[![Saweria](https://img.shields.io/badge/Saweria-Support%20Developer-red)](https://saweria.co/jutionck)
 
-## Lisensi
+## License
 
 [MIT](LICENSE)

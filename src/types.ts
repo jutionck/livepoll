@@ -5,7 +5,7 @@ export interface Question {
   type: QuestionType;
   title: string;
   options: Record<string, string>;
-  timer?: number | null; // timer in seconds (null = manual)
+  timer?: number | null;
   votes?: Record<string, any>;
 }
 
@@ -14,7 +14,7 @@ export interface Session {
   title: string;
   status: 'active' | 'closed';
   active_question_id: string;
-  active_question_activated_at?: number | null; // server timestamp
+  active_question_activated_at?: number | null;
   questions: Record<string, Question>;
   active_question?: {
     id: string;

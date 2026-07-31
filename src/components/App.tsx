@@ -20,7 +20,6 @@ export default function App() {
     };
     window.addEventListener('hashchange', handleHashChange);
 
-    // Initialize Theme following system preference by default
     const savedTheme = localStorage.getItem('theme') as 'light' | 'dark' | null;
     const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     const initialTheme = savedTheme || (systemDark ? 'dark' : 'light');

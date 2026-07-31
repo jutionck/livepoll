@@ -1,22 +1,21 @@
-// Prisma config for LivePoll
-import { defineConfig } from "prisma/config";
-import * as dotenv from "dotenv";
+import { defineConfig } from 'prisma/config';
+import * as dotenv from 'dotenv';
 
-// Load .env.development.local in development, .env in production
-dotenv.config({ path: process.env.NODE_ENV === "production" ? ".env" : ".env.development.local" });
+const envFile = process.env.NODE_ENV === 'production' ? '.env.production.local' : '.env.development.local';
+dotenv.config({ path: envFile });
 dotenv.config();
 
 function encodeDbUrl(rawUrl: string): string {
   try {
-    const protocol = rawUrl.startsWith("postgresql://") ? "postgresql://" : "postgres://";
+    const protocol = rawUrl.startsWith('postgresql://') ? 'postgresql://' : 'postgres://';
     const rest = rawUrl.slice(protocol.length);
-    const lastAt = rest.lastIndexOf("@");
+    const lastAt = rest.lastIndexOf('@');
     if (lastAt === -1) return rawUrl;
 
     const userinfo = rest.slice(0, lastAt);
     const hostPart = rest.slice(lastAt + 1);
 
-    const firstColon = userinfo.indexOf(":");
+    const firstColon = userinfo.indexOf(':');
     if (firstColon === -1) return rawUrl;
 
     const password = userinfo.slice(firstColon + 1);
@@ -32,13 +31,13 @@ function encodeDbUrl(rawUrl: string): string {
   }
 }
 
-const rawUrl = process.env["DATABASE_URL"] || "";
+const rawUrl = process.env['MIGRATE_DATABASE_URL'] || process.env['DATABASE_URL'] || '';
 const dbUrl = encodeDbUrl(rawUrl);
 
 export default defineConfig({
-  schema: "prisma/schema.prisma",
+  schema: 'prisma/schema.prisma',
   migrations: {
-    path: "prisma/migrations",
+    path: 'prisma/migrations',
   },
   datasource: {
     url: dbUrl || undefined,

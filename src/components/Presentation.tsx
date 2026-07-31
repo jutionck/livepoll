@@ -83,7 +83,6 @@ export const Presentation: React.FC<PresentationProps> = ({ code, navigate, them
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
 
-      // Update page title dynamically
       if (data.title) {
         document.title = `LivePoll Presentasi | ${data.title} (${code})`;
       }

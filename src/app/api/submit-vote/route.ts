@@ -71,8 +71,7 @@ export async function POST(request: Request) {
       },
     });
 
-    const hasChanged =
-      !existingVote || JSON.stringify(existingVote.vote) !== JSON.stringify(vote);
+    const hasChanged = !existingVote || JSON.stringify(existingVote.vote) !== JSON.stringify(vote);
 
     if (hasChanged) {
       await prisma.$transaction([

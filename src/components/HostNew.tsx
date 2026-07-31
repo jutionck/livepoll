@@ -98,9 +98,7 @@ export const HostNew: React.FC<HostNewProps> = ({ navigate, theme, toggleTheme }
         const parsed = JSON.parse(savedDraft);
         if (parsed.title) setTitle(parsed.title);
         if (Array.isArray(parsed.questions)) setQuestions(parsed.questions);
-      } catch {
-        /* ignore */
-      }
+      } catch {}
     } else {
       setQuestions([{ id: 'temp-1', type: 'multiple_choice', title: '', options: ['', ''], timer: null }]);
     }
