@@ -17,8 +17,9 @@ import {
   Heart,
   Code,
 } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { ThemeToggle } from './ThemeToggle';
+import { LanguageToggle } from './LanguageToggle';
 import { API_BASE_URL } from '../config';
 
 interface LandingProps {
@@ -33,6 +34,7 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
   const [stats, setStats] = useState<{ sessions: number; votes: number } | null>(null);
   const t = useTranslations('landing');
   const tn = useTranslations('nav');
+  const locale = useLocale();
 
   useEffect(() => {
     fetch(`${API_BASE_URL}/stats`)
@@ -57,7 +59,8 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
             <Layers size={20} className="text-slate-900 dark:text-white" />
             <span className="text-base font-bold text-slate-900 dark:text-white tracking-tight">{tn('brand')}</span>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <LanguageToggle />
             <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
             <button
               onClick={() => navigate('/host/new')}
@@ -233,40 +236,40 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
                   <div className="border border-slate-200 rounded-lg p-4 bg-white space-y-3 shadow-xs">
                     <div>
                       <label className="block text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-1">
-                        Pertanyaan
+                        {t('mockupQuestionLabel')}
                       </label>
                       <div className="px-3 py-2 border border-slate-200 rounded-lg text-xs font-semibold bg-slate-50">
-                        Bagaimana efisiensi kode dengan AI?
+                        {t('mockupQuestion')}
                       </div>
                     </div>
                     <div className="grid grid-cols-2 gap-3">
                       <div>
                         <label className="block text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-1">
-                          Tipe
+                          {t('mockupTypeLabel')}
                         </label>
                         <div className="px-3 py-1.5 border border-slate-200 rounded-lg text-[10px] font-bold bg-white">
-                          Pilihan Tunggal
+                          {t('mockupTypeSingle')}
                         </div>
                       </div>
                       <div>
                         <label className="block text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-1">
-                          Timer
+                          {t('mockupTimerLabel')}
                         </label>
                         <div className="px-3 py-1.5 border border-slate-200 rounded-lg text-[10px] font-bold bg-white">
-                          30 Detik
+                          {t('mockupTimer30')}
                         </div>
                       </div>
                     </div>
                     <div className="space-y-1.5 pt-1.5">
                       <label className="block text-[9px] font-bold text-slate-400 uppercase tracking-wider">
-                        Opsi Pilihan
+                        {t('mockupOptionsLabel')}
                       </label>
                       <div className="flex items-center gap-2">
                         <span className="w-5 h-5 rounded bg-slate-100 text-slate-400 text-[9px] font-black flex items-center justify-center border border-slate-200">
                           A
                         </span>
                         <div className="flex-1 px-3 py-1 border border-slate-200 rounded-lg text-[10px] bg-white font-medium">
-                          Sangat Efisien
+                          {t('mockupOptionA')}
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
@@ -274,7 +277,7 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
                           B
                         </span>
                         <div className="flex-1 px-3 py-1 border border-slate-200 rounded-lg text-[10px] bg-white font-medium">
-                          Cukup Efisien
+                          {t('mockupOptionB')}
                         </div>
                       </div>
                     </div>
@@ -286,7 +289,7 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
                 <div className="space-y-4 animate-fade-in text-left max-w-sm mx-auto w-full">
                   <div className="bg-white border border-slate-200 p-5 rounded-xl text-center flex flex-col items-center shadow-xs">
                     <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-3">
-                      Informasi Sesi Bergabung
+                      {t('mockupJoinInfo')}
                     </h4>
                     <div className="bg-slate-50 p-3 rounded-lg border border-slate-100 mb-4">
                       <svg
@@ -308,14 +311,16 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
                     <div className="w-full">
                       <div className="bg-slate-50 px-2.5 py-1.5 border border-slate-100 rounded-lg flex items-center justify-between gap-2 mb-3">
                         <span className="text-slate-500 text-[10px] font-mono truncate">
-                          livepoll.com/id/join/MG84BX
+                          {window.location.host}/{locale}/join/MG84BX
                         </span>
                         <div className="text-slate-400 p-1 shrink-0">
                           <Copy size={12} />
                         </div>
                       </div>
                       <div className="w-full border-t border-slate-100 pt-3 flex items-center justify-between">
-                        <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Kode Sesi</span>
+                        <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">
+                          {t('mockupSessionCode')}
+                        </span>
                         <span className="bg-slate-900 text-white font-bold px-2 py-0.5 rounded text-[10px] tracking-widest">
                           MG84BX
                         </span>
@@ -328,14 +333,12 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
               {activeStep === 3 && (
                 <div className="space-y-4 animate-fade-in text-left bg-white dark:bg-slate-850 p-5 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xs text-slate-900 dark:text-white">
                   <div className="flex justify-between items-center pb-2.5 border-b border-slate-100 dark:border-slate-750 mb-3 text-slate-400 dark:text-slate-500 text-[9px] font-bold">
-                    <span>Hasil Polling Real-time</span>
+                    <span>{t('mockupResults')}</span>
                     <span className="flex items-center gap-1.5">
-                      <span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span> 10 Respon
+                      <span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span> {t('mockupResponses', { n: 10 })}
                     </span>
                   </div>
-                  <h3 className="text-xs font-bold text-slate-900 dark:text-white mb-4">
-                    Bagaimana efisiensi kode dengan AI?
-                  </h3>
+                  <h3 className="text-xs font-bold text-slate-900 dark:text-white mb-4">{t('mockupQuestion')}</h3>
                   <div className="space-y-3.5 flex-grow text-slate-700 dark:text-slate-300">
                     <div className="space-y-1">
                       <div className="flex justify-between text-[10px] font-bold text-slate-700 dark:text-slate-300">
@@ -343,7 +346,7 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
                           <span className="w-5 h-5 rounded bg-slate-100 dark:bg-slate-800 text-slate-650 dark:text-slate-350 text-[9px] font-black flex items-center justify-center uppercase border border-slate-200 dark:border-slate-750">
                             A
                           </span>{' '}
-                          Sangat Efisien
+                          {t('mockupOptionA')}
                         </span>
                         <span className="text-slate-500 dark:text-slate-400">
                           7 <span className="text-slate-400 dark:text-slate-500 text-[9px] font-normal">(70%)</span>
@@ -359,7 +362,7 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
                           <span className="w-5 h-5 rounded bg-slate-100 dark:bg-slate-800 text-slate-650 dark:text-slate-350 text-[9px] font-black flex items-center justify-center uppercase border border-slate-200 dark:border-slate-750">
                             B
                           </span>{' '}
-                          Cukup Efisien
+                          {t('mockupOptionB')}
                         </span>
                         <span className="text-slate-500 dark:text-slate-400">
                           2 <span className="text-slate-400 dark:text-slate-500 text-[9px] font-normal">(20%)</span>
@@ -460,16 +463,19 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
       </section>
 
       {/* Footer */}
-      <footer className="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 py-6 px-6">
-        <div className="max-w-5xl mx-auto flex flex-col gap-3 text-xs font-semibold text-slate-400">
+      <footer className="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 py-8 px-6">
+        <div className="max-w-5xl mx-auto flex flex-col gap-5 text-xs font-semibold text-slate-400">
+          {/* Row 1: Brand + Language toggle */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-1.5 text-slate-650 dark:text-slate-400">
               <Layers size={16} />
-              <span>LivePoll</span>
+              <span className="text-slate-900 dark:text-white">LivePoll</span>
             </div>
-            <span>&copy; {new Date().getFullYear()} LivePoll</span>
+            <LanguageToggle />
           </div>
-          <div className="flex items-center justify-between sm:justify-start sm:gap-6">
+
+          {/* Row 2: Links */}
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6">
             <a
               href="https://github.com/jutionck/livepoll"
               target="_blank"
@@ -489,7 +495,10 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
               <span>{t('footerSupport')}</span>
             </a>
           </div>
-          <div className="border-t border-slate-100 dark:border-slate-800 pt-3 flex items-center justify-center">
+
+          {/* Row 3: Divider + attribution */}
+          <div className="border-t border-slate-100 dark:border-slate-800 pt-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+            <span>&copy; {new Date().getFullYear()} LivePoll</span>
             <a
               href="https://mipdevp.com"
               target="_blank"

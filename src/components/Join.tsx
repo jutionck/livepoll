@@ -5,6 +5,7 @@ import { ArrowLeft, ArrowRight, Layers, Heart } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { ThemeToggle } from './ThemeToggle';
+import { LanguageToggle } from './LanguageToggle';
 
 interface JoinProps {
   navigate: (path: string) => void;
@@ -39,7 +40,10 @@ export const Join: React.FC<JoinProps> = ({ navigate, theme, toggleTheme }) => {
             <Layers size={18} className="text-slate-900 dark:text-white" />
             <span className="text-sm font-bold text-slate-900 dark:text-white tracking-tight">{tn('brand')}</span>
           </div>
-          <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
+          <div className="flex items-center gap-2">
+            <LanguageToggle />
+            <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
+          </div>
         </div>
       </header>
 

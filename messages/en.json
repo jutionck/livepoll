@@ -47,7 +47,20 @@
     "ctaButton": "Create Your First Free Poll",
     "footerOpenSource": "Open Source on GitHub",
     "footerSupport": "Support the Developer",
-    "footerFrom": "A product by MIPDEVP"
+    "footerFrom": "A product by MIPDEVP",
+    "mockupQuestion": "How efficient is coding with AI?",
+    "mockupOptionA": "Very Efficient",
+    "mockupOptionB": "Fairly Efficient",
+    "mockupJoinInfo": "Session Join Info",
+    "mockupResults": "Real-time Poll Results",
+    "mockupResponses": "{n} Responses",
+    "mockupQuestionLabel": "Question",
+    "mockupTypeLabel": "Type",
+    "mockupTypeSingle": "Single Choice",
+    "mockupTimerLabel": "Timer",
+    "mockupTimer30": "30 Seconds",
+    "mockupOptionsLabel": "Answer Options",
+    "mockupSessionCode": "Session Code"
   },
   "join": {
     "title": "Enter Session",

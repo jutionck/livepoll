@@ -47,7 +47,20 @@
     "ctaButton": "Buat Polling Gratis Pertama Anda",
     "footerOpenSource": "Open Source di GitHub",
     "footerSupport": "Dukung Developer",
-    "footerFrom": "Produk dari MIPDEVP"
+    "footerFrom": "Produk dari MIPDEVP",
+    "mockupQuestion": "Bagaimana efisiensi kode dengan AI?",
+    "mockupOptionA": "Sangat Efisien",
+    "mockupOptionB": "Cukup Efisien",
+    "mockupJoinInfo": "Informasi Sesi Bergabung",
+    "mockupResults": "Hasil Polling Real-time",
+    "mockupResponses": "{n} Respon",
+    "mockupQuestionLabel": "Pertanyaan",
+    "mockupTypeLabel": "Tipe",
+    "mockupTypeSingle": "Pilihan Tunggal",
+    "mockupTimerLabel": "Timer",
+    "mockupTimer30": "30 Detik",
+    "mockupOptionsLabel": "Opsi Pilihan",
+    "mockupSessionCode": "Kode Sesi"
   },
   "join": {
     "title": "Masuk ke Sesi",
