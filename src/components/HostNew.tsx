@@ -74,7 +74,7 @@ const CustomSelect: React.FC<{
               className={`w-full text-left px-3 py-1.5 text-xs transition-colors hover:bg-slate-50 dark:hover:bg-slate-800 ${
                 opt.value === value
                   ? 'bg-slate-55 dark:bg-slate-800 font-bold text-slate-900 dark:text-white'
-                  : 'text-slate-650 dark:text-slate-400'
+                  : 'text-slate-600 dark:text-slate-400'
               }`}
             >
               {opt.label}
@@ -234,7 +234,7 @@ export const HostNew: React.FC<HostNewProps> = ({ navigate, theme, toggleTheme }
 
       <div className="max-w-3xl mx-auto px-4 py-8 w-full">
         {error && (
-          <div className="bg-red-50 dark:bg-red-950/20 border border-red-150 dark:border-red-900/50 p-4 mb-6 rounded-lg flex items-start gap-3 animate-fade-in">
+          <div className="bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/50 p-4 mb-6 rounded-lg flex items-start gap-3 animate-fade-in">
             <AlertCircle className="text-red-500 shrink-0 mt-0.5" size={16} />
             <span className="text-red-700 dark:text-red-400 text-xs font-semibold">{error}</span>
           </div>
@@ -272,7 +272,7 @@ export const HostNew: React.FC<HostNewProps> = ({ navigate, theme, toggleTheme }
                 {/* Header card */}
                 <div className="bg-slate-50 dark:bg-slate-900/50 border-b border-slate-200 dark:border-slate-800 px-5 py-3 flex items-center justify-between rounded-t-xl">
                   <div className="flex items-center gap-3">
-                    <GripVertical size={14} className="text-slate-350 dark:text-slate-650" />
+                    <GripVertical size={14} className="text-slate-400 dark:text-slate-600" />
                     <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
                       Q{qIndex + 1}
                     </span>
@@ -284,7 +284,7 @@ export const HostNew: React.FC<HostNewProps> = ({ navigate, theme, toggleTheme }
                   </div>
                   <button
                     onClick={() => removeQuestion(qIndex)}
-                    className="text-slate-400 hover:text-red-650 p-1 hover:bg-red-50 dark:hover:bg-red-950/20 rounded transition-colors"
+                    className="text-slate-400 hover:text-red-600 p-1 hover:bg-red-50 dark:hover:bg-red-950/20 rounded transition-colors"
                     title={t('delete')}
                   >
                     <Trash2 size={14} />
@@ -339,7 +339,7 @@ export const HostNew: React.FC<HostNewProps> = ({ navigate, theme, toggleTheme }
                       </label>
                       {q.options.map((opt, optIndex) => (
                         <div key={optIndex} className="flex items-center gap-2">
-                          <span className="w-6 h-6 rounded bg-slate-100 dark:bg-slate-800 text-slate-450 dark:text-slate-400 text-[10px] font-extrabold flex items-center justify-center shrink-0 uppercase border border-slate-200 dark:border-slate-700">
+                          <span className="w-6 h-6 rounded bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 text-[10px] font-extrabold flex items-center justify-center shrink-0 uppercase border border-slate-200 dark:border-slate-700">
                             {String.fromCharCode(65 + optIndex)}
                           </span>
                           <input
@@ -352,7 +352,7 @@ export const HostNew: React.FC<HostNewProps> = ({ navigate, theme, toggleTheme }
                           {q.options.length > 2 && (
                             <button
                               onClick={() => removeOption(qIndex, optIndex)}
-                              className="text-slate-355 hover:text-red-500 p-1 hover:bg-slate-55 dark:hover:bg-slate-800 rounded transition-colors"
+                              className="text-slate-400 hover:text-red-500 p-1 hover:bg-slate-55 dark:hover:bg-slate-800 rounded transition-colors"
                             >
                               <Trash2 size={12} />
                             </button>
@@ -362,7 +362,7 @@ export const HostNew: React.FC<HostNewProps> = ({ navigate, theme, toggleTheme }
                       {q.options.length < 8 && (
                         <button
                           onClick={() => addOption(qIndex)}
-                          className="text-slate-650 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 text-[10px] font-bold flex items-center gap-1 mt-2 transition-colors"
+                          className="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 text-[10px] font-bold flex items-center gap-1 mt-2 transition-colors"
                         >
                           <Plus size={12} /> {t('addOption')}
                         </button>
@@ -375,7 +375,7 @@ export const HostNew: React.FC<HostNewProps> = ({ navigate, theme, toggleTheme }
           })}
 
           {/* Add actions */}
-          <div className="border border-dashed border-slate-250 dark:border-slate-800 p-4 rounded-xl flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="border border-dashed border-slate-300 dark:border-slate-800 p-4 rounded-xl flex flex-col sm:flex-row items-center justify-between gap-4">
             <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
               {t('addQuestion')}
             </span>
@@ -386,7 +386,7 @@ export const HostNew: React.FC<HostNewProps> = ({ navigate, theme, toggleTheme }
                   <button
                     key={type}
                     onClick={() => addQuestion(type)}
-                    className="flex-1 sm:flex-initial bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 hover:bg-slate-55 dark:hover:bg-slate-850 text-slate-700 dark:text-slate-300 font-semibold px-3 py-1.5 rounded-lg text-xs transition-colors"
+                    className="flex-1 sm:flex-initial bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 hover:bg-slate-55 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold px-3 py-1.5 rounded-lg text-xs transition-colors"
                   >
                     + {t(info.labelKey)}
                   </button>

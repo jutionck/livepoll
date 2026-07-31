@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import Script from 'next/script';
 import { NextIntlClientProvider, hasLocale } from 'next-intl';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
@@ -11,10 +11,61 @@ export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
 }
 
-export const metadata: Metadata = {
-  title: 'LivePoll - Real-time Interactive Polling',
-  description:
-    'Interactive polling platform for webinars, seminars, and classes. Real-time results on your presentation screen.',
+const BASE_URL = 'https://livepoll.mipdevp.com';
+
+export function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Metadata {
+  const { locale } = params as unknown as { locale: string };
+  const isEn = locale === 'en';
+
+  const title = isEn ? 'LivePoll — Real-time Interactive Polling' : 'LivePoll — Polling Interaktif Real-time';
+  const description = isEn
+    ? 'Create live polls for webinars, seminars, and classes. Audience joins via QR code and results appear in real-time on your screen. Free forever, no sign-up.'
+    : 'Buat polling langsung untuk webinar, seminar, dan kelas. Audiens bergabung via QR code dan hasil muncul real-time di layar Anda. Gratis selamanya, tanpa daftar.';
+
+  return {
+    title,
+    description,
+    metadataBase: new URL(BASE_URL),
+    alternates: {
+      canonical: `/${locale}`,
+      languages: {
+        id: '/id',
+        en: '/en',
+      },
+    },
+    openGraph: {
+      type: 'website',
+      url: `${BASE_URL}/${locale}`,
+      title,
+      description,
+      siteName: 'LivePoll',
+      locale: isEn ? 'en_US' : 'id_ID',
+      alternateLocale: isEn ? ['id_ID'] : ['en_US'],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+    },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        'max-image-preview': 'large',
+      },
+    },
+  };
+}
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
+    { media: '(prefers-color-scheme: dark)', color: '#020617' },
+  ],
 };
 
 export default async function LocaleLayout({
@@ -30,6 +81,25 @@ export default async function LocaleLayout({
   }
   setRequestLocale(locale);
   const t = await getTranslations('nav');
+  const isEn = locale === 'en';
+
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: 'LivePoll',
+    url: `${BASE_URL}/${locale}`,
+    applicationCategory: 'BusinessApplication',
+    operatingSystem: 'Any',
+    description: isEn
+      ? 'Real-time interactive polling for webinars, seminars, and classes.'
+      : 'Polling interaktif real-time untuk webinar, seminar, dan kelas.',
+    offers: {
+      '@type': 'Offer',
+      price: '0',
+      priceCurrency: 'USD',
+    },
+    inLanguage: isEn ? 'en' : 'id',
+  };
 
   return (
     <html lang={locale} suppressHydrationWarning>
@@ -37,6 +107,9 @@ export default async function LocaleLayout({
         <Script id="theme-init" strategy="beforeInteractive">
           {`(function(){try{var t=localStorage.getItem('theme');var d=t?t==='dark':window.matchMedia('(prefers-color-scheme: dark)').matches;if(d)document.documentElement.classList.add('dark')}catch(e){}})();`}
         </Script>
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
       <body className="min-h-full flex flex-col" suppressHydrationWarning>
         <NextIntlClientProvider>

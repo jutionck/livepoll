@@ -182,6 +182,8 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
           <button
             onClick={() => setShowExitModal(true)}
             className="text-slate-400 hover:text-slate-950 dark:hover:text-white transition-colors p-1"
+            aria-label={t('back')}
+            title={t('back')}
           >
             <ArrowLeft size={16} />
           </button>
@@ -270,7 +272,7 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
         ) : (
           <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-sm">
             <div className="flex items-center justify-between mb-3">
-              <span className="text-[9px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 px-2 py-0.5 rounded uppercase tracking-wider border border-slate-150 dark:border-slate-700">
+              <span className="text-[9px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 px-2 py-0.5 rounded uppercase tracking-wider border border-slate-200 dark:border-slate-700">
                 {activeQuestion.type === 'rating'
                   ? t('typeRating')
                   : activeQuestion.type === 'multiple_selection'
@@ -278,7 +280,7 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
                     : t('typeSingle')}
               </span>
               {timeLeft !== null && timeLeft > 0 && (
-                <span className="text-[9px] font-bold bg-red-50 dark:bg-red-950/20 text-red-655 dark:text-red-400 px-2 py-0.5 rounded uppercase tracking-wider border border-red-200 dark:border-red-900/50 animate-pulse">
+                <span className="text-[9px] font-bold bg-red-50 dark:bg-red-950/20 text-red-500 dark:text-red-400 px-2 py-0.5 rounded uppercase tracking-wider border border-red-200 dark:border-red-900/50 animate-pulse">
                   {t('timeLeft', { time: timeLeft })}
                 </span>
               )}
@@ -325,7 +327,7 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
                       className={`w-full text-left p-3.5 rounded-lg border text-xs font-medium transition-all flex items-center gap-3 ${
                         isSelected
                           ? 'border-slate-800 dark:border-slate-100 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 font-semibold'
-                          : 'border-slate-200 dark:border-slate-800 hover:border-slate-350 dark:hover:border-slate-700 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300'
+                          : 'border-slate-200 dark:border-slate-800 hover:border-slate-400 dark:hover:border-slate-700 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300'
                       }`}
                     >
                       <span

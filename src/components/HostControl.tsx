@@ -218,7 +218,7 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
             </h1>
             <div className="flex items-center gap-1.5 mt-0.5">
               <span
-                className={`w-1.5 h-1.5 rounded-full ${session.status === 'active' ? 'bg-green-500 shrink-0' : 'bg-slate-350 dark:bg-slate-700'} shrink-0`}
+                className={`w-1.5 h-1.5 rounded-full ${session.status === 'active' ? 'bg-green-500 shrink-0' : 'bg-slate-400 dark:bg-slate-700'} shrink-0`}
               ></span>
               <span className="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider hidden sm:inline">
                 {session.status === 'active' ? t('votingOpen') : t('votingClosed')}
@@ -230,6 +230,7 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
           <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
           <button
             onClick={() => window.open(`/present/${code}`, '_blank')}
+            aria-label={tp('title')}
             className="flex items-center gap-1 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 px-2 sm:px-3 py-1.5 rounded-lg font-semibold text-xs border border-slate-200 dark:border-slate-800 transition-colors"
           >
             <Eye size={14} /> <span className="hidden sm:inline">{tp('title')}</span>
@@ -238,6 +239,7 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
             onClick={() => setShowExitModal(true)}
             className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 rounded transition-colors"
             title={t('exit')}
+            aria-label={t('exit')}
           >
             <LogOut size={16} />
           </button>
@@ -260,7 +262,7 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
                 <span className="text-slate-500 dark:text-slate-400 text-[10px] font-mono truncate">{joinUrl}</span>
                 <button
                   onClick={copyUrl}
-                  className="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-250 p-1 shrink-0"
+                  className="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-300 p-1 shrink-0"
                 >
                   {copied ? <Check size={14} /> : <Copy size={14} />}
                 </button>
@@ -283,19 +285,19 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
                     className={`w-full text-left p-2.5 rounded-lg border text-xs transition-colors flex items-center justify-between gap-2 ${
                       isSelected
                         ? 'border-slate-800 dark:border-slate-100 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 font-semibold'
-                        : 'border-transparent hover:border-slate-200 dark:hover:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-850 bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400'
+                        : 'border-transparent hover:border-slate-200 dark:hover:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400'
                     }`}
                   >
                     <div className="min-w-0">
                       <div className="flex items-center gap-1.5 mb-0.5">
                         <span
-                          className={`text-[9px] font-bold uppercase ${isSelected ? 'text-slate-400 dark:text-slate-500' : 'text-slate-350 dark:text-slate-600'}`}
+                          className={`text-[9px] font-bold uppercase ${isSelected ? 'text-slate-400 dark:text-slate-500' : 'text-slate-400 dark:text-slate-600'}`}
                         >
                           Q{idx + 1}
                         </span>
                         {isActive && (
                           <span
-                            className={`text-[8px] font-bold px-1 py-0.2 rounded uppercase ${isSelected ? 'bg-white/10 dark:bg-slate-800 text-white dark:text-slate-200 border border-white/20 dark:border-slate-700' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-750'}`}
+                            className={`text-[8px] font-bold px-1 py-0.2 rounded uppercase ${isSelected ? 'bg-white/10 dark:bg-slate-800 text-white dark:text-slate-200 border border-white/20 dark:border-slate-700' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700'}`}
                           >
                             {t('active')}
                           </span>
@@ -327,7 +329,7 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
               </div>
               {selectedQuestionId === session.active_question_id && timeLeft !== null && (
                 <div
-                  className={`px-2.5 py-1 rounded border text-xs font-bold shrink-0 ${timeLeft > 0 ? 'bg-red-50 dark:bg-red-950/20 text-red-700 dark:text-red-400 border-red-200 dark:border-red-900/50 animate-pulse' : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-450 border border-slate-200 dark:border-slate-705'}`}
+                  className={`px-2.5 py-1 rounded border text-xs font-bold shrink-0 ${timeLeft > 0 ? 'bg-red-50 dark:bg-red-950/20 text-red-700 dark:text-red-400 border-red-200 dark:border-red-900/50 animate-pulse' : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-500 border border-slate-200 dark:border-slate-700'}`}
                 >
                   {timeLeft > 0 ? t('timeLeft', { time: timeLeft }) : t('timeUp')}
                 </div>
@@ -360,7 +362,7 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
 
               <button
                 onClick={() => setShowResetModal(true)}
-                className="ml-auto bg-white dark:bg-slate-900 hover:bg-red-50 dark:hover:bg-red-950/20 text-red-650 dark:text-red-400 border border-slate-200 dark:border-slate-800 px-3 py-1.5 rounded-lg font-semibold text-xs flex items-center gap-1.5 transition-colors"
+                className="ml-auto bg-white dark:bg-slate-900 hover:bg-red-50 dark:hover:bg-red-950/20 text-red-600 dark:text-red-400 border border-slate-200 dark:border-slate-800 px-3 py-1.5 rounded-lg font-semibold text-xs flex items-center gap-1.5 transition-colors"
               >
                 <RefreshCw size={12} /> {t('reset')}
               </button>
@@ -406,12 +408,12 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
                       const pct = totalVotes > 0 ? (count / totalVotes) * 100 : 0;
                       return (
                         <div key={r} className="flex items-center gap-3">
-                          <span className="w-8 text-[11px] font-bold text-slate-400 dark:text-slate-550 text-right">
+                          <span className="w-8 text-[11px] font-bold text-slate-400 dark:text-slate-500 text-right">
                             {r} ★
                           </span>
                           <div className="flex-1 h-2.5 bg-slate-100 dark:bg-slate-950 rounded-full overflow-hidden">
                             <div
-                              className="h-full bg-slate-450 dark:bg-slate-500 rounded-full"
+                              className="h-full bg-slate-500 dark:bg-slate-500 rounded-full"
                               style={{ width: `${pct}%` }}
                             ></div>
                           </div>
@@ -430,14 +432,14 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
                     const pct = totalVotes > 0 ? (count / totalVotes) * 100 : 0;
                     return (
                       <div key={key}>
-                        <div className="flex justify-between text-xs font-bold text-slate-750 dark:text-slate-300 mb-1.5">
+                        <div className="flex justify-between text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
                           <span className="flex items-center gap-2 font-medium text-slate-800 dark:text-slate-200">
-                            <span className="w-5 h-5 rounded bg-slate-100 dark:bg-slate-800 text-slate-650 dark:text-slate-400 text-[9px] font-black flex items-center justify-center uppercase border border-slate-200 dark:border-slate-700">
+                            <span className="w-5 h-5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-[9px] font-black flex items-center justify-center uppercase border border-slate-200 dark:border-slate-700">
                               {key}
                             </span>
                             {label}
                           </span>
-                          <span className="text-slate-500 dark:text-slate-450 font-bold">
+                          <span className="text-slate-500 dark:text-slate-500 font-bold">
                             {count} ({Math.round(pct)}%)
                           </span>
                         </div>
@@ -482,7 +484,7 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
             <div className="flex gap-2 justify-end">
               <button
                 onClick={() => setShowExitModal(false)}
-                className="px-3 py-1.5 text-xs font-semibold border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-350 rounded-md bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                className="px-3 py-1.5 text-xs font-semibold border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 rounded-md bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
               >
                 Batal
               </button>
@@ -509,13 +511,13 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
             <div className="flex gap-2 justify-end">
               <button
                 onClick={() => setShowResetModal(false)}
-                className="px-3 py-1.5 text-xs font-semibold border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-350 rounded-md bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                className="px-3 py-1.5 text-xs font-semibold border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 rounded-md bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
               >
                 Batal
               </button>
               <button
                 onClick={executeResetVotes}
-                className="px-3 py-1.5 text-xs font-semibold text-white rounded-md bg-red-650 hover:bg-red-700 transition-colors"
+                className="px-3 py-1.5 text-xs font-semibold text-white rounded-md bg-red-600 hover:bg-red-700 transition-colors"
               >
                 Hapus Semua
               </button>

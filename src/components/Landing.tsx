@@ -81,7 +81,7 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
         <div className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           {/* Left Column: Copy */}
           <div className="lg:col-span-7 space-y-6 text-left">
-            <span className="inline-block text-[10px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-650 dark:text-slate-350 border border-slate-200 dark:border-slate-700 px-2.5 py-1 rounded-md uppercase tracking-wider">
+            <span className="inline-block text-[10px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700 px-2.5 py-1 rounded-md uppercase tracking-wider">
               {t('badge')}
             </span>
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tight leading-tight">
@@ -99,7 +99,7 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
               </button>
               <a
                 href="#features"
-                className="w-full sm:w-auto justify-center border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 text-slate-650 dark:text-slate-300 font-bold px-5 py-3 rounded-lg text-sm transition-all flex items-center bg-white dark:bg-slate-900"
+                className="w-full sm:w-auto justify-center border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 text-slate-600 dark:text-slate-300 font-bold px-5 py-3 rounded-lg text-sm transition-all flex items-center bg-white dark:bg-slate-900"
               >
                 {t('ctaSecondary')}
               </a>
@@ -110,13 +110,13 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
           <div className="lg:col-span-5">
             <div className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
               <div className="flex items-center gap-2 mb-4">
-                <Users size={16} className="text-slate-500 dark:text-slate-450" />
-                <h3 className="font-bold text-xs text-slate-500 dark:text-slate-450 uppercase tracking-wider">
+                <Users size={16} className="text-slate-500 dark:text-slate-500" />
+                <h3 className="font-bold text-xs text-slate-500 dark:text-slate-500 uppercase tracking-wider">
                   {t('forParticipants')}
                 </h3>
               </div>
               <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-2 text-left">{t('joinTitle')}</h2>
-              <p className="text-xs text-slate-450 dark:text-slate-400 mb-5 leading-relaxed text-left">
+              <p className="text-xs text-slate-500 dark:text-slate-400 mb-5 leading-relaxed text-left">
                 {t('joinDesc')}
               </p>
 
@@ -179,7 +179,7 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
           <h2 className="text-xl font-bold text-slate-900 dark:text-white uppercase tracking-wider mb-2">
             {t('howItWorksTitle')}
           </h2>
-          <p className="text-xs text-slate-450 dark:text-slate-400">{t('howItWorksSubtitle')}</p>
+          <p className="text-xs text-slate-500 dark:text-slate-400">{t('howItWorksSubtitle')}</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
@@ -209,7 +209,7 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
                 className={`p-5 rounded-xl border text-left cursor-pointer transition-all ${
                   activeStep === item.step
                     ? 'border-slate-800 dark:border-slate-100 bg-white dark:bg-slate-900 shadow-sm'
-                    : 'border-slate-200 dark:border-slate-800 hover:border-slate-350 dark:hover:border-slate-700 bg-transparent'
+                    : 'border-slate-200 dark:border-slate-800 hover:border-slate-400 dark:hover:border-slate-700 bg-transparent'
                 }`}
               >
                 <h3
@@ -226,9 +226,9 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
           <div className="lg:col-span-7 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm min-h-[380px] flex flex-col justify-between relative overflow-hidden">
             {/* Header bar mock */}
             <div className="absolute top-0 left-0 right-0 h-8 bg-slate-100 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 flex items-center px-4 gap-1.5 shrink-0">
-              <div className="w-2.5 h-2.5 rounded-full bg-slate-350 dark:bg-slate-650"></div>
-              <div className="w-2.5 h-2.5 rounded-full bg-slate-350 dark:bg-slate-650"></div>
-              <div className="w-2.5 h-2.5 rounded-full bg-slate-350 dark:bg-slate-650"></div>
+              <div className="w-2.5 h-2.5 rounded-full bg-slate-400 dark:bg-slate-600"></div>
+              <div className="w-2.5 h-2.5 rounded-full bg-slate-400 dark:bg-slate-600"></div>
+              <div className="w-2.5 h-2.5 rounded-full bg-slate-400 dark:bg-slate-600"></div>
               <span className="text-[9px] font-bold text-slate-400 dark:text-slate-500 ml-2">
                 {t('previewLabel')} {activeStep}
               </span>
@@ -335,8 +335,8 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
               )}
 
               {activeStep === 3 && (
-                <div className="space-y-4 animate-fade-in text-left bg-white dark:bg-slate-850 p-5 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xs text-slate-900 dark:text-white">
-                  <div className="flex justify-between items-center pb-2.5 border-b border-slate-100 dark:border-slate-750 mb-3 text-slate-400 dark:text-slate-500 text-[9px] font-bold">
+                <div className="space-y-4 animate-fade-in text-left bg-white dark:bg-slate-800 p-5 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xs text-slate-900 dark:text-white">
+                  <div className="flex justify-between items-center pb-2.5 border-b border-slate-100 dark:border-slate-700 mb-3 text-slate-400 dark:text-slate-500 text-[9px] font-bold">
                     <span>{t('mockupResults')}</span>
                     <span className="flex items-center gap-1.5">
                       <span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span> {t('mockupResponses', { n: 10 })}
@@ -347,7 +347,7 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
                     <div className="space-y-1">
                       <div className="flex justify-between text-[10px] font-bold text-slate-700 dark:text-slate-300">
                         <span className="flex items-center gap-1.5">
-                          <span className="w-5 h-5 rounded bg-slate-100 dark:bg-slate-800 text-slate-650 dark:text-slate-350 text-[9px] font-black flex items-center justify-center uppercase border border-slate-200 dark:border-slate-750">
+                          <span className="w-5 h-5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-[9px] font-black flex items-center justify-center uppercase border border-slate-200 dark:border-slate-700">
                             A
                           </span>{' '}
                           {t('mockupOptionA')}
@@ -363,7 +363,7 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
                     <div className="space-y-1">
                       <div className="flex justify-between text-[10px] font-bold text-slate-700 dark:text-slate-300">
                         <span className="flex items-center gap-1.5">
-                          <span className="w-5 h-5 rounded bg-slate-100 dark:bg-slate-800 text-slate-650 dark:text-slate-350 text-[9px] font-black flex items-center justify-center uppercase border border-slate-200 dark:border-slate-750">
+                          <span className="w-5 h-5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-[9px] font-black flex items-center justify-center uppercase border border-slate-200 dark:border-slate-700">
                             B
                           </span>{' '}
                           {t('mockupOptionB')}
@@ -397,7 +397,7 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
             <h2 className="text-xl font-bold text-slate-900 dark:text-white uppercase tracking-wider mb-2">
               {t('whyTitle')}
             </h2>
-            <p className="text-xs text-slate-450 dark:text-slate-400">{t('whySubtitle')}</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400">{t('whySubtitle')}</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -435,7 +435,7 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
             ].map((feat, idx) => (
               <div
                 key={idx}
-                className="border border-slate-200 dark:border-slate-800 rounded-xl p-5 flex items-start gap-4 hover:border-slate-350 dark:hover:border-slate-700 transition-colors bg-white dark:bg-slate-900"
+                className="border border-slate-200 dark:border-slate-800 rounded-xl p-5 flex items-start gap-4 hover:border-slate-400 dark:hover:border-slate-700 transition-colors bg-white dark:bg-slate-900"
               >
                 <div className="p-2 bg-slate-50 dark:bg-slate-800 rounded-lg text-slate-900 dark:text-white shrink-0 border border-slate-200 dark:border-slate-700">
                   <feat.icon size={16} />
@@ -471,7 +471,7 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
         <div className="max-w-5xl mx-auto flex flex-col gap-4 text-xs font-semibold text-slate-400">
           {/* Row 1: Brand + Language toggle */}
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-1.5 text-slate-650 dark:text-slate-400">
+            <div className="flex items-center gap-1.5 text-slate-600 dark:text-slate-400">
               <Layers size={16} />
               <span className="text-slate-900 dark:text-white">LivePoll</span>
             </div>

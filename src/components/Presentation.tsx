@@ -106,11 +106,11 @@ export const Presentation: React.FC<PresentationProps> = ({ code, navigate, them
   const queryError = sessionQuery.error as Error | null;
   if (queryError) {
     return (
-      <div className="min-h-screen bg-slate-955 text-white flex items-center justify-center p-6">
+      <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center p-6">
         <div className="max-w-md w-full bg-slate-900 border border-slate-800 rounded-xl p-8 text-center animate-scale-in">
           <AlertCircle className="text-red-400 mx-auto mb-4" size={48} />
           <h2 className="text-base font-bold mb-2">{t('error')}</h2>
-          <p className="text-xs text-slate-450 mb-6">{queryError.message}</p>
+          <p className="text-xs text-slate-500 mb-6">{queryError.message}</p>
           <button
             onClick={() => navigate('/')}
             className="btn-primary px-6 py-2.5 rounded-lg font-semibold text-xs transition-colors"
@@ -161,6 +161,7 @@ export const Presentation: React.FC<PresentationProps> = ({ code, navigate, them
           <button
             onClick={toggleFullscreen}
             className="p-2 bg-slate-50 dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 rounded-lg transition-colors text-slate-500 dark:text-slate-400"
+            aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
           >
             {isFullscreen ? <Minimize size={16} /> : <Maximize size={16} />}
           </button>
@@ -211,7 +212,7 @@ export const Presentation: React.FC<PresentationProps> = ({ code, navigate, them
                             </span>
                           ))}
                         </div>
-                        <p className="text-[9px] sm:text-[10px] font-bold text-slate-450 dark:text-slate-500 uppercase tracking-widest">
+                        <p className="text-[9px] sm:text-[10px] font-bold text-slate-500 dark:text-slate-500 uppercase tracking-widest">
                           {t('average')}
                         </p>
                       </div>
@@ -231,7 +232,7 @@ export const Presentation: React.FC<PresentationProps> = ({ code, navigate, them
                                   style={{ width: `${pct}%` }}
                                 ></div>
                               </div>
-                              <span className="w-6 sm:w-8 text-right text-xs sm:text-sm font-black text-slate-700 dark:text-slate-350">
+                              <span className="w-6 sm:w-8 text-right text-xs sm:text-sm font-black text-slate-700 dark:text-slate-400">
                                 {count}
                               </span>
                             </div>
@@ -255,7 +256,7 @@ export const Presentation: React.FC<PresentationProps> = ({ code, navigate, them
                               </span>
                               <span className="text-sm sm:text-base font-bold text-slate-900 dark:text-white ml-2 shrink-0">
                                 {count}{' '}
-                                <span className="text-[10px] sm:text-xs font-semibold text-slate-450 dark:text-slate-500">
+                                <span className="text-[10px] sm:text-xs font-semibold text-slate-500 dark:text-slate-500">
                                   ({Math.round(pct)}%)
                                 </span>
                               </span>
@@ -276,7 +277,7 @@ export const Presentation: React.FC<PresentationProps> = ({ code, navigate, them
             </>
           ) : (
             <div className="text-center py-12 sm:py-16">
-              <h2 className="text-base sm:text-xl font-bold text-slate-450 dark:text-slate-500">{t('waiting')}</h2>
+              <h2 className="text-base sm:text-xl font-bold text-slate-500 dark:text-slate-500">{t('waiting')}</h2>
             </div>
           )}
         </div>
@@ -290,15 +291,15 @@ export const Presentation: React.FC<PresentationProps> = ({ code, navigate, them
             <div className="bg-white p-4 rounded-xl mb-5 flex items-center justify-center border border-slate-100">
               <QRCodeSVG value={joinUrl} size={150} />
             </div>
-            <p className="text-slate-450 dark:text-slate-500 text-[10px] font-bold uppercase tracking-wider mb-1">
+            <p className="text-slate-500 dark:text-slate-500 text-[10px] font-bold uppercase tracking-wider mb-1">
               {t('joinLink')}
             </p>
-            <p className="font-mono text-slate-800 dark:text-white text-[11px] font-medium break-all select-all mb-4 px-2.5 py-1 bg-slate-50 dark:bg-slate-950 border border-slate-150 dark:border-slate-900 rounded-lg w-full">
+            <p className="font-mono text-slate-800 dark:text-white text-[11px] font-medium break-all select-all mb-4 px-2.5 py-1 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-900 rounded-lg w-full">
               {window.location.host + window.location.pathname}
             </p>
             <div className="w-full border-t border-slate-200 dark:border-slate-900 pt-4">
               <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">{t('sessionCode')}</p>
-              <div className="bg-slate-50 dark:bg-slate-900 border border-slate-150 dark:border-slate-800 py-2 rounded-lg w-full">
+              <div className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 py-2 rounded-lg w-full">
                 <p className="text-2xl font-bold tracking-widest text-slate-800 dark:text-white select-all">{code}</p>
               </div>
             </div>
