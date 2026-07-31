@@ -24,6 +24,7 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
   const [hasVoted, setHasVoted] = useState(false);
   const [showExitModal, setShowExitModal] = useState(false);
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
+  const [hoverRating, setHoverRating] = useState<number | null>(null);
 
   useEffect(() => {
     let pId = localStorage.getItem('participant_id');
@@ -290,22 +291,25 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
             <div className="space-y-2 mb-5">
               {activeQuestion.type === 'rating' ? (
                 <div className="flex items-center justify-center gap-2.5 py-4">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <button
-                      key={star}
-                      onClick={() => handleRatingChange(star)}
-                      className="p-1 transition-transform active:scale-90"
-                    >
-                      <Star
-                        size={36}
-                        className={`${
-                          star <= (selectedVote || 0)
-                            ? 'fill-amber-400 text-amber-400'
-                            : 'text-slate-200 dark:text-slate-800 hover:text-amber-300'
-                        }`}
-                      />
-                    </button>
-                  ))}
+                  {[1, 2, 3, 4, 5].map((star) => {
+                    const activeStar = hoverRating ?? selectedVote ?? 0;
+                    return (
+                      <button
+                        key={star}
+                        onClick={() => handleRatingChange(star)}
+                        onMouseEnter={() => setHoverRating(star)}
+                        onMouseLeave={() => setHoverRating(null)}
+                        className="p-1 transition-transform active:scale-90"
+                      >
+                        <Star
+                          size={36}
+                          className={`transition-colors duration-150 ${
+                            star <= activeStar ? 'fill-amber-400 text-amber-400' : 'text-slate-200 dark:text-slate-800'
+                          }`}
+                        />
+                      </button>
+                    );
+                  })}
                 </div>
               ) : (
                 Object.entries(activeQuestion.options).map(([key, label]: [string, any]) => {
