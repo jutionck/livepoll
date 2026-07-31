@@ -250,7 +250,7 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
         <div className="lg:col-span-4 space-y-5 order-2 lg:order-1">
           <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 flex flex-col items-center text-center shadow-sm">
             <h3 className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-4">
-              Informasi Sesi
+              {t('sessionInfo')}
             </h3>
             <div className="bg-slate-50 dark:bg-slate-950 p-3 rounded-lg border border-slate-100 dark:border-slate-800 mb-4">
               <QRCodeSVG value={joinUrl} size={130} />
@@ -270,7 +270,7 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
 
           <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4 shadow-sm">
             <h3 className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-3">
-              Daftar Pertanyaan
+              {t('questionsList')}
             </h3>
             <div className="space-y-1">
               {Object.values(session.questions).map((q, idx) => {
@@ -297,7 +297,7 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
                           <span
                             className={`text-[8px] font-bold px-1 py-0.2 rounded uppercase ${isSelected ? 'bg-white/10 dark:bg-slate-800 text-white dark:text-slate-200 border border-white/20 dark:border-slate-700' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-750'}`}
                           >
-                            AKTIF
+                            {t('active')}
                           </span>
                         )}
                       </div>
@@ -371,7 +371,7 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
           <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-sm">
             <div className="flex items-center justify-between mb-5">
               <h3 className="font-bold text-slate-900 dark:text-white text-xs uppercase tracking-wider">
-                Hasil Polling
+                {t('resultsTitle')}
               </h3>
               <div className="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-bold px-2.5 py-1 rounded text-xs flex items-center gap-1 border border-slate-200 dark:border-slate-700">
                 <Users size={12} /> {totalVotes} {t('responses')}
@@ -396,7 +396,7 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
                       ))}
                     </div>
                     <p className="text-[8px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">
-                      Rata-rata
+                      {t('average')}
                     </p>
                   </div>
 

@@ -176,16 +176,16 @@ export const Presentation: React.FC<PresentationProps> = ({ code, navigate, them
               <div className="flex items-center justify-between gap-2">
                 <span className="inline-block text-[9px] sm:text-[10px] font-bold bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 px-2 py-0.5 rounded uppercase tracking-wider mb-3">
                   {activeQuestion.type === 'rating'
-                    ? 'Rating 1-5'
+                    ? t('typeRating')
                     : activeQuestion.type === 'multiple_selection'
-                      ? 'Pilihan Ganda'
-                      : 'Pilihan Tunggal'}
+                      ? t('typeMultiple')
+                      : t('typeSingle')}
                 </span>
                 {timeLeft !== null && (
                   <span
                     className={`inline-block text-[9px] sm:text-[10px] font-bold px-2 py-0.5 rounded border uppercase tracking-wider mb-3 ${timeLeft > 0 ? 'bg-red-50 dark:bg-red-950/60 border-red-200 dark:border-red-900/50 text-red-700 dark:text-red-400 animate-pulse' : 'bg-slate-100 dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-400 dark:text-slate-500'}`}
                   >
-                    {timeLeft > 0 ? `${timeLeft}s` : 'Waktu Habis'}
+                    {timeLeft > 0 ? t('timeLeft', { time: timeLeft }) : t('timeUp')}
                   </span>
                 )}
               </div>
@@ -212,7 +212,7 @@ export const Presentation: React.FC<PresentationProps> = ({ code, navigate, them
                           ))}
                         </div>
                         <p className="text-[9px] sm:text-[10px] font-bold text-slate-450 dark:text-slate-500 uppercase tracking-widest">
-                          Rata-rata
+                          {t('average')}
                         </p>
                       </div>
 
@@ -285,13 +285,13 @@ export const Presentation: React.FC<PresentationProps> = ({ code, navigate, them
         <div className="lg:col-span-4 h-full flex flex-col justify-center items-center lg:border-l border-slate-200 dark:border-slate-900 lg:pl-8">
           <div className="bg-white/85 dark:bg-slate-900/20 border border-slate-200 dark:border-slate-900 p-6 rounded-2xl text-center max-w-sm w-full flex flex-col items-center">
             <h3 className="font-bold text-sm mb-4 tracking-tight text-slate-700 dark:text-slate-300">
-              Bergabung Polling
+              {t('joinTitle')}
             </h3>
             <div className="bg-white p-4 rounded-xl mb-5 flex items-center justify-center border border-slate-100">
               <QRCodeSVG value={joinUrl} size={150} />
             </div>
             <p className="text-slate-450 dark:text-slate-500 text-[10px] font-bold uppercase tracking-wider mb-1">
-              Link Bergabung
+              {t('joinLink')}
             </p>
             <p className="font-mono text-slate-800 dark:text-white text-[11px] font-medium break-all select-all mb-4 px-2.5 py-1 bg-slate-50 dark:bg-slate-950 border border-slate-150 dark:border-slate-900 rounded-lg w-full">
               {window.location.host + window.location.pathname}

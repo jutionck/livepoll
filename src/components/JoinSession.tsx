@@ -211,9 +211,7 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
             <Clock className="text-slate-400 dark:text-slate-500 mx-auto mb-3" size={28} />
             <h2 className="text-sm font-bold text-slate-900 dark:text-white mb-1">{t('votingClosedTitle')}</h2>
             <p className="text-xs text-slate-500 dark:text-slate-400">
-              {timeLeft !== null && timeLeft <= 0
-                ? 'Waktu voting telah habis.'
-                : 'Presenter sedang mengulas hasil. Harap tunggu sebentar.'}
+              {timeLeft !== null && timeLeft <= 0 ? t('votingClosedTime') : t('votingClosedWait')}
             </p>
           </div>
         ) : !activeQuestion ? (
@@ -230,7 +228,7 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
 
             <div className="bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-lg p-3 text-left mb-5 text-slate-800 dark:text-slate-200">
               <span className="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1">
-                Jawaban Anda
+                {t('yourAnswer')}
               </span>
               <div className="font-semibold text-xs">
                 {activeQuestion.type === 'rating' ? (
@@ -264,7 +262,7 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
                 onClick={() => setHasVoted(false)}
                 className="text-xs font-bold text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 underline"
               >
-                Ubah Jawaban
+                {t('editAnswer')}
               </button>
             )}
           </div>
@@ -273,14 +271,14 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
             <div className="flex items-center justify-between mb-3">
               <span className="text-[9px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 px-2 py-0.5 rounded uppercase tracking-wider border border-slate-150 dark:border-slate-700">
                 {activeQuestion.type === 'rating'
-                  ? 'Rating'
+                  ? t('typeRating')
                   : activeQuestion.type === 'multiple_selection'
-                    ? 'Pilihan Ganda'
-                    : 'Pilihan Tunggal'}
+                    ? t('typeMultiple')
+                    : t('typeSingle')}
               </span>
               {timeLeft !== null && timeLeft > 0 && (
                 <span className="text-[9px] font-bold bg-red-50 dark:bg-red-950/20 text-red-655 dark:text-red-400 px-2 py-0.5 rounded uppercase tracking-wider border border-red-200 dark:border-red-900/50 animate-pulse">
-                  Waktu: {timeLeft}s
+                  {t('timeLeft', { time: timeLeft })}
                 </span>
               )}
             </div>
@@ -366,7 +364,7 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
                 onClick={() => setShowExitModal(false)}
                 className="px-3 py-1.5 text-xs font-semibold border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 rounded-md bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
               >
-                Batal
+                {t('cancel')}
               </button>
               <button
                 onClick={() => {
@@ -375,7 +373,7 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
                 }}
                 className="px-3 py-1.5 text-xs font-semibold text-white dark:text-slate-900 rounded-md bg-slate-900 dark:bg-slate-100 hover:bg-slate-800 dark:hover:bg-slate-200 transition-colors"
               >
-                Keluar
+                {t('exit')}
               </button>
             </div>
           </div>

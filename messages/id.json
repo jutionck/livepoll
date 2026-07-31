@@ -160,6 +160,7 @@
     "joinLink": "Link Bergabung",
     "sessionCode": "Kode Sesi",
     "loading": "Memuat presentasi...",
-    "error": "Error"
+    "error": "Error",
+    "average": "Rata-rata"
   }
 }

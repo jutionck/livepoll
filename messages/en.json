@@ -160,6 +160,7 @@
     "joinLink": "Join Link",
     "sessionCode": "Session Code",
     "loading": "Loading presentation...",
-    "error": "Error"
+    "error": "Error",
+    "average": "Average"
   }
 }
