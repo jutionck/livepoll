@@ -17,6 +17,7 @@ import {
   Heart,
   Code,
 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { ThemeToggle } from './ThemeToggle';
 import { API_BASE_URL } from '../config';
 
@@ -30,6 +31,8 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
   const [code, setCode] = useState('');
   const [activeStep, setActiveStep] = useState(1);
   const [stats, setStats] = useState<{ sessions: number; votes: number } | null>(null);
+  const t = useTranslations('landing');
+  const tn = useTranslations('nav');
 
   useEffect(() => {
     fetch(`${API_BASE_URL}/stats`)
@@ -41,7 +44,7 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
   const handleJoin = (e: React.FormEvent) => {
     e.preventDefault();
     if (code.trim()) {
-      navigate(`#/join/${code.trim().toUpperCase()}`);
+      navigate(`/join/${code.trim().toUpperCase()}`);
     }
   };
 
@@ -52,15 +55,15 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
         <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Layers size={20} className="text-slate-900 dark:text-white" />
-            <span className="text-base font-bold text-slate-900 dark:text-white tracking-tight">LivePoll</span>
+            <span className="text-base font-bold text-slate-900 dark:text-white tracking-tight">{tn('brand')}</span>
           </div>
           <div className="flex items-center gap-3">
             <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
             <button
-              onClick={() => navigate('#/host/new')}
+              onClick={() => navigate('/host/new')}
               className="text-xs font-bold text-white dark:text-slate-900 bg-slate-900 dark:bg-slate-100 hover:bg-slate-800 dark:hover:bg-slate-200 px-4 py-2 rounded-lg transition-all"
             >
-              Mulai Buat Polling
+              {tn('createPoll')}
             </button>
           </div>
         </div>
@@ -72,27 +75,26 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
           {/* Left Column: Copy */}
           <div className="lg:col-span-7 space-y-6 text-left">
             <span className="inline-block text-[10px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-650 dark:text-slate-350 border border-slate-200 dark:border-slate-700 px-2.5 py-1 rounded-md uppercase tracking-wider">
-              100% Gratis • Tanpa Perlu Bikin Akun
+              {t('badge')}
             </span>
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tight leading-tight">
-              Ubah Presentasi Garing Jadi Interaktif Dalam Hitungan Detik
+              {t('headline')}
             </h1>
             <p className="text-slate-500 dark:text-slate-400 text-sm md:text-base leading-relaxed max-w-lg">
-              Buat polling langsung untuk webinar, seminar, atau kelas. Audiens cukup scan QR dari HP—tanpa perlu unduh
-              aplikasi, tanpa ribet.
+              {t('subheadline')}
             </p>
             <div className="flex flex-col sm:flex-row gap-3 pt-2 w-full sm:w-auto">
               <button
-                onClick={() => navigate('#/host/new')}
+                onClick={() => navigate('/host/new')}
                 className="w-full sm:w-auto justify-center bg-slate-900 dark:bg-slate-100 hover:bg-slate-800 dark:hover:bg-slate-200 text-white dark:text-slate-900 font-bold px-5 py-3 rounded-lg text-sm transition-all flex items-center gap-2"
               >
-                <PlusCircle size={16} /> Buat Polling Sekarang — Gratis!
+                <PlusCircle size={16} /> {t('ctaPrimary')}
               </button>
               <a
                 href="#features"
                 className="w-full sm:w-auto justify-center border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 text-slate-650 dark:text-slate-300 font-bold px-5 py-3 rounded-lg text-sm transition-all flex items-center bg-white dark:bg-slate-900"
               >
-                Lihat Cara Kerjanya ↓
+                {t('ctaSecondary')}
               </a>
             </div>
           </div>
@@ -103,19 +105,19 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
               <div className="flex items-center gap-2 mb-4">
                 <Users size={16} className="text-slate-500 dark:text-slate-450" />
                 <h3 className="font-bold text-xs text-slate-500 dark:text-slate-450 uppercase tracking-wider">
-                  Untuk Peserta
+                  {t('forParticipants')}
                 </h3>
               </div>
-              <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-2 text-left">Mau Ikut Voting?</h2>
+              <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-2 text-left">{t('joinTitle')}</h2>
               <p className="text-xs text-slate-450 dark:text-slate-400 mb-5 leading-relaxed text-left">
-                Masukkan kode sesi dari presenter Anda di bawah ini:
+                {t('joinDesc')}
               </p>
 
               <form onSubmit={handleJoin} className="space-y-3">
                 <div className="flex flex-col gap-2.5">
                   <input
                     type="text"
-                    placeholder="Masukkan Kode Sesi (Contoh: 1234)"
+                    placeholder={t('joinPlaceholder')}
                     value={code}
                     onChange={(e) => setCode(e.target.value)}
                     className="w-full px-4 py-3 border border-slate-200 dark:border-slate-700 rounded-lg text-base font-bold text-center focus:outline-none focus:border-slate-400 dark:focus:border-slate-500 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:font-normal placeholder:text-slate-400"
@@ -126,7 +128,7 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
                     type="submit"
                     className="w-full bg-slate-900 dark:bg-slate-100 hover:bg-slate-800 dark:hover:bg-slate-200 text-white dark:text-slate-900 py-3 px-5 rounded-lg flex items-center justify-center gap-2 transition-colors font-bold text-sm"
                   >
-                    <span>Masuk Sesi</span>
+                    <span>{t('joinButton')}</span>
                     <ArrowRight size={16} />
                   </button>
                 </div>
@@ -146,7 +148,7 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
                   <Layers size={14} />
                 </div>
                 <p className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                  <span className="text-slate-900 dark:text-white">{stats.sessions}</span> sesi polling dibuat
+                  <span className="text-slate-900 dark:text-white">{stats.sessions}</span> {t('statsSessions')}
                 </p>
               </div>
             )}
@@ -156,7 +158,7 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
                   <CheckCircle size={14} />
                 </div>
                 <p className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                  <span className="text-slate-900 dark:text-white">{stats.votes}</span> vote dari peserta
+                  <span className="text-slate-900 dark:text-white">{stats.votes}</span> {t('statsVotes')}
                 </p>
               </div>
             )}
@@ -167,10 +169,10 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
       {/* How it Works Section */}
       <section className="py-20 px-6 max-w-5xl mx-auto w-full">
         <div className="text-center mb-16">
-          <h2 className="text-xl font-bold text-slate-900 dark:text-white uppercase tracking-wider mb-2">Cara Kerja</h2>
-          <p className="text-xs text-slate-450 dark:text-slate-400">
-            Tiga langkah sederhana untuk memulai polling interaktif
-          </p>
+          <h2 className="text-xl font-bold text-slate-900 dark:text-white uppercase tracking-wider mb-2">
+            {t('howItWorksTitle')}
+          </h2>
+          <p className="text-xs text-slate-450 dark:text-slate-400">{t('howItWorksSubtitle')}</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
@@ -179,18 +181,18 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
             {[
               {
                 step: 1,
-                title: '1. Buat Polling',
-                desc: 'Tulis pertanyaan, pilih jenis jawaban (pilihan ganda/rating), dan atur timernya.',
+                title: t('step1Title'),
+                desc: t('step1Desc'),
               },
               {
                 step: 2,
-                title: '2. Tampilkan Kode / QR',
-                desc: 'Tayangkan di layar presentasi. Audiens tinggal scan pakai HP mereka.',
+                title: t('step2Title'),
+                desc: t('step2Desc'),
               },
               {
                 step: 3,
-                title: '3. Lihat Hasil Instan',
-                desc: 'Hasil voting langsung muncul secara real-time dalam grafik yang rapi.',
+                title: t('step3Title'),
+                desc: t('step3Desc'),
               },
             ].map((item) => (
               <div
@@ -221,7 +223,7 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
               <div className="w-2.5 h-2.5 rounded-full bg-slate-350 dark:bg-slate-650"></div>
               <div className="w-2.5 h-2.5 rounded-full bg-slate-350 dark:bg-slate-650"></div>
               <span className="text-[9px] font-bold text-slate-400 dark:text-slate-500 ml-2">
-                Preview Screen - Langkah {activeStep}
+                {t('previewLabel')} {activeStep}
               </span>
             </div>
 
@@ -306,7 +308,7 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
                     <div className="w-full">
                       <div className="bg-slate-50 px-2.5 py-1.5 border border-slate-100 rounded-lg flex items-center justify-between gap-2 mb-3">
                         <span className="text-slate-500 text-[10px] font-mono truncate">
-                          livepoll.com/#/join/MG84BX
+                          livepoll.com/id/join/MG84BX
                         </span>
                         <div className="text-slate-400 p-1 shrink-0">
                           <Copy size={12} />
@@ -388,40 +390,40 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
             <h2 className="text-xl font-bold text-slate-900 dark:text-white uppercase tracking-wider mb-2">
               Mengapa Memilih LivePoll?
             </h2>
-            <p className="text-xs text-slate-450 dark:text-slate-400">Kemudahan maksimal untuk presenter dan peserta</p>
+            <p className="text-xs text-slate-450 dark:text-slate-400">{t('whySubtitle')}</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
               {
                 icon: Clock,
-                title: 'Hasil Update Instan (1 Detik)',
-                desc: 'Grafik bergerak otomatis tiap ada suara masuk, tanpa perlu refresh layar.',
+                title: t('feature1Title'),
+                desc: t('feature1Desc'),
               },
               {
                 icon: QrCode,
-                title: 'Scan & Vote Tanpa Ribet',
-                desc: 'Audiens cukup buka kamera HP dan scan QR code untuk langsung memilih.',
+                title: t('feature2Title'),
+                desc: t('feature2Desc'),
               },
               {
                 icon: Shield,
-                title: 'Bebas Spam & Vote Ganda',
-                desc: 'Sistem otomatis memvalidasi peserta agar hasil polling 100% adil dan akurat.',
+                title: t('feature3Title'),
+                desc: t('feature3Desc'),
               },
               {
                 icon: Tv,
-                title: 'Tampilan Layar Lebar & Jelas',
-                desc: 'Desain kontras tinggi yang siap ditayangkan indah di proyektor maupun Zoom.',
+                title: t('feature4Title'),
+                desc: t('feature4Desc'),
               },
               {
                 icon: Star,
-                title: 'Format Polling Fleksibel',
-                desc: 'Dukung pilihan ganda, skala rating 1-5, hingga multiple choice sesuai kebutuhan.',
+                title: t('feature5Title'),
+                desc: t('feature5Desc'),
               },
               {
                 icon: CheckCircle,
-                title: '100% Tanpa Login Peserta',
-                desc: 'Peserta tak perlu isi email/password. Masuk cepat, partisipasi maksimal.',
+                title: t('feature6Title'),
+                desc: t('feature6Desc'),
               },
             ].map((feat, idx) => (
               <div
@@ -443,18 +445,16 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
 
       {/* CTA section */}
       <section className="py-16 px-6 max-w-3xl mx-auto w-full text-center space-y-6">
-        <h2 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
-          Jangan Biarkan Presentasi Anda Sepi Penonton Lagi
-        </h2>
+        <h2 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">{t('ctaTitle')}</h2>
         <p className="text-slate-500 dark:text-slate-400 text-xs sm:text-sm max-w-md mx-auto leading-relaxed">
-          Buat audiens tetap fokus dan aktif dari awal sampai akhir acara. Gratis selamanya, tanpa perlu daftar.
+          {t('ctaDesc')}
         </p>
         <div>
           <button
-            onClick={() => navigate('#/host/new')}
+            onClick={() => navigate('/host/new')}
             className="inline-flex items-center gap-2 bg-slate-900 dark:bg-slate-100 hover:bg-slate-800 dark:hover:bg-slate-200 text-white dark:text-slate-900 font-bold px-6 py-3 rounded-lg text-sm shadow transition-all hover:translate-y-[-1px]"
           >
-            Buat Polling Gratis Pertama Anda <ChevronRight size={16} />
+            {t('ctaButton')} <ChevronRight size={16} />
           </button>
         </div>
       </section>
@@ -477,7 +477,7 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
               className="flex items-center gap-1.5 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors"
             >
               <Code size={14} />
-              <span>Open Source di GitHub</span>
+              <span>{t('footerOpenSource')}</span>
             </a>
             <a
               href="https://saweria.co/jutionck"
@@ -486,7 +486,7 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
               className="flex items-center gap-1.5 text-red-500 hover:text-red-600 transition-colors"
             >
               <Heart size={14} />
-              <span>Dukung Developer</span>
+              <span>{t('footerSupport')}</span>
             </a>
           </div>
           <div className="border-t border-slate-100 dark:border-slate-800 pt-3 flex items-center justify-center">
@@ -496,7 +496,7 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
               rel="noopener noreferrer"
               className="flex items-center gap-1.5 text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 transition-colors"
             >
-              <span>Produk dari MIPDEVP</span>
+              <span>{t('footerFrom')}</span>
             </a>
           </div>
         </div>

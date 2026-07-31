@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { usePathname, useRouter } from '@/i18n/navigation';
 import { Landing } from './Landing';
 import { HostNew } from './HostNew';
 import { HostControl } from './HostControl';
@@ -9,17 +10,12 @@ import { Join } from './Join';
 import { JoinSession } from './JoinSession';
 
 export default function App() {
-  const [hash, setHash] = useState('');
+  const pathname = usePathname();
+  const router = useRouter();
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
 
   useEffect(() => {
-    setHash(window.location.hash || '#/');
-
-    const handleHashChange = () => {
-      setHash(window.location.hash || '#/');
-    };
-    window.addEventListener('hashchange', handleHashChange);
-
+    // Initialize Theme following system preference by default
     const savedTheme = localStorage.getItem('theme') as 'light' | 'dark' | null;
     const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     const initialTheme = savedTheme || (systemDark ? 'dark' : 'light');
@@ -30,8 +26,6 @@ export default function App() {
     } else {
       document.documentElement.classList.remove('dark');
     }
-
-    return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
 
   const toggleTheme = () => {
@@ -47,34 +41,34 @@ export default function App() {
   };
 
   const navigate = (path: string) => {
-    window.location.hash = path;
+    router.push(path);
   };
 
-  if (hash === '#/' || hash === '') {
+  if (pathname === '/') {
     return <Landing navigate={navigate} theme={theme} toggleTheme={toggleTheme} />;
   }
 
-  if (hash === '#/host/new') {
+  if (pathname === '/host/new') {
     return <HostNew navigate={navigate} theme={theme} toggleTheme={toggleTheme} />;
   }
 
-  if (hash === '#/join') {
+  if (pathname === '/join') {
     return <Join navigate={navigate} theme={theme} toggleTheme={toggleTheme} />;
   }
 
-  const hostMatch = hash.match(/^#\/host\/([A-Za-z0-9]+)$/);
+  const hostMatch = pathname.match(/^\/host\/([A-Za-z0-9]+)$/);
   if (hostMatch) {
     const code = hostMatch[1].toUpperCase();
     return <HostControl code={code} navigate={navigate} theme={theme} toggleTheme={toggleTheme} />;
   }
 
-  const presentMatch = hash.match(/^#\/present\/([A-Za-z0-9]+)$/);
+  const presentMatch = pathname.match(/^\/present\/([A-Za-z0-9]+)$/);
   if (presentMatch) {
     const code = presentMatch[1].toUpperCase();
     return <Presentation code={code} navigate={navigate} theme={theme} toggleTheme={toggleTheme} />;
   }
 
-  const joinMatch = hash.match(/^#\/join\/([A-Za-z0-9]+)$/);
+  const joinMatch = pathname.match(/^\/join\/([A-Za-z0-9]+)$/);
   if (joinMatch) {
     const code = joinMatch[1].toUpperCase();
     return <JoinSession code={code} navigate={navigate} theme={theme} toggleTheme={toggleTheme} />;

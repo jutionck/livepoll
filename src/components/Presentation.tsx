@@ -1,8 +1,10 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { QRCodeSVG } from 'qrcode.react';
 import { Maximize, Minimize, Users, AlertCircle, Layers } from 'lucide-react';
+import { useLocale, useTranslations } from 'next-intl';
 import { API_BASE_URL, getJoinUrl } from '../config';
 import type { Session } from '../types';
 
@@ -16,29 +18,58 @@ interface PresentationProps {
 }
 
 export const Presentation: React.FC<PresentationProps> = ({ code, navigate, theme, toggleTheme }) => {
-  const [session, setSession] = useState<Session | null>(null);
-  const [error, setError] = useState('');
-  const [resultsData, setResultsData] = useState<any>(null);
+  const locale = useLocale();
+  const t = useTranslations('presentation');
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const sessionPollRef = useRef<any>(null);
-  const resultsPollRef = useRef<any>(null);
-  const abortRef = useRef<AbortController | null>(null);
 
+  // Session query with 2s polling
+  const fetchSession = async (): Promise<Session> => {
+    const res = await fetch(`${API_BASE_URL}/get-session?code=${code}`);
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Gagal menyambung.');
+    if (data.title) {
+      document.title = `LivePoll Presentasi | ${data.title} (${code})`;
+    }
+    return data;
+  };
+
+  const sessionQuery = useQuery({
+    queryKey: ['session', code],
+    queryFn: fetchSession,
+    refetchInterval: 2000,
+  });
+
+  const session = sessionQuery.data ?? null;
+
+  // Results query with 1s polling
+  const fetchResults = async (qId: string) => {
+    const res = await fetch(`${API_BASE_URL}/results?code=${code}&q=${qId}&t=${Date.now()}`, {
+      headers: { 'Cache-Control': 'no-store' },
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Gagal.');
+    return data;
+  };
+
+  const resultsQuery = useQuery({
+    queryKey: ['results', code, session?.active_question_id],
+    queryFn: () => fetchResults(session!.active_question_id),
+    refetchInterval: 1000,
+    enabled: !!session?.active_question_id,
+  });
+
+  const resultsData = resultsQuery.data ?? null;
+
+  // Fullscreen listener
   useEffect(() => {
-    fetchSession();
-    sessionPollRef.current = setInterval(fetchSession, 2000);
     const handleFs = () => setIsFullscreen(!!document.fullscreenElement);
     document.addEventListener('fullscreenchange', handleFs);
-    return () => {
-      if (sessionPollRef.current) clearInterval(sessionPollRef.current);
-      if (resultsPollRef.current) clearInterval(resultsPollRef.current);
-      if (abortRef.current) abortRef.current.abort();
-      document.removeEventListener('fullscreenchange', handleFs);
-    };
-  }, [code]);
+    return () => document.removeEventListener('fullscreenchange', handleFs);
+  }, []);
 
+  // Countdown timer effect
   useEffect(() => {
     if (!session) {
       setTimeLeft(null);
@@ -66,72 +97,22 @@ export const Presentation: React.FC<PresentationProps> = ({ code, navigate, them
     return () => clearInterval(timerInterval);
   }, [session?.active_question_id, session?.active_question_activated_at, session?.status]);
 
-  useEffect(() => {
-    if (!session || !session.active_question_id) return;
-    const qId = session.active_question_id;
-    if (resultsPollRef.current) clearInterval(resultsPollRef.current);
-    fetchResults(qId);
-    resultsPollRef.current = setInterval(() => fetchResults(qId), 1000);
-    return () => {
-      if (resultsPollRef.current) clearInterval(resultsPollRef.current);
-    };
-  }, [session?.active_question_id]);
-
-  const fetchSession = async () => {
-    try {
-      const res = await fetch(`${API_BASE_URL}/get-session?code=${code}`);
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
-
-      if (data.title) {
-        document.title = `LivePoll Presentasi | ${data.title} (${code})`;
-      }
-
-      setSession((prev) => {
-        if (
-          prev &&
-          prev.active_question_id === data.active_question_id &&
-          prev.status === data.status &&
-          prev.version === data.version
-        )
-          return prev;
-        return data;
-      });
-    } catch (err: any) {
-      if (!session) setError(err.message || 'Gagal menyambung.');
-    }
-  };
-
-  const fetchResults = async (qId: string) => {
-    if (abortRef.current) abortRef.current.abort();
-    abortRef.current = new AbortController();
-    try {
-      const res = await fetch(`${API_BASE_URL}/results?code=${code}&q=${qId}&t=${Date.now()}`, {
-        signal: abortRef.current.signal,
-        headers: { 'Cache-Control': 'no-store' },
-      });
-      const data = await res.json();
-      if (res.ok) setResultsData(data);
-    } catch (err: any) {
-      if (err.name !== 'AbortError') console.error(err);
-    }
-  };
-
   const toggleFullscreen = () => {
     if (!containerRef.current) return;
     if (!document.fullscreenElement) containerRef.current.requestFullscreen().catch(() => {});
     else document.exitFullscreen();
   };
 
-  if (error) {
+  const queryError = sessionQuery.error as Error | null;
+  if (queryError) {
     return (
       <div className="min-h-screen bg-slate-955 text-white flex items-center justify-center p-6">
         <div className="max-w-md w-full bg-slate-900 border border-slate-800 rounded-xl p-8 text-center animate-scale-in">
           <AlertCircle className="text-red-400 mx-auto mb-4" size={48} />
-          <h2 className="text-base font-bold mb-2">Error</h2>
-          <p className="text-xs text-slate-450 mb-6">{error}</p>
+          <h2 className="text-base font-bold mb-2">{t('error')}</h2>
+          <p className="text-xs text-slate-450 mb-6">{queryError.message}</p>
           <button
-            onClick={() => navigate('#/')}
+            onClick={() => navigate('/')}
             className="btn-primary px-6 py-2.5 rounded-lg font-semibold text-xs transition-colors"
           >
             Kembali
@@ -146,14 +127,14 @@ export const Presentation: React.FC<PresentationProps> = ({ code, navigate, them
       <div className="min-h-screen bg-dots dark:bg-dots-dark text-slate-900 dark:text-white flex items-center justify-center">
         <div className="text-center">
           <div className="w-6 h-6 border-2 border-slate-400 dark:border-slate-700 border-t-slate-900 dark:border-t-white rounded-full animate-spin mx-auto mb-3"></div>
-          <p className="text-xs text-slate-500 font-semibold">Memuat presentasi...</p>
+          <p className="text-xs text-slate-500 font-semibold">{t('loading')}</p>
         </div>
       </div>
     );
   }
 
   const activeQuestion = session.active_question;
-  const joinUrl = getJoinUrl(code);
+  const joinUrl = getJoinUrl(code, locale);
   const totalVotes = resultsData?.total_votes || 0;
 
   return (
@@ -295,9 +276,7 @@ export const Presentation: React.FC<PresentationProps> = ({ code, navigate, them
             </>
           ) : (
             <div className="text-center py-12 sm:py-16">
-              <h2 className="text-base sm:text-xl font-bold text-slate-450 dark:text-slate-500">
-                Menunggu pertanyaan ditampilkan...
-              </h2>
+              <h2 className="text-base sm:text-xl font-bold text-slate-450 dark:text-slate-500">{t('waiting')}</h2>
             </div>
           )}
         </div>
@@ -318,7 +297,7 @@ export const Presentation: React.FC<PresentationProps> = ({ code, navigate, them
               {window.location.host + window.location.pathname}
             </p>
             <div className="w-full border-t border-slate-200 dark:border-slate-900 pt-4">
-              <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Kode Sesi</p>
+              <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">{t('sessionCode')}</p>
               <div className="bg-slate-50 dark:bg-slate-900 border border-slate-150 dark:border-slate-800 py-2 rounded-lg w-full">
                 <p className="text-2xl font-bold tracking-widest text-slate-800 dark:text-white select-all">{code}</p>
               </div>

@@ -1,8 +1,10 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { QRCodeSVG } from 'qrcode.react';
 import { Play, RefreshCw, Users, AlertCircle, Copy, Check, ChevronRight, LogOut, Eye, Lock } from 'lucide-react';
+import { useLocale, useTranslations } from 'next-intl';
 import { API_BASE_URL, getJoinUrl } from '../config';
 import type { Session } from '../types';
 
@@ -16,10 +18,11 @@ interface HostControlProps {
 }
 
 export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme, toggleTheme }) => {
-  const [session, setSession] = useState<Session | null>(null);
-  const [error, setError] = useState('');
+  const locale = useLocale();
+  const t = useTranslations('host');
+  const tp = useTranslations('presentation');
+  const queryClient = useQueryClient();
   const [copied, setCopied] = useState(false);
-  const [resultsData, setResultsData] = useState<any>(null);
   const [selectedQuestionId, setSelectedQuestionId] = useState<string>('');
   const [showExitModal, setShowExitModal] = useState(false);
   const [showResetModal, setShowResetModal] = useState(false);
@@ -27,32 +30,59 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
 
   const hostToken = localStorage.getItem(`host_token_${code}`) || '';
-  const pollIntervalRef = useRef<any>(null);
-  const abortControllerRef = useRef<AbortController | null>(null);
 
   const showNotification = (message: string, type: 'error' | 'success' = 'error') => {
     setNotification({ type, message });
     setTimeout(() => setNotification(null), 3000);
   };
 
-  useEffect(() => {
-    if (!hostToken) {
-      setError('Token Host tidak ditemukan.');
-      return;
+  // Session query with 2s polling
+  const fetchSession = async (): Promise<Session> => {
+    const res = await fetch(`${API_BASE_URL}/get-session?code=${code}`, { headers: { 'X-Host-Token': hostToken } });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Gagal memuat sesi.');
+    if (data.title) {
+      document.title = `LivePoll Host | ${data.title} (${code})`;
     }
-    fetchSession();
-  }, [code, hostToken]);
+    return data;
+  };
 
+  const sessionQuery = useQuery({
+    queryKey: ['session', code],
+    queryFn: fetchSession,
+    refetchInterval: 2000,
+    enabled: !!hostToken,
+  });
+
+  const session = sessionQuery.data ?? null;
+
+  // Sync selected question when session loads
   useEffect(() => {
-    if (!session || !selectedQuestionId) return;
-    fetchResults(selectedQuestionId);
-    pollIntervalRef.current = setInterval(() => fetchResults(selectedQuestionId), 1000);
-    return () => {
-      if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
-      if (abortControllerRef.current) abortControllerRef.current.abort();
-    };
-  }, [session?.code, selectedQuestionId]);
+    if (session?.active_question_id) {
+      setSelectedQuestionId((prev) => prev || session.active_question_id);
+    }
+  }, [session?.active_question_id]);
 
+  // Results query with 1s polling
+  const fetchResults = async (qId: string) => {
+    const res = await fetch(`${API_BASE_URL}/results?code=${code}&q=${qId}&t=${Date.now()}`, {
+      headers: { 'Cache-Control': 'no-store' },
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Gagal.');
+    return data;
+  };
+
+  const resultsQuery = useQuery({
+    queryKey: ['results', code, selectedQuestionId],
+    queryFn: () => fetchResults(selectedQuestionId),
+    refetchInterval: 1000,
+    enabled: !!session && !!selectedQuestionId,
+  });
+
+  const resultsData = resultsQuery.data ?? null;
+
+  // Countdown timer effect
   useEffect(() => {
     if (!session || !session.active_question_id) {
       setTimeLeft(null);
@@ -86,40 +116,6 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
     return () => clearInterval(timerInterval);
   }, [session?.active_question_id, session?.active_question_activated_at, session?.status]);
 
-  const fetchSession = async () => {
-    try {
-      const res = await fetch(`${API_BASE_URL}/get-session?code=${code}`, { headers: { 'X-Host-Token': hostToken } });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Gagal memuat sesi.');
-
-      if (data.title) {
-        document.title = `LivePoll Host | ${data.title} (${code})`;
-      }
-
-      setSession(data);
-      if (data.active_question_id) setSelectedQuestionId(data.active_question_id);
-      else if (data.questions && Object.keys(data.questions).length > 0)
-        setSelectedQuestionId(Object.keys(data.questions)[0]);
-    } catch (err: any) {
-      setError(err.message);
-    }
-  };
-
-  const fetchResults = async (qId: string) => {
-    if (abortControllerRef.current) abortControllerRef.current.abort();
-    abortControllerRef.current = new AbortController();
-    try {
-      const res = await fetch(`${API_BASE_URL}/results?code=${code}&q=${qId}&t=${Date.now()}`, {
-        signal: abortControllerRef.current.signal,
-        headers: { 'Cache-Control': 'no-store' },
-      });
-      const data = await res.json();
-      if (res.ok) setResultsData(data);
-    } catch (err: any) {
-      if (err.name !== 'AbortError') console.error(err);
-    }
-  };
-
   const apiPost = async (endpoint: string, body: any) => {
     const res = await fetch(`${API_BASE_URL}/${endpoint}`, {
       method: 'POST',
@@ -134,8 +130,8 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
   const handleSetActive = async (qId: string) => {
     try {
       await apiPost('set-active-question', { code, question_id: qId });
-      if (session) setSession({ ...session, active_question_id: qId });
       setSelectedQuestionId(qId);
+      await queryClient.invalidateQueries({ queryKey: ['session', code] });
       showNotification('Pertanyaan aktif berhasil diubah.', 'success');
     } catch (err: any) {
       showNotification(err.message);
@@ -145,7 +141,7 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
   const handleToggleStatus = async (newStatus: 'active' | 'closed') => {
     try {
       await apiPost('close-session', { code, status: newStatus });
-      if (session) setSession({ ...session, status: newStatus });
+      await queryClient.invalidateQueries({ queryKey: ['session', code] });
       showNotification(newStatus === 'active' ? 'Voting dibuka kembali.' : 'Voting ditutup.', 'success');
     } catch (err: any) {
       showNotification(err.message);
@@ -156,7 +152,7 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
     setShowResetModal(false);
     try {
       await apiPost('reset-votes', { code, question_id: selectedQuestionId });
-      fetchResults(selectedQuestionId);
+      await queryClient.invalidateQueries({ queryKey: ['results', code, selectedQuestionId] });
       showNotification('Semua jawaban berhasil direset.', 'success');
     } catch (err: any) {
       showNotification(err.message);
@@ -164,23 +160,26 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
   };
 
   const copyUrl = () => {
-    navigator.clipboard.writeText(getJoinUrl(code)).then(() => {
+    navigator.clipboard.writeText(getJoinUrl(code, locale)).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     });
   };
 
-  if (error) {
+  const queryError = sessionQuery.error as Error | null;
+  const accessError = !hostToken ? t('errorToken') : queryError?.message || '';
+
+  if (accessError) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
         <div className="max-w-sm w-full bg-white border border-slate-200 rounded-xl p-6 text-center shadow-sm">
           <div className="w-12 h-12 bg-red-50 rounded-xl flex items-center justify-center mx-auto mb-4">
             <AlertCircle className="text-red-500" size={24} />
           </div>
-          <h2 className="text-sm font-bold text-slate-900 mb-1">Akses Ditolak</h2>
-          <p className="text-xs text-slate-500 mb-5">{error}</p>
+          <h2 className="text-sm font-bold text-slate-900 mb-1">{t('errorAccess')}</h2>
+          <p className="text-xs text-slate-500 mb-5">{accessError}</p>
           <button
-            onClick={() => navigate('#/')}
+            onClick={() => navigate('/')}
             className="w-full bg-slate-900 text-white font-semibold text-xs py-2 rounded-lg"
           >
             Kembali
@@ -195,14 +194,14 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
       <div className="min-h-screen bg-dots flex items-center justify-center">
         <div className="text-center animate-fade-in">
           <div className="w-6 h-6 border-2 border-slate-400 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
-          <p className="text-xs text-slate-400 font-semibold">Memuat panel...</p>
+          <p className="text-xs text-slate-400 font-semibold">{t('loading')}</p>
         </div>
       </div>
     );
   }
 
   const activeQuestion = session.questions[selectedQuestionId];
-  const joinUrl = getJoinUrl(code);
+  const joinUrl = getJoinUrl(code, locale);
   const totalVotes = resultsData?.total_votes || 0;
 
   return (
@@ -222,7 +221,7 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
                 className={`w-1.5 h-1.5 rounded-full ${session.status === 'active' ? 'bg-green-500 shrink-0' : 'bg-slate-350 dark:bg-slate-700'} shrink-0`}
               ></span>
               <span className="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider hidden sm:inline">
-                {session.status === 'active' ? 'Voting Dibuka' : 'Voting Ditutup'}
+                {session.status === 'active' ? t('votingOpen') : t('votingClosed')}
               </span>
             </div>
           </div>
@@ -230,7 +229,7 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
         <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
           <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
           <button
-            onClick={() => window.open(`#/present/${code}`, '_blank')}
+            onClick={() => window.open(`/present/${code}`, '_blank')}
             className="flex items-center gap-1 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 px-2 sm:px-3 py-1.5 rounded-lg font-semibold text-xs border border-slate-200 dark:border-slate-800 transition-colors"
           >
             <Eye size={14} /> <span className="hidden sm:inline">Layar Presentasi</span>
@@ -238,7 +237,7 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
           <button
             onClick={() => setShowExitModal(true)}
             className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 rounded transition-colors"
-            title="Keluar"
+            title={t('exit')}
           >
             <LogOut size={16} />
           </button>
@@ -330,7 +329,7 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
                 <div
                   className={`px-2.5 py-1 rounded border text-xs font-bold shrink-0 ${timeLeft > 0 ? 'bg-red-50 dark:bg-red-950/20 text-red-700 dark:text-red-400 border-red-200 dark:border-red-900/50 animate-pulse' : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-450 border border-slate-200 dark:border-slate-705'}`}
                 >
-                  {timeLeft > 0 ? `Waktu: ${timeLeft}s` : 'Waktu Habis'}
+                  {timeLeft > 0 ? t('timeLeft', { time: timeLeft }) : t('timeUp')}
                 </div>
               )}
             </div>
@@ -341,21 +340,21 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
                   onClick={() => handleSetActive(selectedQuestionId)}
                   className="bg-slate-900 dark:bg-slate-100 hover:bg-slate-800 dark:hover:bg-slate-200 text-white dark:text-slate-900 px-3.5 py-1.5 rounded-lg font-bold text-xs flex items-center gap-1.5 transition-colors"
                 >
-                  <Play size={12} /> Aktifkan Pertanyaan
+                  <Play size={12} /> {t('activate')}
                 </button>
               ) : session.status === 'active' ? (
                 <button
                   onClick={() => handleToggleStatus('closed')}
                   className="bg-amber-500 hover:bg-amber-600 text-white px-3.5 py-1.5 rounded-lg font-bold text-xs flex items-center gap-1.5 transition-colors"
                 >
-                  <Lock size={12} /> Tutup Voting
+                  <Lock size={12} /> {t('closeVoting')}
                 </button>
               ) : (
                 <button
                   onClick={() => handleToggleStatus('active')}
                   className="bg-slate-900 dark:bg-slate-100 hover:bg-slate-800 dark:hover:bg-slate-200 text-white dark:text-slate-900 px-3.5 py-1.5 rounded-lg font-bold text-xs flex items-center gap-1.5 transition-colors"
                 >
-                  <Play size={12} /> Buka Voting
+                  <Play size={12} /> {t('openVoting')}
                 </button>
               )}
 
@@ -363,7 +362,7 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
                 onClick={() => setShowResetModal(true)}
                 className="ml-auto bg-white dark:bg-slate-900 hover:bg-red-50 dark:hover:bg-red-950/20 text-red-650 dark:text-red-400 border border-slate-200 dark:border-slate-800 px-3 py-1.5 rounded-lg font-semibold text-xs flex items-center gap-1.5 transition-colors"
               >
-                <RefreshCw size={12} /> Reset Data
+                <RefreshCw size={12} /> {t('reset')}
               </button>
             </div>
           </div>
@@ -375,7 +374,7 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
                 Hasil Polling
               </h3>
               <div className="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-bold px-2.5 py-1 rounded text-xs flex items-center gap-1 border border-slate-200 dark:border-slate-700">
-                <Users size={12} /> {totalVotes} Respon
+                <Users size={12} /> {totalVotes} {t('responses')}
               </div>
             </div>
 
@@ -478,10 +477,8 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
       {showExitModal && (
         <div className="fixed inset-0 bg-slate-900/40 dark:bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4 z-40 animate-fade-in">
           <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 max-w-xs w-full shadow-lg text-slate-900 dark:text-white">
-            <h3 className="text-sm font-bold mb-1.5">Keluar Panel Presenter</h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mb-5 leading-relaxed">
-              Sesi polling akan tetap berjalan di server. Anda dapat kembali menggunakan kode sesi dan token host Anda.
-            </p>
+            <h3 className="text-sm font-bold mb-1.5">{t('exitTitle')}</h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mb-5 leading-relaxed">{t('exitDesc')}</p>
             <div className="flex gap-2 justify-end">
               <button
                 onClick={() => setShowExitModal(false)}
@@ -492,7 +489,7 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
               <button
                 onClick={() => {
                   setShowExitModal(false);
-                  navigate('#/');
+                  navigate('/');
                 }}
                 className="px-3 py-1.5 text-xs font-semibold text-white dark:text-slate-900 rounded-md bg-slate-900 dark:bg-slate-100 hover:bg-slate-800 dark:hover:bg-slate-200 transition-colors"
               >
@@ -507,10 +504,8 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
       {showResetModal && (
         <div className="fixed inset-0 bg-slate-900/40 dark:bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4 z-40 animate-fade-in">
           <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 max-w-xs w-full shadow-lg text-slate-900 dark:text-white">
-            <h3 className="text-sm font-bold mb-1.5">Reset Jawaban</h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mb-5 leading-relaxed">
-              Hapus semua jawaban masuk untuk pertanyaan ini? Tindakan ini tidak dapat dibatalkan.
-            </p>
+            <h3 className="text-sm font-bold mb-1.5">{t('resetTitle')}</h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mb-5 leading-relaxed">{t('resetDesc')}</p>
             <div className="flex gap-2 justify-end">
               <button
                 onClick={() => setShowResetModal(false)}

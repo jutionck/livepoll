@@ -1,7 +1,8 @@
-export const API_BASE_URL = './api';
+export const API_BASE_URL = '/api';
 
-export const getJoinUrl = (code: string) => {
+// Generate join URL for participants (path-based with locale)
+export const getJoinUrl = (code: string, locale: string = 'id') => {
   if (typeof window === 'undefined') return '';
-  const base = window.location.origin + window.location.pathname;
-  return `${base}#/join/${code}`;
+  const base = window.location.origin;
+  return `${base}/${locale}/join/${code}`;
 };

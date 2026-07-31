@@ -1,7 +1,9 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { AlertCircle, CheckCircle, Clock, Users, Star, ArrowLeft } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { API_BASE_URL } from '../config';
 
 import { ThemeToggle } from './ThemeToggle';
@@ -14,15 +16,14 @@ interface JoinSessionProps {
 }
 
 export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme, toggleTheme }) => {
-  const [session, setSession] = useState<any>(null);
+  const t = useTranslations('participant');
+  const tn = useTranslations('nav');
   const [participantId, setParticipantId] = useState('');
-  const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [selectedVote, setSelectedVote] = useState<any>(null);
   const [hasVoted, setHasVoted] = useState(false);
   const [showExitModal, setShowExitModal] = useState(false);
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
-  const pollIntervalRef = useRef<any>(null);
 
   useEffect(() => {
     let pId = localStorage.getItem('participant_id');
@@ -33,15 +34,28 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
     setParticipantId(pId);
   }, []);
 
-  useEffect(() => {
-    if (!participantId) return;
-    fetchSession();
-    pollIntervalRef.current = setInterval(fetchSession, 2000);
-    return () => {
-      if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
-    };
-  }, [code, participantId]);
+  // Session query with 2s polling
+  const fetchSession = async () => {
+    const response = await fetch(`${API_BASE_URL}/get-session?code=${code}`);
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || 'Sesi tidak ditemukan.');
+    if (data.title) {
+      document.title = `LivePoll | ${data.title} (${code})`;
+    }
+    return data;
+  };
 
+  const sessionQuery = useQuery({
+    queryKey: ['session', code],
+    queryFn: fetchSession,
+    refetchInterval: 2000,
+    enabled: !!participantId,
+  });
+
+  const session = sessionQuery.data ?? null;
+  const error = sessionQuery.error as Error | null;
+
+  // Countdown timer effect
   useEffect(() => {
     if (
       !session ||
@@ -87,31 +101,6 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
     }
   }, [session?.active_question_id]);
 
-  const fetchSession = async () => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/get-session?code=${code}`);
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error || 'Sesi tidak ditemukan.');
-
-      if (data.title) {
-        document.title = `LivePoll | ${data.title} (${code})`;
-      }
-
-      setSession((prev: any) => {
-        if (
-          prev &&
-          prev.active_question_id === data.active_question_id &&
-          prev.status === data.status &&
-          prev.version === data.version
-        )
-          return prev;
-        return data;
-      });
-    } catch (err: any) {
-      setError(err.message || 'Gagal menyambung.');
-    }
-  };
-
   const handleSelectionToggle = (optKey: string) => {
     if (hasVoted) return;
     if (session.active_question.type === 'multiple_choice') {
@@ -156,10 +145,10 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
       <div className="min-h-screen bg-dots flex items-center justify-center p-6">
         <div className="max-w-sm w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-6 text-center shadow-sm text-slate-900 dark:text-white">
           <AlertCircle className="text-red-500 mx-auto mb-4" size={28} />
-          <h2 className="text-sm font-bold mb-1">Terjadi Kesalahan</h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mb-5">{error}</p>
+          <h2 className="text-sm font-bold mb-1">{t('errorTitle')}</h2>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mb-5">{error?.message}</p>
           <button
-            onClick={() => navigate('#/join')}
+            onClick={() => navigate('/join')}
             className="w-full bg-slate-900 dark:bg-slate-100 hover:bg-slate-800 dark:hover:bg-slate-200 text-white dark:text-slate-900 font-semibold text-xs py-2.5 rounded-lg"
           >
             Kembali
@@ -174,7 +163,7 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
       <div className="min-h-screen bg-dots flex items-center justify-center">
         <div className="text-center">
           <div className="w-6 h-6 border-2 border-slate-400 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
-          <p className="text-xs text-slate-400 font-semibold">Memuat sesi...</p>
+          <p className="text-xs text-slate-400 font-semibold">{t('loading')}</p>
         </div>
       </div>
     );
@@ -200,7 +189,7 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
               {session.title}
             </h1>
             <p className="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
-              Sesi {code}
+              {t('session')} {code}
             </p>
           </div>
         </div>
@@ -209,7 +198,7 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
           <div className="flex items-center gap-1.5 shrink-0">
             <span className={`w-1.5 h-1.5 rounded-full ${isClosed ? 'bg-amber-400' : 'bg-green-500'}`}></span>
             <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
-              {isClosed ? 'Ditutup' : 'Aktif'}
+              {isClosed ? t('closed') : t('votingOpen')}
             </span>
           </div>
         </div>
@@ -220,7 +209,7 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
         {isClosed && !hasVoted ? (
           <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-6 text-center shadow-sm">
             <Clock className="text-slate-400 dark:text-slate-500 mx-auto mb-3" size={28} />
-            <h2 className="text-sm font-bold text-slate-900 dark:text-white mb-1">Voting Ditutup</h2>
+            <h2 className="text-sm font-bold text-slate-900 dark:text-white mb-1">{t('votingClosedTitle')}</h2>
             <p className="text-xs text-slate-500 dark:text-slate-400">
               {timeLeft !== null && timeLeft <= 0
                 ? 'Waktu voting telah habis.'
@@ -230,16 +219,14 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
         ) : !activeQuestion ? (
           <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-6 text-center shadow-sm">
             <Users className="text-slate-300 dark:text-slate-600 mx-auto mb-3 animate-pulse" size={28} />
-            <h2 className="text-sm font-bold text-slate-900 dark:text-white mb-1">Menunggu Pertanyaan</h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
-              Sesi aktif. Halaman akan diperbarui otomatis saat pertanyaan ditampilkan.
-            </p>
+            <h2 className="text-sm font-bold text-slate-900 dark:text-white mb-1">{t('waitingTitle')}</h2>
+            <p className="text-xs text-slate-500 dark:text-slate-400">{t('waitingDesc')}</p>
           </div>
         ) : hasVoted ? (
           <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-6 text-center shadow-sm">
             <CheckCircle className="text-green-500 mx-auto mb-3" size={32} />
-            <h2 className="text-sm font-bold text-slate-900 dark:text-white mb-1">Jawaban Terkirim</h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mb-5">Jawaban Anda berhasil disimpan.</p>
+            <h2 className="text-sm font-bold text-slate-900 dark:text-white mb-1">{t('votedTitle')}</h2>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mb-5">{t('votedDesc')}</p>
 
             <div className="bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-lg p-3 text-left mb-5 text-slate-800 dark:text-slate-200">
               <span className="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1">
@@ -362,7 +349,7 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
               }
               className="w-full bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-slate-200 text-white dark:text-slate-900 font-semibold text-sm py-3 rounded-lg flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
             >
-              {submitting ? 'Mengirim...' : 'Kirim Jawaban'}
+              {submitting ? t('sending') : t('submit')}
             </button>
           </div>
         )}
@@ -372,10 +359,8 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
       {showExitModal && (
         <div className="fixed inset-0 bg-slate-900/40 dark:bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4 z-45 animate-fade-in">
           <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 max-w-xs w-full shadow-lg text-left text-slate-900 dark:text-white">
-            <h3 className="text-sm font-bold mb-1.5">Keluar Sesi</h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mb-5 leading-relaxed">
-              Apakah Anda yakin ingin keluar dari sesi polling ini?
-            </p>
+            <h3 className="text-sm font-bold mb-1.5">{t('exitTitle')}</h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mb-5 leading-relaxed">{t('exitDesc')}</p>
             <div className="flex gap-2 justify-end">
               <button
                 onClick={() => setShowExitModal(false)}
@@ -386,7 +371,7 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
               <button
                 onClick={() => {
                   setShowExitModal(false);
-                  navigate('#/');
+                  navigate('/');
                 }}
                 className="px-3 py-1.5 text-xs font-semibold text-white dark:text-slate-900 rounded-md bg-slate-900 dark:bg-slate-100 hover:bg-slate-800 dark:hover:bg-slate-200 transition-colors"
               >
