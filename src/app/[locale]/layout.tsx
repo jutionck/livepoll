@@ -13,8 +13,8 @@ export function generateStaticParams() {
 
 const BASE_URL = 'https://livepoll.mipdevp.com';
 
-export function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Metadata {
-  const { locale } = params as unknown as { locale: string };
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
   const isEn = locale === 'en';
 
   const title = isEn ? 'LivePoll — Real-time Interactive Polling' : 'LivePoll — Polling Interaktif Real-time';
