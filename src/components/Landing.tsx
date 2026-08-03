@@ -40,6 +40,18 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
   const [stats, setStats] = useState<{ sessions: number; votes: number } | null>(null);
   const [demoLoading, setDemoLoading] = useState(false);
   const [stars, setStars] = useState<number | null>(null);
+  const [testimonials, setTestimonials] = useState<
+    { id: string; name: string; role: string; message: string; rating: number }[]
+  >([]);
+
+  useEffect(() => {
+    fetch(`${API_BASE_URL}/testimonials`)
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.testimonials) setTestimonials(d.testimonials);
+      })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     fetch('https://api.github.com/repos/jutionck/livepoll')
@@ -631,12 +643,36 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
           </h2>
           <p className="text-xs text-slate-500 dark:text-slate-400 mb-8">{t('testimonialSubtitle')}</p>
 
-          <div className="bg-white dark:bg-slate-900 border border-dashed border-slate-300 dark:border-slate-700 rounded-2xl p-10">
-            <Quote size={28} className="text-slate-300 dark:text-slate-600 mx-auto mb-4" />
-            <p className="text-sm text-slate-500 dark:text-slate-400 italic max-w-md mx-auto leading-relaxed">
-              {t('testimonialPlaceholder')}
-            </p>
-          </div>
+          {testimonials.length === 0 ? (
+            <div className="bg-white dark:bg-slate-900 border border-dashed border-slate-300 dark:border-slate-700 rounded-2xl p-10">
+              <Quote size={28} className="text-slate-300 dark:text-slate-600 mx-auto mb-4" />
+              <p className="text-sm text-slate-500 dark:text-slate-400 italic max-w-md mx-auto leading-relaxed">
+                {t('testimonialPlaceholder')}
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
+              {testimonials.map((item) => (
+                <div
+                  key={item.id}
+                  className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5"
+                >
+                  <div className="flex gap-0.5 text-amber-400 mb-3">
+                    {Array.from({ length: item.rating }).map((_, i) => (
+                      <Star key={i} size={14} className="fill-amber-400 text-amber-400" />
+                    ))}
+                  </div>
+                  <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed mb-4">
+                    &ldquo;{item.message}&rdquo;
+                  </p>
+                  <div>
+                    <p className="text-sm font-bold text-slate-900 dark:text-white">{item.name}</p>
+                    {item.role && <p className="text-[10px] text-slate-400">{item.role}</p>}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 

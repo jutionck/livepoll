@@ -8,16 +8,16 @@ datasource db {
 }
 
 model Session {
-  code                     String     @id @db.VarChar(10)
-  title                    String     @db.VarChar(255)
-  status                   String     @default("active") @db.VarChar(20)
-  activeQuestionId         String?    @map("active_question_id") @db.VarChar(50)
-  activeQuestionActivatedAt Int?      @map("active_question_activated_at")
-  hostTokenHash            String     @map("host_token_hash") @db.VarChar(255)
-  version                  Int        @default(1)
-  createdAt                DateTime   @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt                DateTime   @updatedAt @map("updated_at") @db.Timestamptz(6)
-  expiresAt                DateTime   @map("expires_at") @db.Timestamptz(6)
+  code                      String   @id @db.VarChar(10)
+  title                     String   @db.VarChar(255)
+  status                    String   @default("active") @db.VarChar(20)
+  activeQuestionId          String?  @map("active_question_id") @db.VarChar(50)
+  activeQuestionActivatedAt Int?     @map("active_question_activated_at")
+  hostTokenHash             String   @map("host_token_hash") @db.VarChar(255)
+  version                   Int      @default(1)
+  createdAt                 DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt                 DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  expiresAt                 DateTime @map("expires_at") @db.Timestamptz(6)
 
   questions Question[]
   votes     Vote[]
@@ -54,4 +54,16 @@ model Vote {
   @@unique([sessionCode, questionId, participantId])
   @@index([sessionCode, questionId])
   @@map("votes")
+}
+
+model Testimonial {
+  id        String   @id @default(uuid()) @db.Uuid
+  name      String   @db.VarChar(100)
+  role      String   @db.VarChar(150)
+  message   String   @db.Text
+  rating    Int      @default(5) @db.SmallInt
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@map("testimonials")
 }

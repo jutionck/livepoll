@@ -8,6 +8,7 @@ import { HostControl } from './HostControl';
 import { Presentation } from './Presentation';
 import { Join } from './Join';
 import { JoinSession } from './JoinSession';
+import { Admin } from './Admin';
 
 export default function App() {
   const pathname = usePathname();
@@ -54,6 +55,10 @@ export default function App() {
 
   if (pathname === '/join') {
     return <Join navigate={navigate} theme={theme} toggleTheme={toggleTheme} />;
+  }
+
+  if (pathname === '/admin') {
+    return <Admin navigate={navigate} />;
   }
 
   const hostMatch = pathname.match(/^\/host\/([A-Za-z0-9]+)$/);
