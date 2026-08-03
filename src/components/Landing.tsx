@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import {
   PlusCircle,
   ArrowRight,
+  Play,
   QrCode,
   Shield,
   Layers,
@@ -32,6 +33,7 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
   const [code, setCode] = useState('');
   const [activeStep, setActiveStep] = useState(1);
   const [stats, setStats] = useState<{ sessions: number; votes: number } | null>(null);
+  const [demoLoading, setDemoLoading] = useState(false);
   const t = useTranslations('landing');
   const tn = useTranslations('nav');
   const locale = useLocale();
@@ -47,6 +49,35 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
     e.preventDefault();
     if (code.trim()) {
       navigate(`/join/${code.trim().toUpperCase()}`);
+    }
+  };
+
+  const handleDemo = async () => {
+    if (demoLoading) return;
+    setDemoLoading(true);
+    try {
+      const res = await fetch(`${API_BASE_URL}/create-session`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: 'LivePoll Demo Session',
+          questions: [
+            {
+              type: 'multiple_choice',
+              title: 'Seberapa tertarik Anda mencoba LivePoll?',
+              options: ['Sangat tertarik!', 'Lumayan', 'Masih ragu'],
+              timer: 60,
+            },
+          ],
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Gagal.');
+      navigate(`/join/${data.code}`);
+    } catch {
+      alert(t('ctaDemoLoading'));
+    } finally {
+      setDemoLoading(false);
     }
   };
 
@@ -96,6 +127,14 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
                 className="w-full sm:w-auto justify-center bg-slate-900 dark:bg-slate-100 hover:bg-slate-800 dark:hover:bg-slate-200 text-white dark:text-slate-900 font-bold px-5 py-3 rounded-lg text-sm transition-all flex items-center gap-2"
               >
                 <PlusCircle size={16} /> {t('ctaPrimary')}
+              </button>
+              <button
+                onClick={handleDemo}
+                disabled={demoLoading}
+                className="w-full sm:w-auto justify-center border border-slate-300 dark:border-slate-700 hover:border-slate-400 dark:hover:border-slate-600 text-slate-700 dark:text-slate-200 font-bold px-5 py-3 rounded-lg text-sm transition-all flex items-center bg-white dark:bg-slate-900 gap-2 disabled:opacity-60"
+              >
+                <Play size={16} />
+                {demoLoading ? t('ctaDemoLoading') : t('ctaDemo')}
               </button>
               <a
                 href="#features"

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { AlertCircle, CheckCircle, Clock, Users, Star, ArrowLeft } from 'lucide-react';
+import { AlertCircle, CheckCircle, Clock, Users, Star, ArrowLeft, Share2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { API_BASE_URL } from '../config';
 
@@ -268,6 +268,36 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
                 {t('editAnswer')}
               </button>
             )}
+
+            <div className="mt-5 border-t border-slate-100 dark:border-slate-800 pt-4">
+              <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-2">
+                {t('share')}
+              </p>
+              <button
+                type="button"
+                onClick={() => {
+                  const url = typeof window !== 'undefined' ? window.location.origin : '';
+                  const text = `${t('votedTitle')} — LivePoll`;
+                  if (navigator.share) {
+                    navigator.share({ title: 'LivePoll', text, url }).catch(() => {});
+                  } else {
+                    navigator.clipboard.writeText(url).then(() => {
+                      const btn = document.getElementById('share-livepoll');
+                      if (btn) {
+                        btn.textContent = t('shareCopied');
+                        setTimeout(() => {
+                          btn.textContent = t('share');
+                        }, 2000);
+                      }
+                    });
+                  }
+                }}
+                className="w-full bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 font-semibold text-xs py-2.5 rounded-lg flex items-center justify-center gap-2 transition-colors"
+              >
+                <Share2 size={14} />
+                <span id="share-livepoll">{t('share')}</span>
+              </button>
+            </div>
           </div>
         ) : (
           <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-sm">

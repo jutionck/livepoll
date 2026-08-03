@@ -60,7 +60,9 @@
     "mockupTimerLabel": "Timer",
     "mockupTimer30": "30 Detik",
     "mockupOptionsLabel": "Opsi Pilihan",
-    "mockupSessionCode": "Kode Sesi"
+    "mockupSessionCode": "Kode Sesi",
+    "ctaDemo": "Coba Demo Langsung",
+    "ctaDemoLoading": "Menyiapkan demo..."
   },
   "join": {
     "title": "Masuk ke Sesi",
@@ -95,7 +97,9 @@
     "exitDesc": "Apakah Anda yakin ingin keluar dari sesi polling ini?",
     "cancel": "Batal",
     "exit": "Keluar",
-    "loading": "Memuat sesi..."
+    "loading": "Memuat sesi...",
+    "share": "Bagikan LivePoll",
+    "shareCopied": "Link disalin!"
   },
   "hostNew": {
     "title": "Buat Sesi Baru",

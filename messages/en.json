@@ -60,7 +60,9 @@
     "mockupTimerLabel": "Timer",
     "mockupTimer30": "30 Seconds",
     "mockupOptionsLabel": "Answer Options",
-    "mockupSessionCode": "Session Code"
+    "mockupSessionCode": "Session Code",
+    "ctaDemo": "Try Live Demo",
+    "ctaDemoLoading": "Preparing demo..."
   },
   "join": {
     "title": "Enter Session",
@@ -95,7 +97,9 @@
     "exitDesc": "Are you sure you want to leave this polling session?",
     "cancel": "Cancel",
     "exit": "Leave",
-    "loading": "Loading session..."
+    "loading": "Loading session...",
+    "share": "Share LivePoll",
+    "shareCopied": "Link copied!"
   },
   "hostNew": {
     "title": "Create New Session",
