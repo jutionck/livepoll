@@ -221,5 +221,31 @@
     "loading": "Loading presentation...",
     "error": "Error",
     "average": "Average"
+  },
+  "admin": {
+    "title": "Admin Panel",
+    "manage": "Manage Testimonials",
+    "loginTitle": "Admin Login",
+    "loginDesc": "Enter the admin password to manage testimonials.",
+    "passwordPlaceholder": "Password",
+    "loginButton": "Login",
+    "loginError": "Incorrect admin password.",
+    "genericError": "An error occurred.",
+    "backHome": "Home",
+    "back": "Back",
+    "logout": "Logout",
+    "addTitle": "Add Testimonial",
+    "nameLabel": "Name",
+    "roleLabel": "Role/Institution",
+    "messageLabel": "Message",
+    "ratingLabel": "Rating",
+    "activeLabel": "Active",
+    "saveButton": "Save Testimonial",
+    "saving": "Saving...",
+    "saveError": "Failed to save.",
+    "deleteConfirm": "Delete this testimonial?",
+    "deleteError": "Failed to delete.",
+    "listTitle": "Testimonials ({count})",
+    "empty": "No testimonials yet."
   }
 }

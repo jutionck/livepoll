@@ -221,5 +221,31 @@
     "loading": "Memuat presentasi...",
     "error": "Error",
     "average": "Rata-rata"
+  },
+  "admin": {
+    "title": "Admin Panel",
+    "manage": "Kelola Testimoni",
+    "loginTitle": "Masuk Admin",
+    "loginDesc": "Masukkan password admin untuk mengelola testimoni.",
+    "passwordPlaceholder": "Password",
+    "loginButton": "Masuk",
+    "loginError": "Password admin salah.",
+    "genericError": "Terjadi kesalahan.",
+    "backHome": "Beranda",
+    "back": "Kembali",
+    "logout": "Keluar",
+    "addTitle": "Tambah Testimoni",
+    "nameLabel": "Nama",
+    "roleLabel": "Peran/Instansi",
+    "messageLabel": "Pesan",
+    "ratingLabel": "Rating",
+    "activeLabel": "Aktif",
+    "saveButton": "Simpan Testimoni",
+    "saving": "Menyimpan...",
+    "saveError": "Gagal menyimpan.",
+    "deleteConfirm": "Hapus testimoni ini?",
+    "deleteError": "Gagal menghapus.",
+    "listTitle": "Daftar Testimoni ({count})",
+    "empty": "Belum ada testimoni."
   }
 }

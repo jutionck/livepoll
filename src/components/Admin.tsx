@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Lock, Plus, Trash2, Star, LogOut } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { API_BASE_URL } from '../config';
 
 interface AdminProps {
@@ -19,6 +20,7 @@ interface TestimonialItem {
 }
 
 export const Admin: React.FC<AdminProps> = ({ navigate }) => {
+  const t = useTranslations('admin');
   const [token, setToken] = useState('');
   const [password, setPassword] = useState('');
   const [isAuthed, setIsAuthed] = useState(false);
@@ -59,7 +61,7 @@ export const Admin: React.FC<AdminProps> = ({ navigate }) => {
       });
       // If 401, password wrong; else auth ok (or validation error but token valid)
       if (res.status === 401) {
-        setError('Password admin salah.');
+        setError(t('loginError'));
         return;
       }
       setToken(password);
@@ -68,7 +70,7 @@ export const Admin: React.FC<AdminProps> = ({ navigate }) => {
       setError('');
       loadTestimonials(password);
     } catch {
-      setError('Terjadi kesalahan.');
+      setError(t('genericError'));
     }
   };
 
@@ -86,7 +88,7 @@ export const Admin: React.FC<AdminProps> = ({ navigate }) => {
         body: JSON.stringify(form),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Gagal menyimpan.');
+      if (!res.ok) throw new Error(data.error || t('saveError'));
       setForm({ name: '', role: '', message: '', rating: 5, isActive: true });
       loadTestimonials(token);
     } catch (err: any) {
@@ -103,7 +105,7 @@ export const Admin: React.FC<AdminProps> = ({ navigate }) => {
         method: 'DELETE',
         headers: { 'X-Admin-Token': token },
       });
-      if (!res.ok) throw new Error('Gagal menghapus.');
+      if (!res.ok) throw new Error(t('deleteError'));
       setTestimonials((prev) => prev.filter((t) => t.id !== id));
     } catch (err: any) {
       setError(err.message);
@@ -128,7 +130,7 @@ export const Admin: React.FC<AdminProps> = ({ navigate }) => {
             >
               <ArrowLeft size={16} /> Kembali
             </button>
-            <h1 className="text-sm font-bold text-slate-900 dark:text-white">Admin Panel</h1>
+            <h1 className="text-sm font-bold text-slate-900 dark:text-white">{t('title')}</h1>
             <div className="w-16" />
           </div>
         </header>
@@ -138,15 +140,13 @@ export const Admin: React.FC<AdminProps> = ({ navigate }) => {
             <div className="w-12 h-12 bg-slate-100 dark:bg-slate-800 rounded-xl flex items-center justify-center mx-auto mb-4">
               <Lock size={24} className="text-slate-500 dark:text-slate-400" />
             </div>
-            <h2 className="text-lg font-bold text-center mb-2">Masuk Admin</h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400 text-center mb-6">
-              Masukkan password admin untuk mengelola testimoni.
-            </p>
+            <h2 className="text-lg font-bold text-center mb-2">{t('loginTitle')}</h2>
+            <p className="text-xs text-slate-500 dark:text-slate-400 text-center mb-6">{t('loginDesc')}</p>
 
             <form onSubmit={handleLogin} className="space-y-3">
               <input
                 type="password"
-                placeholder="Password"
+                placeholder={t('passwordPlaceholder')}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full px-4 py-3 border border-slate-200 dark:border-slate-700 rounded-lg text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:border-slate-400 dark:focus:border-slate-500"
@@ -177,7 +177,7 @@ export const Admin: React.FC<AdminProps> = ({ navigate }) => {
           >
             <ArrowLeft size={16} /> Beranda
           </button>
-          <h1 className="text-sm font-bold text-slate-900 dark:text-white">Kelola Testimoni</h1>
+          <h1 className="text-sm font-bold text-slate-900 dark:text-white">{t('manage')}</h1>
           <button
             onClick={handleLogout}
             className="flex items-center gap-1 text-red-500 hover:text-red-600 text-xs font-semibold transition-colors"
@@ -196,11 +196,13 @@ export const Admin: React.FC<AdminProps> = ({ navigate }) => {
 
         {/* Add form */}
         <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-6 shadow-sm">
-          <h2 className="text-sm font-bold text-slate-900 dark:text-white mb-4">Tambah Testimoni</h2>
+          <h2 className="text-sm font-bold text-slate-900 dark:text-white mb-4">{t('addTitle')}</h2>
           <form onSubmit={handleSubmit} className="space-y-3">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Nama</label>
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
+                  {t('nameLabel')}
+                </label>
                 <input
                   type="text"
                   value={form.name}
@@ -222,7 +224,9 @@ export const Admin: React.FC<AdminProps> = ({ navigate }) => {
               </div>
             </div>
             <div>
-              <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Pesan</label>
+              <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
+                {t('messageLabel')}
+              </label>
               <textarea
                 value={form.message}
                 onChange={(e) => setForm({ ...form, message: e.target.value })}
@@ -268,16 +272,18 @@ export const Admin: React.FC<AdminProps> = ({ navigate }) => {
               disabled={saving}
               className="inline-flex items-center gap-2 bg-slate-900 dark:bg-slate-100 hover:bg-slate-800 dark:hover:bg-slate-200 text-white dark:text-slate-900 font-bold text-sm px-5 py-2.5 rounded-lg transition-colors disabled:opacity-50"
             >
-              <Plus size={16} /> {saving ? 'Menyimpan...' : 'Simpan Testimoni'}
+              <Plus size={16} /> {saving ? t('saving') : t('saveButton')}
             </button>
           </form>
         </div>
 
         {/* List */}
         <div className="space-y-3">
-          <h2 className="text-sm font-bold text-slate-900 dark:text-white">Daftar Testimoni ({testimonials.length})</h2>
+          <h2 className="text-sm font-bold text-slate-900 dark:text-white">
+            {t('listTitle', { count: testimonials.length })}
+          </h2>
           {testimonials.length === 0 ? (
-            <p className="text-xs text-slate-400">Belum ada testimoni.</p>
+            <p className="text-xs text-slate-400">{t('empty')}</p>
           ) : (
             testimonials.map((item) => (
               <div
