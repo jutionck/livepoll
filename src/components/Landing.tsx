@@ -52,8 +52,7 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
   const t = useTranslations('landing');
   const tn = useTranslations('nav');
   const locale = useLocale();
-  const siteUrl =
-    typeof window !== 'undefined' ? window.location.origin + '/' + locale : `https://livepoll.mipdevp.com/${locale}`;
+  const siteUrl = `https://livepoll.mipdevp.com/${locale}`;
 
   useEffect(() => {
     fetch(`${API_BASE_URL}/stats`)
