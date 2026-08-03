@@ -62,7 +62,41 @@
     "mockupOptionsLabel": "Answer Options",
     "mockupSessionCode": "Session Code",
     "ctaDemo": "Try Live Demo",
-    "ctaDemoLoading": "Preparing demo..."
+    "ctaDemoLoading": "Preparing demo...",
+    "faqTitle": "Frequently Asked Questions",
+    "faqSubtitle": "Answers to the most common questions",
+    "faqItems": [
+      {
+        "q": "Is LivePoll really free?",
+        "a": "Yes, 100% free forever with unlimited usage. No paid plans or participant limits."
+      },
+      {
+        "q": "Do participants need an account?",
+        "a": "No. Participants just scan the QR code or enter the session code and vote immediately."
+      },
+      {
+        "q": "Can I use it on a projector or Zoom?",
+        "a": "Yes. There's a fullscreen presentation mode with high contrast designed for projectors and screenshares."
+      },
+      {
+        "q": "How many participants can join?",
+        "a": "For MVP, stable for 50-200 active participants per session. Perfect for webinars, classes, and mid-scale seminars."
+      },
+      {
+        "q": "Is session data secure?",
+        "a": "Each session is protected by a host token, duplicate votes are prevented, and sessions auto-expire after 24 hours."
+      }
+    ],
+    "compareTitle": "Why Choose LivePoll?",
+    "compareSubtitle": "Comparison with other polling platforms",
+    "compareFeature": "Feature",
+    "compareWe": "LivePoll",
+    "compareThem": "Other Platforms (free tier)",
+    "compareFree": "Free forever",
+    "compareLimits": "Participant & session limits",
+    "compareAccount": "No participant account",
+    "compareTimer": "Automatic timer",
+    "compareOpen": "Open source"
   },
   "join": {
     "title": "Enter Session",

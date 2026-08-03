@@ -14,6 +14,7 @@ import {
   Star,
   CheckCircle,
   ChevronRight,
+  ChevronDown,
   Copy,
   Heart,
   Code,
@@ -121,24 +122,24 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
             <p className="text-slate-500 dark:text-slate-400 text-sm md:text-base leading-relaxed max-w-lg">
               {t('subheadline')}
             </p>
-            <div className="flex flex-col sm:flex-row gap-3 pt-2 w-full sm:w-auto">
+            <div className="flex flex-wrap items-center gap-2 pt-2">
               <button
                 onClick={() => navigate('/host/new')}
-                className="w-full sm:w-auto justify-center bg-slate-900 dark:bg-slate-100 hover:bg-slate-800 dark:hover:bg-slate-200 text-white dark:text-slate-900 font-bold px-5 py-3 rounded-lg text-sm transition-all flex items-center gap-2"
+                className="inline-flex items-center gap-1.5 bg-slate-900 dark:bg-slate-100 hover:bg-slate-800 dark:hover:bg-slate-200 text-white dark:text-slate-900 font-bold px-3.5 py-2.5 rounded-lg text-xs sm:text-sm transition-all whitespace-nowrap"
               >
-                <PlusCircle size={16} /> {t('ctaPrimary')}
+                <PlusCircle size={14} /> {t('ctaPrimary')}
               </button>
               <button
                 onClick={handleDemo}
                 disabled={demoLoading}
-                className="w-full sm:w-auto justify-center border border-slate-300 dark:border-slate-700 hover:border-slate-400 dark:hover:border-slate-600 text-slate-700 dark:text-slate-200 font-bold px-5 py-3 rounded-lg text-sm transition-all flex items-center bg-white dark:bg-slate-900 gap-2 disabled:opacity-60"
+                className="inline-flex items-center gap-1.5 border border-slate-300 dark:border-slate-700 hover:border-slate-400 dark:hover:border-slate-600 text-slate-700 dark:text-slate-200 font-bold px-3.5 py-2.5 rounded-lg text-xs sm:text-sm transition-all bg-white dark:bg-slate-900 whitespace-nowrap disabled:opacity-60"
               >
-                <Play size={16} />
+                <Play size={14} />
                 {demoLoading ? t('ctaDemoLoading') : t('ctaDemo')}
               </button>
               <a
                 href="#features"
-                className="w-full sm:w-auto justify-center border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 text-slate-600 dark:text-slate-300 font-bold px-5 py-3 rounded-lg text-sm transition-all flex items-center bg-white dark:bg-slate-900"
+                className="inline-flex items-center gap-1.5 border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 text-slate-600 dark:text-slate-300 font-bold px-3.5 py-2.5 rounded-lg text-xs sm:text-sm transition-all bg-white dark:bg-slate-900 whitespace-nowrap"
               >
                 {t('ctaSecondary')}
               </a>
@@ -484,6 +485,74 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
                   <p className="text-slate-500 dark:text-slate-400 text-[11px] leading-relaxed">{feat.desc}</p>
                 </div>
               </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Comparison Section */}
+      <section className="py-16 px-6 border-b border-slate-200/60 dark:border-slate-800/60">
+        <div className="max-w-3xl mx-auto w-full">
+          <div className="text-center mb-10">
+            <h2 className="text-xl font-bold text-slate-900 dark:text-white uppercase tracking-wider mb-2">
+              {t('compareTitle')}
+            </h2>
+            <p className="text-xs text-slate-500 dark:text-slate-400">{t('compareSubtitle')}</p>
+          </div>
+
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-sm">
+            <div className="grid grid-cols-3 gap-2 px-5 py-3 bg-slate-50 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 text-xs font-bold uppercase tracking-wider">
+              <span className="text-slate-400 dark:text-slate-500">{t('compareFeature')}</span>
+              <span className="text-center text-slate-900 dark:text-white">{t('compareWe')}</span>
+              <span className="text-center text-slate-400 dark:text-slate-500">{t('compareThem')}</span>
+            </div>
+            {[
+              { feature: t('compareFree'), we: '✓', them: '✗' },
+              { feature: t('compareLimits'), we: '✗', them: '✓' },
+              { feature: t('compareAccount'), we: '✓', them: '✗' },
+              { feature: t('compareTimer'), we: '✓', them: '✗' },
+              { feature: t('compareOpen'), we: '✓', them: '✗' },
+            ].map((row, idx) => (
+              <div
+                key={idx}
+                className={`grid grid-cols-3 gap-2 px-5 py-3 text-xs font-semibold ${
+                  idx % 2 === 0 ? 'bg-white dark:bg-slate-900' : 'bg-slate-50/50 dark:bg-slate-800/40'
+                }`}
+              >
+                <span className="text-slate-700 dark:text-slate-300">{row.feature}</span>
+                <span className="text-center text-emerald-500 font-black">{row.we}</span>
+                <span className="text-center text-red-400 font-black">{row.them}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section className="py-16 px-6 border-b border-slate-200/60 dark:border-slate-800/60">
+        <div className="max-w-3xl mx-auto w-full">
+          <div className="text-center mb-10">
+            <h2 className="text-xl font-bold text-slate-900 dark:text-white uppercase tracking-wider mb-2">
+              {t('faqTitle')}
+            </h2>
+            <p className="text-xs text-slate-500 dark:text-slate-400">{t('faqSubtitle')}</p>
+          </div>
+
+          <div className="space-y-3">
+            {t.raw('faqItems').map((item: { q: string; a: string }, idx: number) => (
+              <details
+                key={idx}
+                className="group bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden"
+              >
+                <summary className="flex items-center justify-between gap-3 px-5 py-4 cursor-pointer select-none text-sm font-bold text-slate-900 dark:text-white list-none">
+                  {item.q}
+                  <ChevronDown
+                    size={16}
+                    className="text-slate-400 shrink-0 transition-transform duration-200 group-open:rotate-180"
+                  />
+                </summary>
+                <p className="px-5 pb-4 text-xs text-slate-500 dark:text-slate-400 leading-relaxed">{item.a}</p>
+              </details>
             ))}
           </div>
         </div>

@@ -81,25 +81,6 @@ export default async function LocaleLayout({
   }
   setRequestLocale(locale);
   const t = await getTranslations('nav');
-  const isEn = locale === 'en';
-
-  const jsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'WebApplication',
-    name: 'LivePoll',
-    url: `${BASE_URL}/${locale}`,
-    applicationCategory: 'BusinessApplication',
-    operatingSystem: 'Any',
-    description: isEn
-      ? 'Real-time interactive polling for webinars, seminars, and classes.'
-      : 'Polling interaktif real-time untuk webinar, seminar, dan kelas.',
-    offers: {
-      '@type': 'Offer',
-      price: '0',
-      priceCurrency: 'USD',
-    },
-    inLanguage: isEn ? 'en' : 'id',
-  };
 
   return (
     <html lang={locale} suppressHydrationWarning>
@@ -107,7 +88,6 @@ export default async function LocaleLayout({
         <Script id="theme-init" strategy="beforeInteractive">
           {`(function(){try{var t=localStorage.getItem('theme');var d=t?t==='dark':window.matchMedia('(prefers-color-scheme: dark)').matches;if(d)document.documentElement.classList.add('dark')}catch(e){}})();`}
         </Script>
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>

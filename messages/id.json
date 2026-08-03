@@ -62,7 +62,41 @@
     "mockupOptionsLabel": "Opsi Pilihan",
     "mockupSessionCode": "Kode Sesi",
     "ctaDemo": "Coba Demo Langsung",
-    "ctaDemoLoading": "Menyiapkan demo..."
+    "ctaDemoLoading": "Menyiapkan demo...",
+    "faqTitle": "Pertanyaan Umum (FAQ)",
+    "faqSubtitle": "Jawaban untuk pertanyaan yang paling sering diajukan",
+    "faqItems": [
+      {
+        "q": "Apakah LivePoll benar-benar gratis?",
+        "a": "Ya, 100% gratis selamanya untuk penggunaan tanpa batas. Tidak ada paket berbayar atau batasan jumlah peserta."
+      },
+      {
+        "q": "Apakah peserta perlu membuat akun?",
+        "a": "Tidak. Peserta cukup scan QR code atau masukkan kode sesi, lalu langsung bisa voting."
+      },
+      {
+        "q": "Bisa dipakai di proyektor atau Zoom?",
+        "a": "Bisa. Ada mode presentasi layar penuh dengan kontras tinggi yang nyaman ditayangkan di proyektor maupun screenshare."
+      },
+      {
+        "q": "Berapa banyak peserta yang bisa ikut?",
+        "a": "Untuk MVP, stabil untuk 50-200 peserta aktif per sesi. Cocok untuk webinar, kelas, dan seminar skala menengah."
+      },
+      {
+        "q": "Apakah data sesi aman?",
+        "a": "Setiap sesi dilindungi token host, vote dicegah duplikasi, dan sesi otomatis dihapus setelah 24 jam."
+      }
+    ],
+    "compareTitle": "Kenapa Pilih LivePoll?",
+    "compareSubtitle": "Perbandingan dengan platform polling lain",
+    "compareFeature": "Fitur",
+    "compareWe": "LivePoll",
+    "compareThem": "Platform Lain (free tier)",
+    "compareFree": "Gratis selamanya",
+    "compareLimits": "Batas peserta & sesi",
+    "compareAccount": "Tanpa akun peserta",
+    "compareTimer": "Timer otomatis",
+    "compareOpen": "Open source"
   },
   "join": {
     "title": "Masuk ke Sesi",
