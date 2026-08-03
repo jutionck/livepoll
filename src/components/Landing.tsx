@@ -225,23 +225,23 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
       {/* Stats Bar */}
       {stats && (stats.sessions > 0 || stats.votes > 0) && (
         <section className="py-8 px-6 border-b border-slate-200/60 dark:border-slate-800/60">
-          <div className="max-w-5xl mx-auto flex flex-wrap items-center gap-x-8 gap-y-3">
+          <div className="max-w-5xl mx-auto grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-6">
             {stats.sessions > 0 && (
-              <div className="flex items-center gap-2.5">
+              <div className="flex items-center gap-2.5 justify-center sm:justify-start">
                 <div className="w-8 h-8 rounded-full bg-emerald-50 dark:bg-emerald-950/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-900/50 shrink-0">
                   <Layers size={14} />
                 </div>
-                <p className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                <p className="text-xs font-bold text-slate-700 dark:text-slate-300 whitespace-nowrap">
                   <span className="text-slate-900 dark:text-white">{stats.sessions}</span> {t('statsSessions')}
                 </p>
               </div>
             )}
             {stats.votes > 0 && (
-              <div className="flex items-center gap-2.5">
+              <div className="flex items-center gap-2.5 justify-center sm:justify-start">
                 <div className="w-8 h-8 rounded-full bg-indigo-50 dark:bg-indigo-950/30 flex items-center justify-center text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-900/50 shrink-0">
                   <CheckCircle size={14} />
                 </div>
-                <p className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                <p className="text-xs font-bold text-slate-700 dark:text-slate-300 whitespace-nowrap">
                   <span className="text-slate-900 dark:text-white">{stats.votes}</span> {t('statsVotes')}
                 </p>
               </div>
