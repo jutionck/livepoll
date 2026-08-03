@@ -96,7 +96,15 @@
     "compareLimits": "Participant & session limits",
     "compareAccount": "No participant account",
     "compareTimer": "Automatic timer",
-    "compareOpen": "Open source"
+    "compareOpen": "Open source",
+    "shareTitle": "Share LivePoll With Your Friends",
+    "shareDesc": "Help us grow by sharing LivePoll with your community.",
+    "shareWhatsapp": "Share via WhatsApp",
+    "shareTelegram": "Share via Telegram",
+    "shareX": "Share on X (Twitter)",
+    "testimonialTitle": "What Users Say",
+    "testimonialSubtitle": "Their experience using LivePoll",
+    "testimonialPlaceholder": "The first testimonial will appear here. Be the first to try!"
   },
   "join": {
     "title": "Enter Session",

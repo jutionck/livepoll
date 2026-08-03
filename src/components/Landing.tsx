@@ -16,6 +16,10 @@ import {
   ChevronRight,
   ChevronDown,
   Copy,
+  MessageCircle,
+  Send,
+  Share2,
+  Quote,
   Heart,
   Code,
 } from 'lucide-react';
@@ -35,9 +39,21 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
   const [activeStep, setActiveStep] = useState(1);
   const [stats, setStats] = useState<{ sessions: number; votes: number } | null>(null);
   const [demoLoading, setDemoLoading] = useState(false);
+  const [stars, setStars] = useState<number | null>(null);
+
+  useEffect(() => {
+    fetch('https://api.github.com/repos/jutionck/livepoll')
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.stargazers_count !== undefined) setStars(d.stargazers_count);
+      })
+      .catch(() => {});
+  }, []);
   const t = useTranslations('landing');
   const tn = useTranslations('nav');
   const locale = useLocale();
+  const siteUrl =
+    typeof window !== 'undefined' ? window.location.origin + '/' + locale : `https://livepoll.mipdevp.com/${locale}`;
 
   useEffect(() => {
     fetch(`${API_BASE_URL}/stats`)
@@ -94,6 +110,16 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
             </span>
           </div>
           <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
+            <a
+              href="https://github.com/jutionck/livepoll"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hidden sm:flex items-center gap-1.5 border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 rounded-lg px-2.5 py-1.5 text-xs font-bold text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-900 transition-colors"
+              aria-label="GitHub stars"
+            >
+              <Star size={13} className="fill-amber-400 text-amber-400" />
+              {stars !== null ? stars : 'GitHub'}
+            </a>
             <LanguageToggle />
             <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
             <button
@@ -554,6 +580,63 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
                 <p className="px-5 pb-4 text-xs text-slate-500 dark:text-slate-400 leading-relaxed">{item.a}</p>
               </details>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Share Section */}
+      <section className="py-16 px-6 border-b border-slate-200/60 dark:border-slate-800/60">
+        <div className="max-w-3xl mx-auto w-full text-center">
+          <h2 className="text-xl font-bold text-slate-900 dark:text-white uppercase tracking-wider mb-2">
+            {t('shareTitle')}
+          </h2>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mb-8">{t('shareDesc')}</p>
+
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            <a
+              href={`https://wa.me/?text=${encodeURIComponent('LivePoll — ' + siteUrl)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white font-bold px-5 py-2.5 rounded-lg text-sm transition-all"
+            >
+              <MessageCircle size={16} />
+              {t('shareWhatsapp')}
+            </a>
+            <a
+              href={`https://t.me/share/url?url=${encodeURIComponent(siteUrl)}&text=LivePoll`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 bg-sky-500 hover:bg-sky-600 text-white font-bold px-5 py-2.5 rounded-lg text-sm transition-all"
+            >
+              <Send size={16} />
+              {t('shareTelegram')}
+            </a>
+            <a
+              href={`https://twitter.com/intent/tweet?text=${encodeURIComponent('LivePoll — Real-time interactive polling')}&url=${encodeURIComponent(siteUrl)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 bg-slate-900 dark:bg-slate-100 hover:bg-slate-800 dark:hover:bg-slate-200 text-white dark:text-slate-900 font-bold px-5 py-2.5 rounded-lg text-sm transition-all"
+            >
+              <Share2 size={16} />
+              {t('shareX')}
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonial Section */}
+      <section className="py-16 px-6 border-b border-slate-200/60 dark:border-slate-800/60">
+        <div className="max-w-3xl mx-auto w-full text-center">
+          <h2 className="text-xl font-bold text-slate-900 dark:text-white uppercase tracking-wider mb-2">
+            {t('testimonialTitle')}
+          </h2>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mb-8">{t('testimonialSubtitle')}</p>
+
+          <div className="bg-white dark:bg-slate-900 border border-dashed border-slate-300 dark:border-slate-700 rounded-2xl p-10">
+            <Quote size={28} className="text-slate-300 dark:text-slate-600 mx-auto mb-4" />
+            <p className="text-sm text-slate-500 dark:text-slate-400 italic max-w-md mx-auto leading-relaxed">
+              {t('testimonialPlaceholder')}
+            </p>
           </div>
         </div>
       </section>

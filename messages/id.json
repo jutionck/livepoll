@@ -96,7 +96,15 @@
     "compareLimits": "Batas peserta & sesi",
     "compareAccount": "Tanpa akun peserta",
     "compareTimer": "Timer otomatis",
-    "compareOpen": "Open source"
+    "compareOpen": "Open source",
+    "shareTitle": "Bagikan LivePoll ke Teman Anda",
+    "shareDesc": "Bantu kami berkembang dengan membagikan LivePoll ke komunitas Anda.",
+    "shareWhatsapp": "Bagikan via WhatsApp",
+    "shareTelegram": "Bagikan via Telegram",
+    "shareX": "Bagikan di X (Twitter)",
+    "testimonialTitle": "Apa Kata Pengguna?",
+    "testimonialSubtitle": "Pengalaman mereka menggunakan LivePoll",
+    "testimonialPlaceholder": "Testimoni pertama akan muncul di sini. Jadilah yang pertama mencoba!"
   },
   "join": {
     "title": "Masuk ke Sesi",
