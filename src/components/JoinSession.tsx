@@ -182,8 +182,8 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
           <button
             onClick={() => setShowExitModal(true)}
             className="text-slate-400 hover:text-slate-950 dark:hover:text-white transition-colors p-1"
-            aria-label={t('back')}
-            title={t('back')}
+            aria-label={tn('back')}
+            title={tn('back')}
           >
             <ArrowLeft size={16} />
           </button>
