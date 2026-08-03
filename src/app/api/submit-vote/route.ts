@@ -1,7 +1,13 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
+import { rateLimit, getClientIp } from '@/lib/rate-limit';
 
 export async function POST(request: Request) {
+  // Rate limit: 30 votes per minute per IP
+  if (!rateLimit(`vote:${getClientIp(request)}`, 30, 60_000)) {
+    return NextResponse.json({ error: 'Terlalu banyak permintaan. Coba lagi nanti.' }, { status: 429 });
+  }
+
   try {
     const { code, question_id, participant_id, vote } = await request.json();
 

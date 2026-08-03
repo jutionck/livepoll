@@ -1,13 +1,34 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
+import { hasOffensiveContent, getModerationError } from '@/lib/moderation';
+import { rateLimit, getClientIp } from '@/lib/rate-limit';
 import crypto from 'crypto';
 
 export async function POST(request: Request) {
+  // Rate limit: 10 session creations per 10 minutes per IP
+  if (!rateLimit(`create-session:${getClientIp(request)}`, 10, 600_000)) {
+    return NextResponse.json({ error: 'Terlalu banyak permintaan. Coba lagi nanti.' }, { status: 429 });
+  }
+
   try {
     const { title, questions, host_name, host_org } = await request.json();
 
     if (!title || !questions || !Array.isArray(questions) || questions.length === 0) {
       return NextResponse.json({ error: 'Data tidak lengkap.' }, { status: 400 });
+    }
+
+    // Content moderation check (SARA/hate speech)
+    const flaggedTexts: (string | undefined)[] = [title, host_name, host_org];
+    for (const q of questions) {
+      flaggedTexts.push(String(q.title ?? ''));
+      if (Array.isArray(q.options)) {
+        q.options.forEach((o: unknown) => flaggedTexts.push(String(o ?? '')));
+      } else if (q.options && typeof q.options === 'object') {
+        Object.values(q.options).forEach((o) => flaggedTexts.push(String(o ?? '')));
+      }
+    }
+    if (hasOffensiveContent(...flaggedTexts)) {
+      return NextResponse.json({ error: getModerationError() }, { status: 422 });
     }
 
     // Generate unique session code

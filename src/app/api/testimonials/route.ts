@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
+import { hasOffensiveContent, getModerationError } from '@/lib/moderation';
 import crypto from 'crypto';
 
 function isAdmin(request: Request): boolean {
@@ -33,6 +34,11 @@ export async function POST(request: Request) {
     const { name, role, message, rating, isActive } = await request.json();
     if (!name || !message) {
       return NextResponse.json({ error: 'Nama dan pesan wajib diisi.' }, { status: 400 });
+    }
+
+    // Content moderation check
+    if (hasOffensiveContent(name, role, message)) {
+      return NextResponse.json({ error: getModerationError() }, { status: 422 });
     }
 
     const testimonial = await prisma.testimonial.create({
