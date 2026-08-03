@@ -14,6 +14,8 @@ model Session {
   activeQuestionId          String?  @map("active_question_id") @db.VarChar(50)
   activeQuestionActivatedAt Int?     @map("active_question_activated_at")
   hostTokenHash             String   @map("host_token_hash") @db.VarChar(255)
+  hostName                  String?  @map("host_name") @db.VarChar(100)
+  hostOrg                   String?  @map("host_org") @db.VarChar(150)
   version                   Int      @default(1)
   createdAt                 DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt                 DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)

@@ -2,7 +2,19 @@
 
 import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { AlertCircle, CheckCircle, Clock, Users, Star, ArrowLeft, Share2 } from 'lucide-react';
+import {
+  AlertCircle,
+  CheckCircle,
+  Clock,
+  Users,
+  Star,
+  ArrowLeft,
+  Share2,
+  MessageCircle,
+  Send,
+  Link2,
+  Check,
+} from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { API_BASE_URL } from '../config';
 
@@ -25,6 +37,8 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
   const [showExitModal, setShowExitModal] = useState(false);
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
   const [hoverRating, setHoverRating] = useState<number | null>(null);
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     let pId = localStorage.getItem('participant_id');
@@ -275,27 +289,11 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
               </p>
               <button
                 type="button"
-                onClick={() => {
-                  const url = typeof window !== 'undefined' ? window.location.origin : '';
-                  const text = `${t('votedTitle')} — LivePoll`;
-                  if (navigator.share) {
-                    navigator.share({ title: 'LivePoll', text, url }).catch(() => {});
-                  } else {
-                    navigator.clipboard.writeText(url).then(() => {
-                      const btn = document.getElementById('share-livepoll');
-                      if (btn) {
-                        btn.textContent = t('shareCopied');
-                        setTimeout(() => {
-                          btn.textContent = t('share');
-                        }, 2000);
-                      }
-                    });
-                  }
-                }}
+                onClick={() => setShowShareModal(true)}
                 className="w-full bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 font-semibold text-xs py-2.5 rounded-lg flex items-center justify-center gap-2 transition-colors"
               >
                 <Share2 size={14} />
-                <span id="share-livepoll">{t('share')}</span>
+                <span>{t('share')}</span>
               </button>
             </div>
           </div>
@@ -388,6 +386,83 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
           </div>
         )}
       </main>
+
+      {/* Custom Share Modal */}
+      {showShareModal && (
+        <div className="fixed inset-0 bg-slate-900/40 dark:bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4 z-45 animate-fade-in">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-6 max-w-xs w-full shadow-lg text-slate-900 dark:text-white">
+            <h3 className="text-sm font-bold mb-1.5">{t('shareTitle')}</h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mb-5">{t('shareDesc')}</p>
+
+            <div className="space-y-2">
+              <button
+                type="button"
+                onClick={() => {
+                  const url = typeof window !== 'undefined' ? window.location.origin : '';
+                  navigator.clipboard.writeText(url).then(() => {
+                    setCopied(true);
+                    setTimeout(() => setCopied(false), 2000);
+                  });
+                }}
+                className="w-full flex items-center justify-between bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-3 transition-colors"
+              >
+                <span className="flex items-center gap-2.5 text-xs font-semibold text-slate-700 dark:text-slate-200">
+                  <Link2 size={16} className="text-slate-400" />
+                  {copied ? t('shareCopied') : t('shareCopy')}
+                </span>
+                {copied && <Check size={16} className="text-emerald-500" />}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  const url = typeof window !== 'undefined' ? window.location.origin : '';
+                  window.open(`https://wa.me/?text=${encodeURIComponent('LivePoll — ' + url)}`, '_blank');
+                }}
+                className="w-full flex items-center gap-2.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg px-4 py-3 text-xs font-bold transition-colors"
+              >
+                <MessageCircle size={16} />
+                {t('shareWhatsapp')}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  const url = typeof window !== 'undefined' ? window.location.origin : '';
+                  window.open(`https://t.me/share/url?url=${encodeURIComponent(url)}&text=LivePoll`, '_blank');
+                }}
+                className="w-full flex items-center gap-2.5 bg-sky-500 hover:bg-sky-600 text-white rounded-lg px-4 py-3 text-xs font-bold transition-colors"
+              >
+                <Send size={16} />
+                {t('shareTelegram')}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  const url = typeof window !== 'undefined' ? window.location.origin : '';
+                  window.open(
+                    `https://twitter.com/intent/tweet?text=${encodeURIComponent('LivePoll — Real-time interactive polling')}&url=${encodeURIComponent(url)}`,
+                    '_blank',
+                  );
+                }}
+                className="w-full flex items-center gap-2.5 bg-slate-900 dark:bg-slate-100 hover:bg-slate-800 dark:hover:bg-slate-200 text-white dark:text-slate-900 rounded-lg px-4 py-3 text-xs font-bold transition-colors"
+              >
+                <Share2 size={16} />
+                {t('shareX')}
+              </button>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setShowShareModal(false)}
+              className="w-full mt-4 text-xs font-bold text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
+            >
+              {t('shareClose')}
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Custom Exit Modal */}
       {showExitModal && (

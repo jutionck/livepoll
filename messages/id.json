@@ -141,7 +141,19 @@
     "exit": "Keluar",
     "loading": "Memuat sesi...",
     "share": "Bagikan LivePoll",
-    "shareCopied": "Link disalin!"
+    "shareCopied": "Link Disalin!",
+    "testimonialPrompt": "Apakah polling ini membantu?",
+    "testimonialDesc": "Berikan penilaian Anda untuk mendukung LivePoll.",
+    "testimonialSend": "Kirim Testimoni",
+    "testimonialSent": "Terima kasih! Testimoni Anda terkirim.",
+    "skip": "Lewati",
+    "shareTitle": "Bagikan LivePoll",
+    "shareDesc": "Bagikan ke teman atau komunitas Anda:",
+    "shareCopy": "Salin Link",
+    "shareWhatsapp": "WhatsApp",
+    "shareTelegram": "Telegram",
+    "shareX": "X (Twitter)",
+    "shareClose": "Tutup"
   },
   "hostNew": {
     "title": "Buat Sesi Baru",
@@ -172,7 +184,11 @@
     "errorTitle": "Judul sesi tidak boleh kosong.",
     "errorNoQuestions": "Tambahkan minimal satu pertanyaan.",
     "errorNoTitle": "Pertanyaan #{n} belum memiliki judul.",
-    "errorFewOptions": "Pertanyaan #{n} minimal harus memiliki 2 pilihan."
+    "errorFewOptions": "Pertanyaan #{n} minimal harus memiliki 2 pilihan.",
+    "hostNameLabel": "Nama Anda (opsional)",
+    "hostNamePlaceholder": "Contoh: Jution Candra Kirana",
+    "hostOrgLabel": "Organisasi / Instansi (opsional)",
+    "hostOrgPlaceholder": "Contoh: Universitas Indonesia"
   },
   "host": {
     "votingOpen": "Voting Dibuka",
@@ -220,7 +236,14 @@
     "sessionCode": "Kode Sesi",
     "loading": "Memuat presentasi...",
     "error": "Error",
-    "average": "Rata-rata"
+    "average": "Rata-rata",
+    "testimonialPrompt": "Apakah polling ini membantu presentasi Anda?",
+    "testimonialDesc": "Berikan penilaian Anda untuk mendukung LivePoll. Nama dan instansi Anda terisi otomatis dari sesi.",
+    "testimonialSend": "Kirim Testimoni",
+    "testimonialSending": "Mengirim...",
+    "testimonialPlaceholder": "Tulis pengalaman Anda menggunakan LivePoll...",
+    "skip": "Lewati",
+    "testimonialSent": "Testimoni terkirim!"
   },
   "admin": {
     "title": "Admin Panel",

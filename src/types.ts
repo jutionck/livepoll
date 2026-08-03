@@ -13,6 +13,8 @@ export interface Session {
   code: string;
   title: string;
   status: 'active' | 'closed';
+  host_name?: string | null;
+  host_org?: string | null;
   active_question_id: string;
   active_question_activated_at?: number | null;
   questions: Record<string, Question>;

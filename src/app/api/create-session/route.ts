@@ -4,7 +4,7 @@ import crypto from 'crypto';
 
 export async function POST(request: Request) {
   try {
-    const { title, questions } = await request.json();
+    const { title, questions, host_name, host_org } = await request.json();
 
     if (!title || !questions || !Array.isArray(questions) || questions.length === 0) {
       return NextResponse.json({ error: 'Data tidak lengkap.' }, { status: 400 });
@@ -48,6 +48,8 @@ export async function POST(request: Request) {
           code,
           title,
           status: 'active',
+          hostName: host_name ? String(host_name).slice(0, 100) : null,
+          hostOrg: host_org ? String(host_org).slice(0, 150) : null,
           activeQuestionId: firstQId,
           activeQuestionActivatedAt: Math.floor(Date.now() / 1000),
           hostTokenHash,

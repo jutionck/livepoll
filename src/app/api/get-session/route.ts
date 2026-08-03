@@ -44,6 +44,8 @@ export async function GET(request: Request) {
         code: session.code,
         title: session.title,
         status: session.status,
+        host_name: session.hostName,
+        host_org: session.hostOrg,
         active_question_id: session.activeQuestionId,
         active_question_activated_at: session.activeQuestionActivatedAt,
         questions: questionsMap,

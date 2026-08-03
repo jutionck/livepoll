@@ -90,6 +90,8 @@ export const HostNew: React.FC<HostNewProps> = ({ navigate, theme, toggleTheme }
   const t = useTranslations('hostNew');
   const tn = useTranslations('nav');
   const [title, setTitle] = useState('Sesi Polling Live');
+  const [hostName, setHostName] = useState('');
+  const [hostOrg, setHostOrg] = useState('');
   const [questions, setQuestions] = useState<QuestionDraft[]>([]);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -100,6 +102,8 @@ export const HostNew: React.FC<HostNewProps> = ({ navigate, theme, toggleTheme }
       try {
         const parsed = JSON.parse(savedDraft);
         if (parsed.title) setTitle(parsed.title);
+        if (parsed.hostName) setHostName(parsed.hostName);
+        if (parsed.hostOrg) setHostOrg(parsed.hostOrg);
         if (Array.isArray(parsed.questions)) setQuestions(parsed.questions);
       } catch {}
     } else {
@@ -109,7 +113,7 @@ export const HostNew: React.FC<HostNewProps> = ({ navigate, theme, toggleTheme }
 
   useEffect(() => {
     if (questions.length > 0) {
-      localStorage.setItem('host_session_draft', JSON.stringify({ title, questions }));
+      localStorage.setItem('host_session_draft', JSON.stringify({ title, questions, hostName, hostOrg }));
     }
   }, [title, questions]);
 
@@ -201,7 +205,12 @@ export const HostNew: React.FC<HostNewProps> = ({ navigate, theme, toggleTheme }
       const response = await fetch(`${API_BASE_URL}/create-session`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title: title.trim(), questions: formattedQuestions }),
+        body: JSON.stringify({
+          title: title.trim(),
+          questions: formattedQuestions,
+          host_name: hostName.trim(),
+          host_org: hostOrg.trim(),
+        }),
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Gagal membuat sesi.');
@@ -253,6 +262,33 @@ export const HostNew: React.FC<HostNewProps> = ({ navigate, theme, toggleTheme }
               placeholder={t('sessionTitlePlaceholder')}
               className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700 rounded-lg text-base font-bold focus:outline-none focus:border-slate-400 dark:focus:border-slate-500 bg-white dark:bg-slate-800 text-slate-900 dark:text-white transition-colors"
             />
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-sm">
+              <label className="block text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-2">
+                {t('hostNameLabel')}
+              </label>
+              <input
+                type="text"
+                value={hostName}
+                onChange={(e) => setHostName(e.target.value)}
+                placeholder={t('hostNamePlaceholder')}
+                className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700 rounded-lg text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:border-slate-400 dark:focus:border-slate-500 transition-colors"
+              />
+            </div>
+            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-sm">
+              <label className="block text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-2">
+                {t('hostOrgLabel')}
+              </label>
+              <input
+                type="text"
+                value={hostOrg}
+                onChange={(e) => setHostOrg(e.target.value)}
+                placeholder={t('hostOrgPlaceholder')}
+                className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700 rounded-lg text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:border-slate-400 dark:focus:border-slate-500 transition-colors"
+              />
+            </div>
           </div>
 
           <div className="flex items-center justify-between">

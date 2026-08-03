@@ -141,7 +141,19 @@
     "exit": "Leave",
     "loading": "Loading session...",
     "share": "Share LivePoll",
-    "shareCopied": "Link copied!"
+    "shareCopied": "Link Copied!",
+    "testimonialPrompt": "Did this poll help you?",
+    "testimonialDesc": "Leave a rating to support LivePoll.",
+    "testimonialSend": "Send Testimonial",
+    "testimonialSent": "Thank you! Your testimonial has been sent.",
+    "skip": "Skip",
+    "shareTitle": "Share LivePoll",
+    "shareDesc": "Share with your friends or community:",
+    "shareCopy": "Copy Link",
+    "shareWhatsapp": "WhatsApp",
+    "shareTelegram": "Telegram",
+    "shareX": "X (Twitter)",
+    "shareClose": "Close"
   },
   "hostNew": {
     "title": "Create New Session",
@@ -172,7 +184,11 @@
     "errorTitle": "Session title cannot be empty.",
     "errorNoQuestions": "Add at least one question.",
     "errorNoTitle": "Question #{n} needs a title.",
-    "errorFewOptions": "Question #{n} needs at least 2 options."
+    "errorFewOptions": "Question #{n} needs at least 2 options.",
+    "hostNameLabel": "Your Name (optional)",
+    "hostNamePlaceholder": "e.g. John Doe",
+    "hostOrgLabel": "Organization / Institution (optional)",
+    "hostOrgPlaceholder": "e.g. University of Indonesia"
   },
   "host": {
     "votingOpen": "Voting Open",
@@ -220,7 +236,14 @@
     "sessionCode": "Session Code",
     "loading": "Loading presentation...",
     "error": "Error",
-    "average": "Average"
+    "average": "Average",
+    "testimonialPrompt": "Did this poll help your presentation?",
+    "testimonialDesc": "Leave a rating to support LivePoll. Your name and institution are auto-filled from the session.",
+    "testimonialSend": "Send Testimonial",
+    "testimonialSending": "Sending...",
+    "testimonialPlaceholder": "Write your experience using LivePoll...",
+    "skip": "Skip",
+    "testimonialSent": "Testimonial sent!"
   },
   "admin": {
     "title": "Admin Panel",
