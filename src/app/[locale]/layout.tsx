@@ -1,9 +1,9 @@
 import type { Metadata, Viewport } from 'next';
-import Script from 'next/script';
 import { NextIntlClientProvider, hasLocale } from 'next-intl';
-import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
+import { ThemeInit } from '@/components/ThemeInit';
 import Providers from './providers';
 import '../globals.css';
 
@@ -80,18 +80,15 @@ export default async function LocaleLayout({
     notFound();
   }
   setRequestLocale(locale);
-  const t = await getTranslations('nav');
 
   return (
     <html lang={locale} suppressHydrationWarning>
       <head>
-        <Script id="theme-init" strategy="beforeInteractive">
-          {`(function(){try{var t=localStorage.getItem('theme');var d=t?t==='dark':window.matchMedia('(prefers-color-scheme: dark)').matches;if(d)document.documentElement.classList.add('dark')}catch(e){}})();`}
-        </Script>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
       <body className="min-h-full flex flex-col" suppressHydrationWarning>
+        <ThemeInit />
         <NextIntlClientProvider>
           <Providers>{children}</Providers>
         </NextIntlClientProvider>
