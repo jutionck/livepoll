@@ -104,7 +104,9 @@
     "shareX": "Bagikan di X (Twitter)",
     "testimonialTitle": "Apa Kata Pengguna?",
     "testimonialSubtitle": "Pengalaman mereka menggunakan LivePoll",
-    "testimonialPlaceholder": "Testimoni pertama akan muncul di sini. Jadilah yang pertama mencoba!"
+    "testimonialPlaceholder": "Testimoni pertama akan muncul di sini. Jadilah yang pertama mencoba!",
+    "videoTitle": "Lihat LivePoll dalam 60 Detik",
+    "videoSubtitle": "Video demo singkat cara menggunakan LivePoll"
   },
   "join": {
     "title": "Masuk ke Sesi",

@@ -527,6 +527,28 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
         </div>
       </section>
 
+      {/* Video Demo Section */}
+      <section className="py-16 px-6 border-b border-slate-200/60 dark:border-slate-800/60">
+        <div className="max-w-3xl mx-auto w-full">
+          <div className="text-center mb-10">
+            <h2 className="text-xl font-bold text-slate-900 dark:text-white uppercase tracking-wider mb-2">
+              {t('videoTitle')}
+            </h2>
+            <p className="text-xs text-slate-500 dark:text-slate-400">{t('videoSubtitle')}</p>
+          </div>
+
+          <div className="aspect-video rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-lg">
+            <iframe
+              className="w-full h-full"
+              src="https://www.youtube.com/embed/4pAcFzw8B6w"
+              title="LivePoll Demo"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowFullScreen
+            />
+          </div>
+        </div>
+      </section>
+
       {/* Comparison Section */}
       <section className="py-16 px-6 border-b border-slate-200/60 dark:border-slate-800/60">
         <div className="max-w-3xl mx-auto w-full">

@@ -104,7 +104,9 @@
     "shareX": "Share on X (Twitter)",
     "testimonialTitle": "What Users Say",
     "testimonialSubtitle": "Their experience using LivePoll",
-    "testimonialPlaceholder": "The first testimonial will appear here. Be the first to try!"
+    "testimonialPlaceholder": "The first testimonial will appear here. Be the first to try!",
+    "videoTitle": "See LivePoll in 60 Seconds",
+    "videoSubtitle": "A short demo video on how to use LivePoll"
   },
   "join": {
     "title": "Enter Session",
