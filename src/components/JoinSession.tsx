@@ -314,6 +314,20 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
           </div>
         ) : (
           <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-sm">
+            <div className="mb-4">
+              <label className="block text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1.5">
+                {t('nameLabel')}
+              </label>
+              <input
+                type="text"
+                value={participantName}
+                onChange={handleNameChange}
+                placeholder={t('namePlaceholder')}
+                className="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-lg text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:border-slate-400 dark:focus:border-slate-500 transition-colors"
+                maxLength={100}
+              />
+            </div>
+
             <div className="flex items-center justify-between mb-3">
               <span className="text-[9px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 px-2 py-0.5 rounded uppercase tracking-wider border border-slate-200 dark:border-slate-700">
                 {activeQuestion.type === 'rating'
