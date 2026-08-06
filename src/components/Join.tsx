@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowLeft, ArrowRight, Layers, Heart } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
@@ -15,13 +15,20 @@ interface JoinProps {
 
 export const Join: React.FC<JoinProps> = ({ navigate, theme, toggleTheme }) => {
   const [code, setCode] = useState('');
+  const [name, setName] = useState('');
   const t = useTranslations('join');
   const tn = useTranslations('nav');
   const tl = useTranslations('landing');
 
+  useEffect(() => {
+    const savedName = localStorage.getItem('participant_name');
+    if (savedName) setName(savedName);
+  }, []);
+
   const handleJoin = (e: React.FormEvent) => {
     e.preventDefault();
     if (code.trim()) {
+      localStorage.setItem('participant_name', name.trim());
       navigate(`/join/${code.trim().toUpperCase()}`);
     }
   };
@@ -56,6 +63,22 @@ export const Join: React.FC<JoinProps> = ({ navigate, theme, toggleTheme }) => {
 
           <form onSubmit={handleJoin} className="space-y-4">
             <div>
+              <label className="block text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1.5">
+                {t('nameLabel')}
+              </label>
+              <input
+                type="text"
+                placeholder={t('namePlaceholder')}
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="w-full px-4 py-3 border border-slate-200 dark:border-slate-700 rounded-lg text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:border-slate-400 dark:focus:border-slate-500 transition-colors"
+                maxLength={100}
+              />
+            </div>
+            <div>
+              <label className="block text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1.5">
+                {t('codeLabel')}
+              </label>
               <input
                 type="text"
                 placeholder={t('placeholder')}

@@ -115,7 +115,10 @@
     "button": "Join",
     "errorTitle": "An Error Occurred",
     "sessionNotFound": "Session not found or has expired.",
-    "back": "Back"
+    "back": "Back",
+    "nameLabel": "Your Name (optional)",
+    "namePlaceholder": "Enter your name",
+    "codeLabel": "Session Code"
   },
   "participant": {
     "badge": "Participant",

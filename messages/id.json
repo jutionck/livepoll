@@ -115,7 +115,10 @@
     "button": "Gabung",
     "errorTitle": "Terjadi Kesalahan",
     "sessionNotFound": "Sesi tidak ditemukan atau telah kedaluwarsa.",
-    "back": "Kembali"
+    "back": "Kembali",
+    "nameLabel": "Nama Anda (opsional)",
+    "namePlaceholder": "Masukkan nama Anda",
+    "codeLabel": "Kode Sesi"
   },
   "participant": {
     "badge": "Peserta",
