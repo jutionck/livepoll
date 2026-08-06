@@ -156,6 +156,11 @@
     "shareDesc": "Bagikan ke teman atau komunitas Anda:",
     "shareCopy": "Salin Link",
     "shareWhatsapp": "WhatsApp",
+    "nameTitle": "Masukkan Nama Anda",
+    "nameDesc": "Nama Anda akan tampil di papan peringkat dan dipakai untuk penilaian.",
+    "namePlaceholder": "Nama lengkap Anda...",
+    "nameStart": "Mulai Kuis",
+    "nameRequired": "Silakan isi nama Anda untuk melanjutkan.",
     "shareTelegram": "Telegram",
     "shareX": "X (Twitter)",
     "shareClose": "Tutup",
@@ -238,7 +243,15 @@
     "score": "Skor",
     "correctLabel": "Benar",
     "totalLabel": "Total",
-    "isQuiz": "KUIS"
+    "isQuiz": "KUIS",
+    "noQuestion": "Pilih pertanyaan dari daftar.",
+    "expandAnswers": "Lihat Jawaban",
+    "collapseAnswers": "Tutup Jawaban",
+    "yourAnswer": "Jawaban",
+    "correctAns": "Jawaban Benar",
+    "benar": "Benar",
+    "salah": "Salah",
+    "next": "Soal Berikutnya"
   },
   "presentation": {
     "title": "Layar Presentasi",
@@ -261,7 +274,14 @@
     "testimonialSending": "Mengirim...",
     "testimonialPlaceholder": "Tulis pengalaman Anda menggunakan LivePoll...",
     "skip": "Lewati",
-    "testimonialSent": "Testimoni terkirim!"
+    "testimonialSent": "Testimoni terkirim!",
+    "finalResult": "Hasil Akhir",
+    "leaderboardEmpty": "Belum ada peserta yang mengikuti kuis.",
+    "rank": "Peringkat",
+    "participant": "Peserta",
+    "score": "Skor",
+    "correctLabel": "Benar",
+    "seeAll": "Lihat Semua Peringkat"
   },
   "admin": {
     "title": "Admin Panel",

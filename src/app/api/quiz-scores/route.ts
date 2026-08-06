@@ -32,13 +32,49 @@ export async function GET(request: Request) {
     });
 
     // Build participant scores
-    const participantMap = new Map<string, { name: string; correct: number; total: number }>();
+    const participantMap = new Map<
+      string,
+      {
+        name: string;
+        correct: number;
+        total: number;
+        points: number;
+        answers: {
+          question_id: string;
+          question_title: string;
+          answer: string;
+          is_correct: boolean;
+          correct_answer: string;
+          points: number;
+        }[];
+      }
+    >();
+
+    // Kahoot-style: faster correct answers earn more points (up to 1000)
+    const computePoints = (question: (typeof questions)[number], isCorrect: boolean, vote: (typeof votes)[number]) => {
+      if (!isCorrect) return 0;
+      const timer = question.timer;
+      const activatedAt = session.activeQuestionActivatedAt;
+      if (!timer || !activatedAt) return 1000;
+      const elapsed = Math.max(0, Math.min(timer, vote.updatedAt.getTime() / 1000 - activatedAt));
+      const factor = Math.max(0.1, 1 - elapsed / timer);
+      return Math.round(1000 * factor);
+    };
 
     votes.forEach((v) => {
       const entry = participantMap.get(v.participantId) || {
         name: v.participantName || 'Tanpa Nama',
         correct: 0,
         total: 0,
+        points: 0,
+        answers: [] as {
+          question_id: string;
+          question_title: string;
+          answer: string;
+          is_correct: boolean;
+          correct_answer: string;
+          points: number;
+        }[],
       };
 
       const question = questions.find((q) => q.qId === v.questionId);
@@ -51,6 +87,23 @@ export async function GET(request: Request) {
 
         const isCorrect = correctSet.size === voteSet.size && [...correctSet].every((x) => voteSet.has(x));
         if (isCorrect) entry.correct++;
+
+        const points = computePoints(question, isCorrect, v);
+        entry.points += points;
+
+        const labels = Object.fromEntries(
+          Object.entries((question.options as Record<string, unknown>) ?? {}).map(([k, v]) => [k, String(v)]),
+        );
+        const formatAnswer = (keys: string[]) => keys.map((k) => labels[k] || k).join(', ');
+
+        entry.answers.push({
+          question_id: question.qId,
+          question_title: question.title,
+          answer: Array.isArray(voteVal) ? formatAnswer(voteVal) : formatAnswer([voteVal]),
+          is_correct: isCorrect,
+          correct_answer: formatAnswer(correctArr),
+          points,
+        });
       }
 
       participantMap.set(v.participantId, entry);
@@ -63,9 +116,10 @@ export async function GET(request: Request) {
         name: data.name,
         correct: data.correct,
         total: data.total,
-        score: data.total > 0 ? Math.round((data.correct / data.total) * 100) : 0,
+        points: data.points,
+        answers: data.answers,
       }))
-      .sort((a, b) => b.correct - a.correct || a.name.localeCompare(b.name));
+      .sort((a, b) => b.points - a.points || a.name.localeCompare(b.name));
 
     // Question stats
     const questionStats = questions.map((q) => {

@@ -156,6 +156,11 @@
     "shareDesc": "Share with your friends or community:",
     "shareCopy": "Copy Link",
     "shareWhatsapp": "WhatsApp",
+    "nameTitle": "Enter Your Name",
+    "nameDesc": "Your name will be shown on the leaderboard and used for scoring.",
+    "namePlaceholder": "Your name...",
+    "nameStart": "Start Quiz",
+    "nameRequired": "Please enter your name to continue.",
     "shareTelegram": "Telegram",
     "shareX": "X (Twitter)",
     "shareClose": "Close",
@@ -238,7 +243,15 @@
     "score": "Score",
     "correctLabel": "Correct",
     "totalLabel": "Total",
-    "isQuiz": "QUIZ"
+    "isQuiz": "QUIZ",
+    "noQuestion": "Choose a question from the list.",
+    "expandAnswers": "View Answers",
+    "collapseAnswers": "Hide Answers",
+    "yourAnswer": "Answer",
+    "correctAns": "Correct Answer",
+    "benar": "Correct",
+    "salah": "Wrong",
+    "next": "Next Question"
   },
   "presentation": {
     "title": "Presentation Screen",
@@ -261,7 +274,14 @@
     "testimonialSending": "Sending...",
     "testimonialPlaceholder": "Write your experience using LivePoll...",
     "skip": "Skip",
-    "testimonialSent": "Testimonial sent!"
+    "testimonialSent": "Testimonial sent!",
+    "finalResult": "Final Result",
+    "leaderboardEmpty": "No participants have taken the quiz yet.",
+    "rank": "Rank",
+    "participant": "Participant",
+    "score": "Score",
+    "correctLabel": "Correct",
+    "seeAll": "See All Rankings"
   },
   "admin": {
     "title": "Admin Panel",

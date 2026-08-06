@@ -57,6 +57,12 @@ export async function GET(request: Request) {
       const activeQId = session.activeQuestionId;
       let activeQuestion = null;
 
+      const sessionQuestions = await prisma.question.findMany({
+        where: { sessionCode: code },
+        select: { correctAnswer: true },
+      });
+      const isQuiz = sessionQuestions.some((q) => q.correctAnswer);
+
       if (activeQId) {
         const q = await prisma.question.findUnique({
           where: { sessionCode_qId: { sessionCode: code, qId: activeQId } },
@@ -68,6 +74,7 @@ export async function GET(request: Request) {
             title: q.title,
             options: q.options,
             timer: q.timer,
+            has_answer: !!q.correctAnswer,
           };
         }
       }
@@ -79,6 +86,7 @@ export async function GET(request: Request) {
         active_question_id: activeQId,
         active_question: activeQuestion,
         active_question_activated_at: session.activeQuestionActivatedAt,
+        is_quiz: isQuiz,
         version: session.version,
       });
     }
