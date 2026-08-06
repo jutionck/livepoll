@@ -3,7 +3,20 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { QRCodeSVG } from 'qrcode.react';
-import { Play, RefreshCw, Users, AlertCircle, Copy, Check, ChevronRight, LogOut, Eye, Lock, Star } from 'lucide-react';
+import {
+  Play,
+  RefreshCw,
+  Users,
+  AlertCircle,
+  Copy,
+  Check,
+  ChevronRight,
+  LogOut,
+  Eye,
+  Lock,
+  Star,
+  Trophy,
+} from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { API_BASE_URL, getJoinUrl } from '../config';
 import type { Session } from '../types';
@@ -33,6 +46,8 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
   const [testimonialRating, setTestimonialRating] = useState(5);
   const [testimonialMsg, setTestimonialMsg] = useState('');
   const [testimonialSending, setTestimonialSending] = useState(false);
+  const [showLeaderboard, setShowLeaderboard] = useState(false);
+  const [leaderboard, setLeaderboard] = useState<any[]>([]);
 
   const hostToken = localStorage.getItem(`host_token_${code}`) || '';
 
@@ -193,6 +208,20 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
       showNotification(err.message);
     } finally {
       setTestimonialSending(false);
+    }
+  };
+
+  const fetchLeaderboard = async () => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/quiz-scores?code=${code}`, {
+        headers: { 'X-Host-Token': hostToken },
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Gagal.');
+      setLeaderboard(data.leaderboard || []);
+      setShowLeaderboard(true);
+    } catch (err: any) {
+      showNotification(err.message);
     }
   };
 
@@ -535,6 +564,58 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
                 Keluar
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Custom Leaderboard Modal */}
+      {showLeaderboard && (
+        <div className="fixed inset-0 bg-slate-900/40 dark:bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4 z-40 animate-fade-in">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-6 max-w-md w-full shadow-lg text-slate-900 dark:text-white">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-sm font-bold flex items-center gap-2">
+                <Trophy size={16} className="text-amber-400" /> {t('leaderboard')}
+              </h3>
+              <button
+                onClick={() => setShowLeaderboard(false)}
+                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 text-xs font-bold transition-colors"
+              >
+                ✕
+              </button>
+            </div>
+
+            {leaderboard.length === 0 ? (
+              <p className="text-xs text-slate-500 dark:text-slate-400 text-center py-6">{t('leaderboardEmpty')}</p>
+            ) : (
+              <div className="space-y-2">
+                <div className="flex items-center justify-between px-3 py-2 bg-slate-50 dark:bg-slate-800 rounded-lg text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                  <span>{t('rank')}</span>
+                  <span className="flex-1 ml-3">{t('participant')}</span>
+                  <span className="w-16 text-center">{t('score')}</span>
+                </div>
+                {leaderboard.map((item, idx) => (
+                  <div
+                    key={item.participant_id}
+                    className={`flex items-center justify-between px-3 py-2.5 rounded-lg text-xs ${
+                      idx === 0
+                        ? 'bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/40'
+                        : 'bg-slate-50 dark:bg-slate-800'
+                    }`}
+                  >
+                    <span className={`w-8 font-black ${idx === 0 ? 'text-amber-500' : 'text-slate-400'}`}>
+                      {idx === 0 ? '🏆' : idx + 1}
+                    </span>
+                    <span className="flex-1 ml-3 font-bold text-slate-800 dark:text-slate-200 truncate">
+                      {item.name}
+                      <span className="block text-[9px] font-normal text-slate-400">
+                        {t('correctLabel')}: {item.correct}/{item.total}
+                      </span>
+                    </span>
+                    <span className="w-16 text-center font-black text-slate-900 dark:text-white">{item.score}</span>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       )}

@@ -103,6 +103,11 @@ export async function POST(request: Request) {
             title: q.title,
             options: optionsObj,
             timer: timerVal,
+            correctAnswer: q.correct_answer
+              ? Array.isArray(q.correct_answer)
+                ? q.correct_answer
+                : [q.correct_answer]
+              : undefined,
           },
         });
       }

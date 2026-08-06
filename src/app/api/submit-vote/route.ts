@@ -9,7 +9,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    const { code, question_id, participant_id, vote } = await request.json();
+    const { code, question_id, participant_id, participant_name, vote } = await request.json();
 
     if (!code || !question_id || !participant_id || vote === undefined) {
       return NextResponse.json({ error: 'Data tidak lengkap.' }, { status: 400 });
@@ -94,6 +94,7 @@ export async function POST(request: Request) {
             sessionCode: code.toUpperCase(),
             questionId: question_id,
             participantId: participant_id,
+            participantName: participant_name ? String(participant_name).slice(0, 100) : null,
             vote,
           },
         }),

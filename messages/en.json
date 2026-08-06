@@ -155,7 +155,9 @@
     "shareWhatsapp": "WhatsApp",
     "shareTelegram": "Telegram",
     "shareX": "X (Twitter)",
-    "shareClose": "Close"
+    "shareClose": "Close",
+    "nameLabel": "Your Name (optional)",
+    "namePlaceholder": "Enter your name"
   },
   "hostNew": {
     "title": "Create New Session",
@@ -190,7 +192,10 @@
     "hostNameLabel": "Your Name (optional)",
     "hostNamePlaceholder": "e.g. John Doe",
     "hostOrgLabel": "Organization / Institution (optional)",
-    "hostOrgPlaceholder": "e.g. University of Indonesia"
+    "hostOrgPlaceholder": "e.g. University of Indonesia",
+    "correctAnswerLabel": "Correct Answer (Quiz)",
+    "correctAnswerHint": "Select the correct answer for quiz mode. Leave empty for regular poll.",
+    "correctAnswerClear": "Clear Correct Answer"
   },
   "host": {
     "votingOpen": "Voting Open",
@@ -222,7 +227,15 @@
     "notifActivated": "Question activated successfully.",
     "notifReset": "All answers have been reset.",
     "notifVotingOpen": "Voting has been reopened.",
-    "notifVotingClosed": "Voting has been closed."
+    "notifVotingClosed": "Voting has been closed.",
+    "leaderboard": "Leaderboard",
+    "leaderboardEmpty": "No participants have taken the quiz yet.",
+    "rank": "Rank",
+    "participant": "Participant",
+    "score": "Score",
+    "correctLabel": "Correct",
+    "totalLabel": "Total",
+    "isQuiz": "QUIZ"
   },
   "presentation": {
     "title": "Presentation Screen",

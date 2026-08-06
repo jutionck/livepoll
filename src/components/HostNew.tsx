@@ -19,6 +19,7 @@ interface QuestionDraft {
   title: string;
   options: string[];
   timer?: number | null;
+  correctAnswer?: string[];
 }
 
 const TYPE_LABELS: Record<string, { labelKey: string; badge: string }> = {
@@ -150,6 +151,24 @@ export const HostNew: React.FC<HostNewProps> = ({ navigate, theme, toggleTheme }
     setQuestions(updated);
   };
 
+  const toggleCorrectAnswer = (qIndex: number, optKey: string) => {
+    const updated = [...questions];
+    const q = updated[qIndex];
+    if (q.type === 'multiple_choice') {
+      q.correctAnswer = [optKey];
+    } else {
+      const current = q.correctAnswer || [];
+      q.correctAnswer = current.includes(optKey) ? current.filter((k) => k !== optKey) : [...current, optKey];
+    }
+    setQuestions(updated);
+  };
+
+  const clearCorrectAnswer = (qIndex: number) => {
+    const updated = [...questions];
+    updated[qIndex].correctAnswer = [];
+    setQuestions(updated);
+  };
+
   const updateQuestionTimer = (index: number, val: string) => {
     const updated = [...questions];
     updated[index].timer = val === 'manual' ? null : parseInt(val, 10);
@@ -199,6 +218,9 @@ export const HostNew: React.FC<HostNewProps> = ({ navigate, theme, toggleTheme }
     const formattedQuestions = questions.map((q) => {
       const qData: any = { type: q.type, title: q.title, timer: q.timer ?? null };
       if (q.type !== 'rating') qData.options = q.options.filter((o) => o.trim());
+      if (q.type !== 'rating' && q.correctAnswer && q.correctAnswer.length > 0) {
+        qData.correct_answer = q.correctAnswer;
+      }
       return qData;
     });
     try {
@@ -401,6 +423,45 @@ export const HostNew: React.FC<HostNewProps> = ({ navigate, theme, toggleTheme }
                           className="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 text-[10px] font-bold flex items-center gap-1 mt-2 transition-colors"
                         >
                           <Plus size={12} /> {t('addOption')}
+                        </button>
+                      )}
+                    </div>
+                  )}
+
+                  {q.type !== 'rating' && q.options.filter((o) => o.trim()).length >= 2 && (
+                    <div className="mt-5 border-t border-slate-100 dark:border-slate-800 pt-4">
+                      <label className="block text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1">
+                        {t('correctAnswerLabel')}
+                      </label>
+                      <p className="text-[10px] text-slate-400 dark:text-slate-500 mb-2">{t('correctAnswerHint')}</p>
+                      <div className="flex flex-wrap gap-2">
+                        {q.options.map((opt, optIndex) => {
+                          if (!opt.trim()) return null;
+                          const key = String.fromCharCode(97 + optIndex);
+                          const isSelected = q.correctAnswer?.includes(key) || false;
+                          return (
+                            <button
+                              key={key}
+                              type="button"
+                              onClick={() => toggleCorrectAnswer(qIndex, key)}
+                              className={`px-3 py-1.5 rounded-lg border text-xs font-bold transition-colors ${
+                                isSelected
+                                  ? 'bg-emerald-500 border-emerald-500 text-white'
+                                  : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-emerald-400'
+                              }`}
+                            >
+                              {String.fromCharCode(65 + optIndex)}. {opt.trim()}
+                            </button>
+                          );
+                        })}
+                      </div>
+                      {q.correctAnswer && q.correctAnswer.length > 0 && (
+                        <button
+                          type="button"
+                          onClick={() => clearCorrectAnswer(qIndex)}
+                          className="mt-2 text-[10px] font-bold text-red-500 hover:text-red-600 transition-colors"
+                        >
+                          {t('correctAnswerClear')}
                         </button>
                       )}
                     </div>

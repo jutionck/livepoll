@@ -28,14 +28,15 @@ model Session {
 }
 
 model Question {
-  id          String   @id @default(uuid()) @db.Uuid
-  sessionCode String   @map("session_code") @db.VarChar(10)
-  qId         String   @map("q_id") @db.VarChar(50)
-  type        String   @db.VarChar(50)
-  title       String   @db.Text
-  options     Json     @default("{}")
-  timer       Int?
-  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  id            String   @id @default(uuid()) @db.Uuid
+  sessionCode   String   @map("session_code") @db.VarChar(10)
+  qId           String   @map("q_id") @db.VarChar(50)
+  type          String   @db.VarChar(50)
+  title         String   @db.Text
+  options       Json     @default("{}")
+  timer         Int?
+  correctAnswer Json?    @map("correct_answer")
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
 
   session Session @relation(fields: [sessionCode], references: [code], onDelete: Cascade)
 
@@ -44,12 +45,13 @@ model Question {
 }
 
 model Vote {
-  id            String   @id @default(uuid()) @db.Uuid
-  sessionCode   String   @map("session_code") @db.VarChar(10)
-  questionId    String   @map("question_id") @db.VarChar(50)
-  participantId String   @map("participant_id") @db.VarChar(100)
-  vote          Json
-  updatedAt     DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  id              String   @id @default(uuid()) @db.Uuid
+  sessionCode     String   @map("session_code") @db.VarChar(10)
+  questionId      String   @map("question_id") @db.VarChar(50)
+  participantId   String   @map("participant_id") @db.VarChar(100)
+  participantName String?  @map("participant_name") @db.VarChar(100)
+  vote            Json
+  updatedAt       DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
 
   session Session @relation(fields: [sessionCode], references: [code], onDelete: Cascade)
 

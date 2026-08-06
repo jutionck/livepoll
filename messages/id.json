@@ -155,7 +155,9 @@
     "shareWhatsapp": "WhatsApp",
     "shareTelegram": "Telegram",
     "shareX": "X (Twitter)",
-    "shareClose": "Tutup"
+    "shareClose": "Tutup",
+    "nameLabel": "Nama Anda (opsional)",
+    "namePlaceholder": "Masukkan nama Anda"
   },
   "hostNew": {
     "title": "Buat Sesi Baru",
@@ -190,7 +192,10 @@
     "hostNameLabel": "Nama Anda (opsional)",
     "hostNamePlaceholder": "Contoh: Jution Candra Kirana",
     "hostOrgLabel": "Organisasi / Instansi (opsional)",
-    "hostOrgPlaceholder": "Contoh: Universitas Indonesia"
+    "hostOrgPlaceholder": "Contoh: Universitas Indonesia",
+    "correctAnswerLabel": "Jawaban Benar (Kuis)",
+    "correctAnswerHint": "Pilih jawaban yang benar untuk mode kuis. Kosongkan untuk polling biasa.",
+    "correctAnswerClear": "Hapus Jawaban Benar"
   },
   "host": {
     "votingOpen": "Voting Dibuka",
@@ -222,7 +227,15 @@
     "notifActivated": "Pertanyaan aktif berhasil diubah.",
     "notifReset": "Semua jawaban berhasil direset.",
     "notifVotingOpen": "Voting dibuka kembali.",
-    "notifVotingClosed": "Voting ditutup."
+    "notifVotingClosed": "Voting ditutup.",
+    "leaderboard": "Leaderboard",
+    "leaderboardEmpty": "Belum ada peserta yang mengikuti kuis.",
+    "rank": "Peringkat",
+    "participant": "Peserta",
+    "score": "Skor",
+    "correctLabel": "Benar",
+    "totalLabel": "Total",
+    "isQuiz": "KUIS"
   },
   "presentation": {
     "title": "Layar Presentasi",

@@ -37,6 +37,7 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
   const [showExitModal, setShowExitModal] = useState(false);
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
   const [hoverRating, setHoverRating] = useState<number | null>(null);
+  const [participantName, setParticipantName] = useState('');
   const [showShareModal, setShowShareModal] = useState(false);
   const [copied, setCopied] = useState(false);
 
@@ -47,6 +48,8 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
       localStorage.setItem('participant_id', pId);
     }
     setParticipantId(pId);
+    const savedName = localStorage.getItem('participant_name');
+    if (savedName) setParticipantName(savedName);
   }, []);
 
   // Session query with 2s polling
@@ -116,6 +119,12 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
     }
   }, [session?.active_question_id]);
 
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setParticipantName(val);
+    localStorage.setItem('participant_name', val);
+  };
+
   const handleSelectionToggle = (optKey: string) => {
     if (hasVoted) return;
     if (session.active_question.type === 'multiple_choice') {
@@ -142,7 +151,13 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
       const response = await fetch(`${API_BASE_URL}/submit-vote`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code, question_id: activeQId, participant_id: participantId, vote: selectedVote }),
+        body: JSON.stringify({
+          code,
+          question_id: activeQId,
+          participant_id: participantId,
+          participant_name: participantName.trim() || undefined,
+          vote: selectedVote,
+        }),
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Gagal.');

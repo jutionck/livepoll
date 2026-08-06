@@ -37,6 +37,7 @@ export async function GET(request: Request) {
           title: q.title,
           options: q.options,
           timer: q.timer,
+          correct_answer: q.correctAnswer,
         };
       });
 
