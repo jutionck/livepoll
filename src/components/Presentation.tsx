@@ -9,6 +9,7 @@ import { API_BASE_URL, getJoinUrl } from '../config';
 import type { Session } from '../types';
 
 import { ThemeToggle } from './ThemeToggle';
+import { LanguageToggle } from './LanguageToggle';
 import { Fireworks } from './Fireworks';
 
 interface PresentationProps {
@@ -84,6 +85,25 @@ export const Presentation: React.FC<PresentationProps> = ({ code, navigate, them
 
   const ranking = rankingQuery.data?.leaderboard || [];
   const formatPoints = (n: unknown) => Number(n || 0).toLocaleString();
+
+  // Quiz participants who joined (name cards like Kahoot)
+  const fetchJoined = async () => {
+    const res = await fetch(`${API_BASE_URL}/joined-participants?code=${code}`, {
+      headers: { 'Cache-Control': 'no-store' },
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Gagal.');
+    return data;
+  };
+
+  const joinedQuery = useQuery({
+    queryKey: ['joined', code],
+    queryFn: fetchJoined,
+    refetchInterval: 2000,
+    enabled: !!session?.is_quiz,
+  });
+
+  const joined: { participant_id: string; name: string }[] = joinedQuery.data?.participants || [];
 
   // Sequential podium reveal: 3rd → 2nd → 1st
   const [revealed, setRevealed] = useState(0);
@@ -170,7 +190,7 @@ export const Presentation: React.FC<PresentationProps> = ({ code, navigate, them
             onClick={() => navigate('/')}
             className="btn-primary px-6 py-2.5 rounded-lg font-semibold text-xs transition-colors"
           >
-            Kembali
+            {t('back')}
           </button>
         </div>
       </div>
@@ -212,6 +232,7 @@ export const Presentation: React.FC<PresentationProps> = ({ code, navigate, them
               {totalVotes} <span className="hidden sm:inline">{t('responses')}</span>
             </span>
           </div>
+          <LanguageToggle />
           <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
           <button
             onClick={toggleFullscreen}
@@ -453,6 +474,28 @@ export const Presentation: React.FC<PresentationProps> = ({ code, navigate, them
           ) : (
             <div className="text-center py-12 sm:py-16">
               <h2 className="text-base sm:text-xl font-bold text-slate-500 dark:text-slate-500">{t('waiting')}</h2>
+            </div>
+          )}
+
+          {/* Quiz joined participants (name cards) */}
+          {session.is_quiz && joined.length > 0 && (
+            <div className="mt-8 sm:mt-10">
+              <p className="text-[9px] sm:text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-2.5">
+                {t('joinedTitle')} · {joined.length}
+              </p>
+              <div className="flex flex-wrap gap-1.5 sm:gap-2">
+                {joined.map((p) => (
+                  <span
+                    key={p.participant_id}
+                    className="inline-flex items-center gap-1.5 bg-white/80 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800 rounded-full pl-1.5 pr-2.5 py-1 text-[10px] sm:text-xs font-bold text-slate-700 dark:text-slate-200 shadow-sm animate-fade-in"
+                  >
+                    <span className="w-4 h-4 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-[8px] text-slate-500 dark:text-slate-300 font-black shrink-0">
+                      {p.name.charAt(0).toUpperCase()}
+                    </span>
+                    <span className="max-w-[120px] sm:max-w-[160px] truncate">{p.name}</span>
+                  </span>
+                ))}
+              </div>
             </div>
           )}
         </div>

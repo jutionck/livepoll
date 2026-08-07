@@ -24,6 +24,7 @@ import { API_BASE_URL, getJoinUrl } from '../config';
 import type { Session } from '../types';
 
 import { ThemeToggle } from './ThemeToggle';
+import { LanguageToggle } from './LanguageToggle';
 
 interface HostControlProps {
   code: string;
@@ -89,8 +90,12 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
 
   // Sync selected question when session loads
   useEffect(() => {
-    if (session?.active_question_id) {
+    if (!session) return;
+    if (session.active_question_id) {
       setSelectedQuestionId((prev) => prev || session.active_question_id);
+    } else {
+      const first = Object.values(session.questions || {})[0];
+      if (first) setSelectedQuestionId(first.id);
     }
   }, [session?.active_question_id]);
 
@@ -177,7 +182,11 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
     }
   };
 
-  const handleStartVote = () => startVoteFor(selectedQuestionId);
+  const handleStartVote = () => {
+    const qId = selectedQuestionId || Object.values(session?.questions || {})[0]?.id;
+    if (!qId) return;
+    startVoteFor(qId);
+  };
 
   const handleNextQuestion = () => {
     const questions = Object.values(session?.questions || {});
@@ -228,7 +237,7 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
       localStorage.setItem(`testimonial_done_${code}`, '1');
       setTestimonialDone(true);
       setShowTestimonial(false);
-      showNotification('Testimoni terkirim!', 'success');
+      showNotification(tp('testimonialSent'), 'success');
     } catch (err: any) {
       showNotification(err.message);
     } finally {
@@ -284,7 +293,7 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
             onClick={() => navigate('/')}
             className="w-full bg-slate-900 text-white font-semibold text-xs py-2 rounded-lg"
           >
-            Kembali
+            {t('back')}
           </button>
         </div>
       </div>
@@ -330,6 +339,7 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
         </div>
         <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
           <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
+          <LanguageToggle />
           <button
             onClick={() => window.open(`/present/${code}`, '_blank')}
             aria-label={tp('title')}
@@ -613,7 +623,7 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
                 onClick={() => setShowExitModal(false)}
                 className="px-3 py-1.5 text-xs font-semibold border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 rounded-md bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
               >
-                Batal
+                {t('cancel')}
               </button>
               <button
                 onClick={() => {
@@ -622,7 +632,7 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
                 }}
                 className="px-3 py-1.5 text-xs font-semibold text-white dark:text-slate-900 rounded-md bg-slate-900 dark:bg-slate-100 hover:bg-slate-800 dark:hover:bg-slate-200 transition-colors"
               >
-                Keluar
+                {t('exit')}
               </button>
             </div>
           </div>
@@ -795,13 +805,13 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
                 onClick={() => setShowResetModal(false)}
                 className="px-3 py-1.5 text-xs font-semibold border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 rounded-md bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
               >
-                Batal
+                {t('cancel')}
               </button>
               <button
                 onClick={executeResetVotes}
                 className="px-3 py-1.5 text-xs font-semibold text-white rounded-md bg-red-600 hover:bg-red-700 transition-colors"
               >
-                Hapus Semua
+                {t('resetConfirm')}
               </button>
             </div>
           </div>

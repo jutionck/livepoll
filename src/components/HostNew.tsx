@@ -1,11 +1,13 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Trash2, ArrowLeft, Play, AlertCircle, Plus, GripVertical, ChevronDown } from 'lucide-react';
+import { Trash2, ArrowLeft, Play, AlertCircle, Plus, GripVertical, ChevronDown, Clock } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { API_BASE_URL } from '../config';
+import { API_BASE_URL, getHostId, getAuthToken } from '../config';
 
 import { ThemeToggle } from './ThemeToggle';
+import { HostAuth } from './HostAuth';
+import { LanguageToggle } from './LanguageToggle';
 
 interface HostNewProps {
   navigate: (path: string) => void;
@@ -193,7 +195,7 @@ export const HostNew: React.FC<HostNewProps> = ({ navigate, theme, toggleTheme }
     setQuestions(updated);
   };
 
-  const handleLaunch = async () => {
+  const handleLaunch = async (startThisNow: boolean) => {
     setError('');
     if (!title.trim()) {
       setError(t('errorTitle'));
@@ -232,6 +234,9 @@ export const HostNew: React.FC<HostNewProps> = ({ navigate, theme, toggleTheme }
           questions: formattedQuestions,
           host_name: hostName.trim(),
           host_org: hostOrg.trim(),
+          host_id: getHostId(),
+          start_now: startThisNow,
+          auth_token: getAuthToken() || undefined,
         }),
       });
       const data = await response.json();
@@ -259,11 +264,19 @@ export const HostNew: React.FC<HostNewProps> = ({ navigate, theme, toggleTheme }
             <span>{tn('back')}</span>
           </button>
           <h1 className="text-sm font-bold text-slate-900 dark:text-white">{t('title')}</h1>
-          <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
+          <div className="flex items-center gap-2">
+            <LanguageToggle />
+            <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
+          </div>
         </div>
       </nav>
 
       <div className="max-w-3xl mx-auto px-4 py-8 w-full">
+        {/* Optional host login (saves sessions to account) */}
+        <div className="mb-6">
+          <HostAuth compact />
+        </div>
+
         {error && (
           <div className="bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/50 p-4 mb-6 rounded-lg flex items-start gap-3 animate-fade-in">
             <AlertCircle className="text-red-500 shrink-0 mt-0.5" size={16} />
@@ -492,22 +505,36 @@ export const HostNew: React.FC<HostNewProps> = ({ navigate, theme, toggleTheme }
             </div>
           </div>
 
-          {/* Submit */}
+          {/* Start option (action buttons) */}
           <div className="pt-4 pb-8">
-            <button
-              onClick={handleLaunch}
-              disabled={loading}
-              className="w-full bg-slate-900 hover:bg-slate-800 disabled:bg-slate-300 text-white font-bold py-3.5 rounded-xl transition-all flex items-center justify-center gap-2"
-            >
-              {loading ? (
-                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-              ) : (
-                <>
-                  <Play size={16} />
-                  {t('launch')}
-                </>
-              )}
-            </button>
+            <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-2">
+              {t('startOption')}
+            </p>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={() => handleLaunch(true)}
+                disabled={loading}
+                className="bg-slate-900 hover:bg-slate-800 disabled:bg-slate-300 dark:bg-slate-100 dark:hover:bg-slate-200 dark:disabled:bg-slate-700 text-white dark:text-slate-900 px-3 py-3 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 transition-all"
+              >
+                {loading ? (
+                  <div className="w-4 h-4 border-2 border-white/30 dark:border-slate-900/30 border-t-white dark:border-t-slate-900 rounded-full animate-spin"></div>
+                ) : (
+                  <Play size={14} />
+                )}
+                {t('startNow')}
+              </button>
+              <button
+                type="button"
+                onClick={() => handleLaunch(false)}
+                disabled={loading}
+                className="bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 px-3 py-3 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 transition-all"
+              >
+                <Clock size={14} />
+                {t('startLater')}
+              </button>
+            </div>
+            <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-2">{t('startLaterHint')}</p>
           </div>
         </div>
       </div>

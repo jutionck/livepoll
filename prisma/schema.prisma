@@ -14,6 +14,8 @@ model Session {
   activeQuestionId          String?  @map("active_question_id") @db.VarChar(50)
   activeQuestionActivatedAt Int?     @map("active_question_activated_at")
   hostTokenHash             String   @map("host_token_hash") @db.VarChar(255)
+  hostIdHash                String?  @map("host_id_hash") @db.VarChar(255)
+  hostAccountId             String?  @map("host_account_id") @db.Uuid
   hostName                  String?  @map("host_name") @db.VarChar(100)
   hostOrg                   String?  @map("host_org") @db.VarChar(150)
   version                   Int      @default(1)
@@ -23,8 +25,35 @@ model Session {
 
   questions Question[]
   votes     Vote[]
+  joinedParticipants JoinedParticipant[]
+  hostAccount HostAccount? @relation(fields: [hostAccountId], references: [id], onDelete: SetNull)
 
   @@map("sessions")
+}
+
+model HostAccount {
+  id            String   @id @default(uuid()) @db.Uuid
+  email         String   @unique @db.VarChar(255)
+  passwordHash  String   @db.VarChar(255)
+  authTokenHash String?  @map("auth_token_hash") @db.VarChar(255)
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  sessions Session[]
+
+  @@map("host_accounts")
+}
+
+model JoinedParticipant {
+  id              String   @id @default(uuid()) @db.Uuid
+  sessionCode     String   @map("session_code") @db.VarChar(10)
+  participantId   String   @map("participant_id") @db.VarChar(100)
+  participantName String?  @map("participant_name") @db.VarChar(100)
+  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  session Session @relation(fields: [sessionCode], references: [code], onDelete: Cascade)
+
+  @@unique([sessionCode, participantId])
+  @@map("joined_participants")
 }
 
 model Question {

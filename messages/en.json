@@ -6,6 +6,17 @@
     "themeLight": "Light Mode",
     "themeDark": "Dark Mode"
   },
+  "hostAuth": {
+    "title": "Login to Save Your Sessions",
+    "emailPlaceholder": "Email",
+    "passwordPlaceholder": "Password (min. 6 chars)",
+    "login": "Login",
+    "register": "Register",
+    "noAccount": "New here? Register",
+    "hasAccount": "Already have an account? Login",
+    "logout": "Logout",
+    "genericError": "An error occurred."
+  },
   "landing": {
     "badge": "100% Free • No Account Needed",
     "headline": "Turn Boring Presentations Into Interactive In Seconds",
@@ -63,6 +74,10 @@
     "mockupSessionCode": "Session Code",
     "ctaDemo": "Try Live Demo",
     "ctaDemoLoading": "Preparing demo...",
+    "mySessions": "My Sessions",
+    "mySessionsEmpty": "You haven't created any sessions yet in this browser.",
+    "mySessionsOpen": "Open",
+    "mySessionsQuestions": "questions",
     "faqTitle": "Frequently Asked Questions",
     "faqSubtitle": "Answers to the most common questions",
     "faqItems": [
@@ -143,6 +158,8 @@
     "exitTitle": "Leave Session",
     "exitDesc": "Are you sure you want to leave this polling session?",
     "cancel": "Cancel",
+    "back": "Back",
+    "sendError": "Failed to send.",
     "exit": "Leave",
     "loading": "Loading session...",
     "share": "Share LivePoll",
@@ -192,6 +209,8 @@
     "delete": "Delete",
     "addQuestion": "Add Question:",
     "launch": "Start Presentation Session",
+    "createSession": "Create Session",
+    "createAndStart": "Create & Start Session",
     "launching": "Processing...",
     "errorTitle": "Session title cannot be empty.",
     "errorNoQuestions": "Add at least one question.",
@@ -203,7 +222,12 @@
     "hostOrgPlaceholder": "e.g. University of Indonesia",
     "correctAnswerLabel": "Correct Answer (Quiz)",
     "correctAnswerHint": "Select the correct answer for quiz mode. Leave empty for regular poll.",
-    "correctAnswerClear": "Clear Correct Answer"
+    "correctAnswerClear": "Clear Correct Answer",
+    "startOption": "When to Start",
+    "startNow": "Start Now",
+    "startLater": "Start Later",
+    "startNowHint": "Voting opens immediately and the first question is shown on the presentation screen.",
+    "startLaterHint": "The session is created without opening voting. Start it manually from the host panel."
   },
   "host": {
     "votingOpen": "Voting Open",
@@ -251,7 +275,8 @@
     "correctAns": "Correct Answer",
     "benar": "Correct",
     "salah": "Wrong",
-    "next": "Next Question"
+    "next": "Next Question",
+    "back": "Back"
   },
   "presentation": {
     "title": "Presentation Screen",
@@ -281,7 +306,9 @@
     "participant": "Participant",
     "score": "Score",
     "correctLabel": "Correct",
-    "seeAll": "See All Rankings"
+    "seeAll": "See All Rankings",
+    "joinedTitle": "Joined Participants",
+    "back": "Back"
   },
   "admin": {
     "title": "Admin Panel",
@@ -305,6 +332,7 @@
     "saving": "Saving...",
     "saveError": "Failed to save.",
     "deleteConfirm": "Delete this testimonial?",
+    "delete": "Delete",
     "deleteError": "Failed to delete.",
     "listTitle": "Testimonials ({count})",
     "empty": "No testimonials yet."

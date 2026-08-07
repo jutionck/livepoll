@@ -26,7 +26,8 @@ import {
 import { useLocale, useTranslations } from 'next-intl';
 import { ThemeToggle } from './ThemeToggle';
 import { LanguageToggle } from './LanguageToggle';
-import { API_BASE_URL } from '../config';
+import { HostAuth } from './HostAuth';
+import { API_BASE_URL, getHostId, getAuthToken } from '../config';
 
 interface LandingProps {
   navigate: (path: string) => void;
@@ -43,6 +44,28 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
   const [testimonials, setTestimonials] = useState<
     { id: string; name: string; role: string; message: string; rating: number }[]
   >([]);
+  const [mySessions, setMySessions] = useState<
+    { code: string; title: string; status: string; question_count: number }[] | null
+  >(null);
+  const [accountEmail, setAccountEmail] = useState<string | null>(null);
+
+  const loadMySessions = () => {
+    const hostId = getHostId();
+    if (!hostId) return;
+    const headers: Record<string, string> = { 'X-Host-Id': hostId };
+    const token = getAuthToken();
+    if (token) headers['X-Host-Account-Token'] = token;
+    fetch(`${API_BASE_URL}/my-sessions`, { headers })
+      .then((r) => r.json())
+      .then((d) => {
+        if (Array.isArray(d.sessions)) setMySessions(d.sessions);
+      })
+      .catch(() => {});
+  };
+
+  useEffect(() => {
+    loadMySessions();
+  }, []);
 
   useEffect(() => {
     fetch(`${API_BASE_URL}/testimonials`)
@@ -221,6 +244,52 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
           </div>
         </div>
       </section>
+
+      {/* My Sessions (from DB) */}
+      {mySessions !== null && (mySessions.length > 0 || accountEmail !== null) && (
+        <section className="py-8 px-6 border-b border-slate-200/60 dark:border-slate-800/60">
+          <div className="max-w-5xl mx-auto">
+            <h3 className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-3 flex items-center gap-2">
+              <Layers size={12} /> {t('mySessions')}
+            </h3>
+            <div className="mb-4">
+              <HostAuth
+                compact
+                onAuthChange={(account) => {
+                  setAccountEmail(account?.email ?? null);
+                  loadMySessions();
+                }}
+              />
+            </div>
+            {mySessions.length === 0 ? (
+              <p className="text-xs text-slate-400 dark:text-slate-500">{t('mySessionsEmpty')}</p>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
+                {mySessions.map((s) => (
+                  <button
+                    key={s.code}
+                    onClick={() => navigate(`/host/${s.code}`)}
+                    className="flex items-center justify-between gap-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 rounded-xl px-4 py-3 text-left transition-colors animate-fade-in"
+                  >
+                    <span className="min-w-0">
+                      <span className="block text-xs font-bold text-slate-900 dark:text-white truncate">{s.title}</span>
+                      <span className="block text-[10px] font-bold text-slate-400 dark:text-slate-500 mt-0.5 font-mono">
+                        {s.code} · {s.question_count} {t('mySessionsQuestions')}
+                      </span>
+                    </span>
+                    <span className="flex items-center gap-1.5 shrink-0">
+                      <span
+                        className={`w-1.5 h-1.5 rounded-full ${s.status === 'active' ? 'bg-green-500' : 'bg-amber-400'}`}
+                      ></span>
+                      <ChevronRight size={14} className="text-slate-300 dark:text-slate-600" />
+                    </span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </section>
+      )}
 
       {/* Stats Bar */}
       {stats && (stats.sessions > 0 || stats.votes > 0) && (

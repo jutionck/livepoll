@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Lock, Plus, Trash2, Star, LogOut } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { API_BASE_URL } from '../config';
+import { LanguageToggle } from './LanguageToggle';
 
 interface AdminProps {
   navigate: (path: string) => void;
@@ -99,7 +100,7 @@ export const Admin: React.FC<AdminProps> = ({ navigate }) => {
   };
 
   const handleDelete = async (id: string) => {
-    if (!window.confirm('Hapus testimonial ini?')) return;
+    if (!window.confirm(t('deleteConfirm'))) return;
     try {
       const res = await fetch(`${API_BASE_URL}/testimonials/${id}`, {
         method: 'DELETE',
@@ -128,10 +129,10 @@ export const Admin: React.FC<AdminProps> = ({ navigate }) => {
               onClick={() => navigate('/')}
               className="flex items-center gap-1.5 text-slate-500 hover:text-slate-900 dark:hover:text-slate-100 font-semibold text-xs transition-colors"
             >
-              <ArrowLeft size={16} /> Kembali
+              <ArrowLeft size={16} /> {t('back')}
             </button>
             <h1 className="text-sm font-bold text-slate-900 dark:text-white">{t('title')}</h1>
-            <div className="w-16" />
+            <LanguageToggle />
           </div>
         </header>
 
@@ -175,15 +176,18 @@ export const Admin: React.FC<AdminProps> = ({ navigate }) => {
             onClick={() => navigate('/')}
             className="flex items-center gap-1.5 text-slate-500 hover:text-slate-900 dark:hover:text-slate-100 font-semibold text-xs transition-colors"
           >
-            <ArrowLeft size={16} /> Beranda
+            <ArrowLeft size={16} /> {t('backHome')}
           </button>
           <h1 className="text-sm font-bold text-slate-900 dark:text-white">{t('manage')}</h1>
-          <button
-            onClick={handleLogout}
-            className="flex items-center gap-1 text-red-500 hover:text-red-600 text-xs font-semibold transition-colors"
-          >
-            <LogOut size={14} /> Keluar
-          </button>
+          <div className="flex items-center gap-2">
+            <LanguageToggle />
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-1 text-red-500 hover:text-red-600 text-xs font-semibold transition-colors"
+            >
+              <LogOut size={14} /> {t('logout')}
+            </button>
+          </div>
         </div>
       </header>
 
@@ -305,7 +309,7 @@ export const Admin: React.FC<AdminProps> = ({ navigate }) => {
                 <button
                   onClick={() => handleDelete(item.id)}
                   className="text-slate-300 hover:text-red-500 p-1.5 shrink-0 transition-colors"
-                  aria-label="Hapus"
+                  aria-label={t('delete')}
                 >
                   <Trash2 size={16} />
                 </button>

@@ -19,6 +19,7 @@ import { useTranslations } from 'next-intl';
 import { API_BASE_URL } from '../config';
 
 import { ThemeToggle } from './ThemeToggle';
+import { LanguageToggle } from './LanguageToggle';
 
 interface JoinSessionProps {
   code: string;
@@ -45,6 +46,22 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
   );
   const [nameError, setNameError] = useState(false);
 
+  const notifyJoin = async (name?: string) => {
+    try {
+      await fetch(`${API_BASE_URL}/join-session`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          code,
+          participant_id: participantId || localStorage.getItem('participant_id'),
+          participant_name: name,
+        }),
+      });
+    } catch {
+      // silent
+    }
+  };
+
   useEffect(() => {
     let pId = localStorage.getItem('participant_id');
     if (!pId) {
@@ -52,8 +69,9 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
       localStorage.setItem('participant_id', pId);
     }
     setParticipantId(pId);
-    const savedName = localStorage.getItem('participant_name');
+    const savedName = localStorage.getItem('participant_name') || '';
     if (savedName) setParticipantName(savedName);
+    notifyJoin(savedName || undefined);
   }, []);
 
   const handleSubmitName = () => {
@@ -64,6 +82,7 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
     localStorage.setItem('participant_name', participantName.trim());
     localStorage.setItem(`name_done_${code}`, '1');
     setNameDone(true);
+    notifyJoin(participantName.trim());
   };
 
   // Session query with 2s polling
@@ -172,7 +191,7 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
       localStorage.setItem(`vote_${code}_${activeQId}`, JSON.stringify({ vote: selectedVote, submitted: true }));
       setHasVoted(true);
     } catch (err: any) {
-      alert(err.message || 'Gagal mengirim.');
+      alert(err.message || t('sendError'));
     } finally {
       setSubmitting(false);
     }
@@ -189,7 +208,7 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
             onClick={() => navigate('/join')}
             className="w-full bg-slate-900 dark:bg-slate-100 hover:bg-slate-800 dark:hover:bg-slate-200 text-white dark:text-slate-900 font-semibold text-xs py-2.5 rounded-lg"
           >
-            Kembali
+            {t('back')}
           </button>
         </div>
       </div>
@@ -235,6 +254,7 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
           </div>
         </div>
         <div className="flex items-center gap-3">
+          <LanguageToggle />
           <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
           <div className="flex items-center gap-1.5 shrink-0">
             <span className={`w-1.5 h-1.5 rounded-full ${isClosed ? 'bg-amber-400' : 'bg-green-500'}`}></span>

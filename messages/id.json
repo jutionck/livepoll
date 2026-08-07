@@ -1,10 +1,21 @@
 {
   "nav": {
     "brand": "LivePoll",
-    "createPoll": "Mulai Buat Polling",
+    "createPoll": "Buat Poll",
     "back": "Kembali",
     "themeLight": "Mode Terang",
     "themeDark": "Mode Gelap"
+  },
+  "hostAuth": {
+    "title": "Masuk untuk Menyimpan Sesi Anda",
+    "emailPlaceholder": "Email",
+    "passwordPlaceholder": "Password (min. 6 karakter)",
+    "login": "Masuk",
+    "register": "Daftar",
+    "noAccount": "Belum punya akun? Daftar",
+    "hasAccount": "Sudah punya akun? Masuk",
+    "logout": "Keluar",
+    "genericError": "Terjadi kesalahan."
   },
   "landing": {
     "badge": "100% Gratis • Tanpa Perlu Bikin Akun",
@@ -63,6 +74,10 @@
     "mockupSessionCode": "Kode Sesi",
     "ctaDemo": "Coba Demo Langsung",
     "ctaDemoLoading": "Menyiapkan demo...",
+    "mySessions": "Sesi Saya",
+    "mySessionsEmpty": "Anda belum membuat sesi apa pun di browser ini.",
+    "mySessionsOpen": "Buka",
+    "mySessionsQuestions": "pertanyaan",
     "faqTitle": "Pertanyaan Umum (FAQ)",
     "faqSubtitle": "Jawaban untuk pertanyaan yang paling sering diajukan",
     "faqItems": [
@@ -143,6 +158,8 @@
     "exitTitle": "Keluar Sesi",
     "exitDesc": "Apakah Anda yakin ingin keluar dari sesi polling ini?",
     "cancel": "Batal",
+    "back": "Kembali",
+    "sendError": "Gagal mengirim.",
     "exit": "Keluar",
     "loading": "Memuat sesi...",
     "share": "Bagikan LivePoll",
@@ -192,6 +209,8 @@
     "delete": "Hapus",
     "addQuestion": "Tambah Pertanyaan:",
     "launch": "Mulai Sesi Presentasi",
+    "createSession": "Buat Sesi",
+    "createAndStart": "Buat & Mulai Sesi",
     "launching": "Memproses...",
     "errorTitle": "Judul sesi tidak boleh kosong.",
     "errorNoQuestions": "Tambahkan minimal satu pertanyaan.",
@@ -203,7 +222,12 @@
     "hostOrgPlaceholder": "Contoh: Universitas Indonesia",
     "correctAnswerLabel": "Jawaban Benar (Kuis)",
     "correctAnswerHint": "Pilih jawaban yang benar untuk mode kuis. Kosongkan untuk polling biasa.",
-    "correctAnswerClear": "Hapus Jawaban Benar"
+    "correctAnswerClear": "Hapus Jawaban Benar",
+    "startOption": "Kapan Dimulai",
+    "startNow": "Mulai Sekarang",
+    "startLater": "Mulai Nanti",
+    "startNowHint": "Voting langsung dibuka dan pertanyaan pertama tampil di layar presentasi.",
+    "startLaterHint": "Sesi dibuat tanpa membuka voting. Mulai kapan saja dari panel host."
   },
   "host": {
     "votingOpen": "Voting Dibuka",
@@ -251,7 +275,8 @@
     "correctAns": "Jawaban Benar",
     "benar": "Benar",
     "salah": "Salah",
-    "next": "Soal Berikutnya"
+    "next": "Soal Berikutnya",
+    "back": "Kembali"
   },
   "presentation": {
     "title": "Layar Presentasi",
@@ -281,7 +306,9 @@
     "participant": "Peserta",
     "score": "Skor",
     "correctLabel": "Benar",
-    "seeAll": "Lihat Semua Peringkat"
+    "seeAll": "Lihat Semua Peringkat",
+    "joinedTitle": "Peserta Bergabung",
+    "back": "Kembali"
   },
   "admin": {
     "title": "Admin Panel",
@@ -305,6 +332,7 @@
     "saving": "Menyimpan...",
     "saveError": "Gagal menyimpan.",
     "deleteConfirm": "Hapus testimoni ini?",
+    "delete": "Hapus",
     "deleteError": "Gagal menghapus.",
     "listTitle": "Daftar Testimoni ({count})",
     "empty": "Belum ada testimoni."

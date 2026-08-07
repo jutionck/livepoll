@@ -11,7 +11,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    const { title, questions, host_name, host_org } = await request.json();
+    const { title, questions, host_name, host_org, host_id, start_now, auth_token } = await request.json();
 
     if (!title || !questions || !Array.isArray(questions) || questions.length === 0) {
       return NextResponse.json({ error: 'Data tidak lengkap.' }, { status: 400 });
@@ -52,13 +52,26 @@ export async function POST(request: Request) {
     if (!isUnique) {
       return NextResponse.json({ error: 'Gagal membuat kode sesi unik.' }, { status: 500 });
     }
-
     // Generate host token
     const hostToken = crypto.randomBytes(16).toString('hex');
     const hostTokenHash = crypto.createHash('sha256').update(hostToken).digest('hex');
+    const hostIdHash = host_id ? crypto.createHash('sha256').update(String(host_id)).digest('hex') : null;
 
+    // Optional account login: link session to the host account
+    let hostAccountId: string | null = null;
+    if (auth_token) {
+      const account = await prisma.hostAccount.findFirst({
+        where: { authTokenHash: crypto.createHash('sha256').update(String(auth_token)).digest('hex') },
+        select: { id: true },
+      });
+      hostAccountId = account?.id ?? null;
+    }
     const expiresAt = new Date(Date.now() + 24 * 3600 * 1000); // 24 hours
+    const startNow = start_now !== false;
+    const status = startNow ? 'active' : 'closed';
     const firstQId = 'q1';
+    const activeQuestionId = startNow ? firstQId : null;
+    const activeQuestionActivatedAt = startNow ? Math.floor(Date.now() / 1000) : null;
 
     const labels = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
 
@@ -68,12 +81,14 @@ export async function POST(request: Request) {
         data: {
           code,
           title,
-          status: 'active',
+          status,
           hostName: host_name ? String(host_name).slice(0, 100) : null,
           hostOrg: host_org ? String(host_org).slice(0, 150) : null,
-          activeQuestionId: firstQId,
-          activeQuestionActivatedAt: Math.floor(Date.now() / 1000),
+          activeQuestionId,
+          activeQuestionActivatedAt,
           hostTokenHash,
+          hostIdHash,
+          hostAccountId,
           expiresAt,
         },
       });
