@@ -1,11 +1,13 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
+import { getLang, msg, err } from '@/lib/api-errors';
 import { hashPassword, generateAuthToken } from '@/lib/host-auth';
 import { rateLimit, getClientIp } from '@/lib/rate-limit';
 
 export async function POST(request: Request) {
+  const lang = getLang(request);
   if (!rateLimit(`host-login:${getClientIp(request)}`, 10, 600_000)) {
-    return NextResponse.json({ error: 'Terlalu banyak permintaan. Coba lagi nanti.' }, { status: 429 });
+    return err('RATE_LIMIT', 429, lang);
   }
 
   try {
@@ -16,7 +18,7 @@ export async function POST(request: Request) {
 
     const account = await prisma.hostAccount.findUnique({ where: { email: cleanEmail } });
     if (!account || account.passwordHash !== hashPassword(String(password || ''))) {
-      return NextResponse.json({ error: 'Email atau password salah.' }, { status: 401 });
+      return err('WRONG_CREDENTIALS', 401, lang);
     }
 
     const { token, hash } = generateAuthToken();
@@ -28,6 +30,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ token, account: { id: account.id, email: account.email } });
   } catch (error: any) {
     console.error(error);
-    return NextResponse.json({ error: error.message || 'Terjadi kesalahan server.' }, { status: 500 });
+    return NextResponse.json({ error: error.message || msg('SERVER_ERROR', lang) }, { status: 500 });
   }
 }

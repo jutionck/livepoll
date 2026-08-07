@@ -209,6 +209,7 @@
     "delete": "Delete",
     "addQuestion": "Add Question:",
     "launch": "Start Presentation Session",
+    "createFail": "Failed to create session.",
     "createSession": "Create Session",
     "createAndStart": "Create & Start Session",
     "launching": "Processing...",
@@ -276,7 +277,8 @@
     "benar": "Correct",
     "salah": "Wrong",
     "next": "Next Question",
-    "back": "Back"
+    "back": "Back",
+    "loadSessionError": "Failed to load session."
   },
   "presentation": {
     "title": "Presentation Screen",

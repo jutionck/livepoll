@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
-import { hasOffensiveContent, getModerationError } from '@/lib/moderation';
+import { getLang, msg, err } from '@/lib/api-errors';
+import { hasOffensiveContent } from '@/lib/moderation';
 import crypto from 'crypto';
 
 function isAdmin(request: Request): boolean {
@@ -12,7 +13,8 @@ function isAdmin(request: Request): boolean {
   return hash === expected;
 }
 
-export async function GET() {
+export async function GET(request: Request) {
+  const lang = getLang(request);
   try {
     const testimonials = await prisma.testimonial.findMany({
       where: { isActive: true },
@@ -21,24 +23,25 @@ export async function GET() {
     return NextResponse.json({ testimonials });
   } catch (error: any) {
     console.error(error);
-    return NextResponse.json({ error: 'Terjadi kesalahan server.' }, { status: 500 });
+    return NextResponse.json({ error: msg('SERVER_ERROR', lang) }, { status: 500 });
   }
 }
 
 export async function POST(request: Request) {
+  const lang = getLang(request);
   if (!isAdmin(request)) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return err('UNAUTHORIZED', 401, lang);
   }
 
   try {
     const { name, role, message, rating, isActive } = await request.json();
     if (!name || !message) {
-      return NextResponse.json({ error: 'Nama dan pesan wajib diisi.' }, { status: 400 });
+      return err('NAME_MESSAGE_REQUIRED', 400, lang);
     }
 
     // Content moderation check
     if (hasOffensiveContent(name, role, message)) {
-      return NextResponse.json({ error: getModerationError() }, { status: 422 });
+      return err('MODERATION', 422, lang);
     }
 
     const testimonial = await prisma.testimonial.create({
@@ -54,6 +57,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ testimonial }, { status: 201 });
   } catch (error: any) {
     console.error(error);
-    return NextResponse.json({ error: error.message || 'Terjadi kesalahan server.' }, { status: 500 });
+    return NextResponse.json({ error: error.message || msg('SERVER_ERROR', lang) }, { status: 500 });
   }
 }

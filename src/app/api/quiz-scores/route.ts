@@ -1,25 +1,27 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
+import { getLang, msg, err } from '@/lib/api-errors';
 import crypto from 'crypto';
 
 export async function GET(request: Request) {
+  const lang = getLang(request);
   try {
     const { searchParams } = new URL(request.url);
     const code = searchParams.get('code')?.toUpperCase();
     const tokenHeader = request.headers.get('X-Host-Token') || '';
 
     if (!code) {
-      return NextResponse.json({ error: 'Kode sesi wajib diisi.' }, { status: 400 });
+      return err('CODE_REQUIRED', 400, lang);
     }
 
     const session = await prisma.session.findUnique({ where: { code } });
     if (!session) {
-      return NextResponse.json({ error: 'Sesi tidak ditemukan.' }, { status: 404 });
+      return err('SESSION_NOT_FOUND', 404, lang);
     }
 
     const hash = crypto.createHash('sha256').update(tokenHeader).digest('hex');
     if (hash !== session.hostTokenHash) {
-      return NextResponse.json({ error: 'Akses ditolak. Token host tidak valid.' }, { status: 403 });
+      return err('ACCESS_DENIED', 403, lang);
     }
 
     const questions = await prisma.question.findMany({
@@ -153,6 +155,6 @@ export async function GET(request: Request) {
     });
   } catch (error: any) {
     console.error(error);
-    return NextResponse.json({ error: error.message || 'Terjadi kesalahan server.' }, { status: 500 });
+    return NextResponse.json({ error: error.message || msg('SERVER_ERROR', lang) }, { status: 500 });
   }
 }

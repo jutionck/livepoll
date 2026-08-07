@@ -209,6 +209,7 @@
     "delete": "Hapus",
     "addQuestion": "Tambah Pertanyaan:",
     "launch": "Mulai Sesi Presentasi",
+    "createFail": "Gagal membuat sesi.",
     "createSession": "Buat Sesi",
     "createAndStart": "Buat & Mulai Sesi",
     "launching": "Memproses...",
@@ -276,7 +277,8 @@
     "benar": "Benar",
     "salah": "Salah",
     "next": "Soal Berikutnya",
-    "back": "Kembali"
+    "back": "Kembali",
+    "loadSessionError": "Gagal memuat sesi."
   },
   "presentation": {
     "title": "Layar Presentasi",

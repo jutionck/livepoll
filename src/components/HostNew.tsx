@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Trash2, ArrowLeft, Play, AlertCircle, Plus, GripVertical, ChevronDown, Clock } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { API_BASE_URL, getHostId, getAuthToken } from '../config';
+import { API_BASE_URL, apiFetch, getHostId, getAuthToken } from '../config';
 
 import { ThemeToggle } from './ThemeToggle';
 import { HostAuth } from './HostAuth';
@@ -226,7 +226,7 @@ export const HostNew: React.FC<HostNewProps> = ({ navigate, theme, toggleTheme }
       return qData;
     });
     try {
-      const response = await fetch(`${API_BASE_URL}/create-session`, {
+      const response = await apiFetch(`${API_BASE_URL}/create-session`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -240,7 +240,7 @@ export const HostNew: React.FC<HostNewProps> = ({ navigate, theme, toggleTheme }
         }),
       });
       const data = await response.json();
-      if (!response.ok) throw new Error(data.error || 'Gagal membuat sesi.');
+      if (!response.ok) throw new Error(data.error || t('createFail'));
       localStorage.setItem(`host_token_${data.code}`, data.host_token);
       localStorage.removeItem('host_session_draft');
       navigate(`/host/${data.code}`);

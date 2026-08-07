@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { QRCodeSVG } from 'qrcode.react';
 import { Maximize, Minimize, Users, AlertCircle, Layers, ChevronDown } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
-import { API_BASE_URL, getJoinUrl } from '../config';
+import { API_BASE_URL, apiFetch, getJoinUrl } from '../config';
 import type { Session } from '../types';
 
 import { ThemeToggle } from './ThemeToggle';
@@ -28,7 +28,7 @@ export const Presentation: React.FC<PresentationProps> = ({ code, navigate, them
 
   // Session query with 2s polling
   const fetchSession = async (): Promise<Session> => {
-    const res = await fetch(`${API_BASE_URL}/get-session?code=${code}`);
+    const res = await apiFetch(`${API_BASE_URL}/get-session?code=${code}`);
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Gagal menyambung.');
     if (data.title) {
@@ -47,7 +47,7 @@ export const Presentation: React.FC<PresentationProps> = ({ code, navigate, them
 
   // Results query with 1s polling
   const fetchResults = async (qId: string) => {
-    const res = await fetch(`${API_BASE_URL}/results?code=${code}&q=${qId}&t=${Date.now()}`, {
+    const res = await apiFetch(`${API_BASE_URL}/results?code=${code}&q=${qId}&t=${Date.now()}`, {
       headers: { 'Cache-Control': 'no-store' },
     });
     const data = await res.json();
@@ -68,7 +68,7 @@ export const Presentation: React.FC<PresentationProps> = ({ code, navigate, them
   const showQuizRanking = session?.status === 'closed' && !!session.active_question?.has_answer;
 
   const fetchRanking = async () => {
-    const res = await fetch(`${API_BASE_URL}/quiz-scores-public?code=${code}&v=${Math.floor(Date.now() / 5000)}`, {
+    const res = await apiFetch(`${API_BASE_URL}/quiz-scores-public?code=${code}&v=${Math.floor(Date.now() / 5000)}`, {
       headers: { 'Cache-Control': 'no-store' },
     });
     const data = await res.json();
@@ -88,7 +88,7 @@ export const Presentation: React.FC<PresentationProps> = ({ code, navigate, them
 
   // Quiz participants who joined (name cards like Kahoot)
   const fetchJoined = async () => {
-    const res = await fetch(`${API_BASE_URL}/joined-participants?code=${code}`, {
+    const res = await apiFetch(`${API_BASE_URL}/joined-participants?code=${code}`, {
       headers: { 'Cache-Control': 'no-store' },
     });
     const data = await res.json();

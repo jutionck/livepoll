@@ -1,21 +1,23 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
+import { getLang, msg, err } from '@/lib/api-errors';
 
 export async function GET(request: Request) {
+  const lang = getLang(request);
   try {
     const { searchParams } = new URL(request.url);
     const code = searchParams.get('code')?.toUpperCase();
     const qId = searchParams.get('q');
 
     if (!code || !qId) {
-      return NextResponse.json({ error: 'Data tidak lengkap.' }, { status: 400 });
+      return err('DATA_INCOMPLETE', 400, lang);
     }
 
     const question = await prisma.question.findUnique({
       where: { sessionCode_qId: { sessionCode: code, qId } },
     });
     if (!question) {
-      return NextResponse.json({ error: 'Pertanyaan tidak ditemukan.' }, { status: 404 });
+      return err('QUESTION_NOT_FOUND', 404, lang);
     }
 
     const votes = await prisma.vote.findMany({
@@ -101,6 +103,6 @@ export async function GET(request: Request) {
     });
   } catch (error: any) {
     console.error(error);
-    return NextResponse.json({ error: error.message || 'Terjadi kesalahan server.' }, { status: 500 });
+    return NextResponse.json({ error: error.message || msg('SERVER_ERROR', lang) }, { status: 500 });
   }
 }

@@ -16,7 +16,7 @@ import {
   Check,
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { API_BASE_URL } from '../config';
+import { API_BASE_URL, apiFetch } from '../config';
 
 import { ThemeToggle } from './ThemeToggle';
 import { LanguageToggle } from './LanguageToggle';
@@ -48,7 +48,7 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
 
   const notifyJoin = async (name?: string) => {
     try {
-      await fetch(`${API_BASE_URL}/join-session`, {
+      await apiFetch(`${API_BASE_URL}/join-session`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -87,7 +87,7 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
 
   // Session query with 2s polling
   const fetchSession = async () => {
-    const response = await fetch(`${API_BASE_URL}/get-session?code=${code}`);
+    const response = await apiFetch(`${API_BASE_URL}/get-session?code=${code}`);
     const data = await response.json();
     if (!response.ok) throw new Error(data.error || 'Sesi tidak ditemukan.');
     if (data.title) {
@@ -175,7 +175,7 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
     setSubmitting(true);
     const activeQId = session.active_question.id;
     try {
-      const response = await fetch(`${API_BASE_URL}/submit-vote`, {
+      const response = await apiFetch(`${API_BASE_URL}/submit-vote`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

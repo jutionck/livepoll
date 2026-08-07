@@ -1,5 +1,19 @@
 export const API_BASE_URL = '/api';
 
+// Locale of the current page, derived from the URL path (e.g. /en/join/ABC)
+export const getClientLang = (): 'id' | 'en' => {
+  if (typeof window === 'undefined') return 'id';
+  const m = window.location.pathname.match(/^\/(en|id)(?:\/|$)/);
+  return m && m[1] === 'en' ? 'en' : 'id';
+};
+
+// Fetch wrapper that tells the API which language to use for error messages
+export const apiFetch = (path: string, init?: RequestInit) => {
+  const clean = path.replace(/^\/api/, '');
+  const sep = clean.includes('?') ? '&' : '?';
+  return fetch(`${API_BASE_URL}${clean}${sep}lang=${getClientLang()}`, init);
+};
+
 // Generate join URL for participants (path-based with locale)
 export const getJoinUrl = (code: string, locale: string = 'id') => {
   if (typeof window === 'undefined') return '';

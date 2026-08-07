@@ -1,20 +1,22 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
-import { hasOffensiveContent, getModerationError } from '@/lib/moderation';
+import { getLang, msg, err } from '@/lib/api-errors';
+import { hasOffensiveContent } from '@/lib/moderation';
 import { rateLimit, getClientIp } from '@/lib/rate-limit';
 import crypto from 'crypto';
 
 export async function POST(request: Request) {
+  const lang = getLang(request);
   // Rate limit: 10 session creations per 10 minutes per IP
   if (!rateLimit(`create-session:${getClientIp(request)}`, 10, 600_000)) {
-    return NextResponse.json({ error: 'Terlalu banyak permintaan. Coba lagi nanti.' }, { status: 429 });
+    return err('RATE_LIMIT', 429, lang);
   }
 
   try {
     const { title, questions, host_name, host_org, host_id, start_now, auth_token } = await request.json();
 
     if (!title || !questions || !Array.isArray(questions) || questions.length === 0) {
-      return NextResponse.json({ error: 'Data tidak lengkap.' }, { status: 400 });
+      return err('DATA_INCOMPLETE', 400, lang);
     }
 
     // Content moderation check (SARA/hate speech)
@@ -28,7 +30,7 @@ export async function POST(request: Request) {
       }
     }
     if (hasOffensiveContent(...flaggedTexts)) {
-      return NextResponse.json({ error: getModerationError() }, { status: 422 });
+      return err('MODERATION', 422, lang);
     }
 
     // Generate unique session code
@@ -50,7 +52,7 @@ export async function POST(request: Request) {
     }
 
     if (!isUnique) {
-      return NextResponse.json({ error: 'Gagal membuat kode sesi unik.' }, { status: 500 });
+      return err('UNIQUE_CODE_FAIL', 500, lang);
     }
     // Generate host token
     const hostToken = crypto.randomBytes(16).toString('hex');
@@ -140,6 +142,6 @@ export async function POST(request: Request) {
     );
   } catch (error: any) {
     console.error(error);
-    return NextResponse.json({ error: error.message || 'Terjadi kesalahan server.' }, { status: 500 });
+    return NextResponse.json({ error: error.message || msg('SERVER_ERROR', lang) }, { status: 500 });
   }
 }

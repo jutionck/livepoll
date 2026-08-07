@@ -1,14 +1,16 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
+import { getLang, msg, err } from '@/lib/api-errors';
 
 export async function GET(request: Request) {
+  const lang = getLang(request);
   try {
     const authHeader = request.headers.get('authorization');
     const cronSecret = process.env.CRON_SECRET;
 
     // basic check if secret is configured
     if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return err('UNAUTHORIZED', 401, lang);
     }
 
     const result = await prisma.session.deleteMany({

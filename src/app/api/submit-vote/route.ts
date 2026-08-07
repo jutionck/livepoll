@@ -1,38 +1,40 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
+import { getLang, msg, err } from '@/lib/api-errors';
 import { rateLimit, getClientIp } from '@/lib/rate-limit';
 
 export async function POST(request: Request) {
+  const lang = getLang(request);
   // Rate limit: 30 votes per minute per IP
   if (!rateLimit(`vote:${getClientIp(request)}`, 30, 60_000)) {
-    return NextResponse.json({ error: 'Terlalu banyak permintaan. Coba lagi nanti.' }, { status: 429 });
+    return err('RATE_LIMIT', 429, lang);
   }
 
   try {
     const { code, question_id, participant_id, participant_name, vote } = await request.json();
 
     if (!code || !question_id || !participant_id || vote === undefined) {
-      return NextResponse.json({ error: 'Data tidak lengkap.' }, { status: 400 });
+      return err('DATA_INCOMPLETE', 400, lang);
     }
 
     const session = await prisma.session.findUnique({ where: { code: code.toUpperCase() } });
     if (!session) {
-      return NextResponse.json({ error: 'Sesi tidak ditemukan.' }, { status: 404 });
+      return err('SESSION_NOT_FOUND', 404, lang);
     }
 
     if (session.status !== 'active') {
-      return NextResponse.json({ error: 'Voting sudah ditutup.' }, { status: 400 });
+      return err('VOTING_CLOSED', 400, lang);
     }
 
     if (session.activeQuestionId !== question_id) {
-      return NextResponse.json({ error: 'Pertanyaan ini sedang tidak aktif.' }, { status: 400 });
+      return err('QUESTION_INACTIVE', 400, lang);
     }
 
     const question = await prisma.question.findUnique({
       where: { sessionCode_qId: { sessionCode: code.toUpperCase(), qId: question_id } },
     });
     if (!question) {
-      return NextResponse.json({ error: 'Pertanyaan tidak ditemukan.' }, { status: 404 });
+      return err('QUESTION_NOT_FOUND', 404, lang);
     }
 
     // Check timer limit on server side
@@ -40,7 +42,7 @@ export async function POST(request: Request) {
       const now = Math.floor(Date.now() / 1000);
       const passed = now - session.activeQuestionActivatedAt;
       if (passed > question.timer) {
-        return NextResponse.json({ error: 'Waktu voting telah habis.' }, { status: 400 });
+        return err('TIME_EXPIRED', 400, lang);
       }
     }
 
@@ -48,15 +50,15 @@ export async function POST(request: Request) {
     const options = question.options as Record<string, string> | null;
     if (question.type === 'multiple_choice') {
       if (typeof vote !== 'string' || !options || !options[vote]) {
-        return NextResponse.json({ error: 'Jawaban tidak valid.' }, { status: 400 });
+        return err('INVALID_ANSWER', 400, lang);
       }
     } else if (question.type === 'multiple_selection') {
       if (!Array.isArray(vote)) {
-        return NextResponse.json({ error: 'Jawaban harus berupa pilihan ganda.' }, { status: 400 });
+        return err('INVALID_SINGLE_CHOICE', 400, lang);
       }
       for (const v of vote) {
         if (typeof v !== 'string' || !options || !options[v]) {
-          return NextResponse.json({ error: 'Jawaban tidak valid.' }, { status: 400 });
+          return err('INVALID_ANSWER', 400, lang);
         }
       }
     } else if (question.type === 'rating') {
@@ -108,6 +110,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: true });
   } catch (error: any) {
     console.error(error);
-    return NextResponse.json({ error: error.message || 'Terjadi kesalahan server.' }, { status: 500 });
+    return NextResponse.json({ error: error.message || msg('SERVER_ERROR', lang) }, { status: 500 });
   }
 }

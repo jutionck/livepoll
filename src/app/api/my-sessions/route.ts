@@ -1,8 +1,10 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
+import { getLang, msg, err } from '@/lib/api-errors';
 import crypto from 'crypto';
 
 export async function GET(request: Request) {
+  const lang = getLang(request);
   try {
     const accountToken = request.headers.get('X-Host-Account-Token') || '';
     const hostId = request.headers.get('X-Host-Id') || '';
@@ -53,6 +55,6 @@ export async function GET(request: Request) {
     });
   } catch (error: any) {
     console.error(error);
-    return NextResponse.json({ error: error.message || 'Terjadi kesalahan server.' }, { status: 500 });
+    return NextResponse.json({ error: error.message || msg('SERVER_ERROR', lang) }, { status: 500 });
   }
 }

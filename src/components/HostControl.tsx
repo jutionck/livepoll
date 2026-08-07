@@ -20,7 +20,7 @@ import {
   Trophy,
 } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
-import { API_BASE_URL, getJoinUrl } from '../config';
+import { API_BASE_URL, apiFetch, getJoinUrl } from '../config';
 import type { Session } from '../types';
 
 import { ThemeToggle } from './ThemeToggle';
@@ -70,9 +70,11 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
 
   // Session query with 2s polling
   const fetchSession = async (): Promise<Session> => {
-    const res = await fetch(`${API_BASE_URL}/get-session?code=${code}`, { headers: { 'X-Host-Token': hostTokenSafe } });
+    const res = await apiFetch(`${API_BASE_URL}/get-session?code=${code}`, {
+      headers: { 'X-Host-Token': hostTokenSafe },
+    });
     const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'Gagal memuat sesi.');
+    if (!res.ok) throw new Error(data.error || t('loadSessionError'));
     if (data.title) {
       document.title = `LivePoll Host | ${data.title} (${code})`;
     }
@@ -101,7 +103,7 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
 
   // Results query with 1s polling
   const fetchResults = async (qId: string) => {
-    const res = await fetch(`${API_BASE_URL}/results?code=${code}&q=${qId}&t=${Date.now()}`, {
+    const res = await apiFetch(`${API_BASE_URL}/results?code=${code}&q=${qId}&t=${Date.now()}`, {
       headers: { 'Cache-Control': 'no-store' },
     });
     const data = await res.json();
@@ -159,7 +161,7 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
   }, [session?.active_question_id, session?.active_question_activated_at, session?.status]);
 
   const apiPost = async (endpoint: string, body: any) => {
-    const res = await fetch(`${API_BASE_URL}/${endpoint}`, {
+    const res = await apiFetch(`${API_BASE_URL}/${endpoint}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'X-Host-Token': hostTokenSafe },
       body: JSON.stringify(body),
@@ -221,7 +223,7 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
   const submitTestimonial = async () => {
     setTestimonialSending(true);
     try {
-      const res = await fetch(`${API_BASE_URL}/testimonial-public`, {
+      const res = await apiFetch(`${API_BASE_URL}/testimonial-public`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -247,7 +249,7 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
 
   const fetchLeaderboard = async () => {
     try {
-      const res = await fetch(`${API_BASE_URL}/quiz-scores?code=${code}`, {
+      const res = await apiFetch(`${API_BASE_URL}/quiz-scores?code=${code}`, {
         headers: { 'X-Host-Token': hostTokenSafe },
       });
       const data = await res.json();

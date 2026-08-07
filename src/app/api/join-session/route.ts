@@ -1,19 +1,21 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
+import { getLang, msg, err } from '@/lib/api-errors';
 
 export async function POST(request: Request) {
+  const lang = getLang(request);
   try {
     const { code, participant_id, participant_name } = await request.json();
     const sessionCode = String(code || '').toUpperCase();
     const participantId = String(participant_id || '').slice(0, 100);
 
     if (!sessionCode || !participantId) {
-      return NextResponse.json({ error: 'Data tidak lengkap.' }, { status: 400 });
+      return err('DATA_INCOMPLETE', 400, lang);
     }
 
     const session = await prisma.session.findUnique({ where: { code: sessionCode } });
     if (!session) {
-      return NextResponse.json({ error: 'Sesi tidak ditemukan.' }, { status: 404 });
+      return err('SESSION_NOT_FOUND', 404, lang);
     }
 
     await prisma.joinedParticipant.upsert({
@@ -31,6 +33,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: true });
   } catch (error: any) {
     console.error(error);
-    return NextResponse.json({ error: error.message || 'Terjadi kesalahan server.' }, { status: 500 });
+    return NextResponse.json({ error: error.message || msg('SERVER_ERROR', lang) }, { status: 500 });
   }
 }

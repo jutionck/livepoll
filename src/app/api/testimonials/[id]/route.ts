@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
+import { getLang, msg, err } from '@/lib/api-errors';
 import crypto from 'crypto';
 
 function isAdmin(request: Request): boolean {
@@ -12,8 +13,9 @@ function isAdmin(request: Request): boolean {
 }
 
 export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
+  const lang = getLang(request);
   if (!isAdmin(request)) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return err('UNAUTHORIZED', 401, lang);
   }
 
   try {
@@ -22,6 +24,6 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
     return NextResponse.json({ success: true });
   } catch (error: any) {
     console.error(error);
-    return NextResponse.json({ error: 'Testimonial tidak ditemukan.' }, { status: 404 });
+    return err('TESTIMONIAL_NOT_FOUND', 404, lang);
   }
 }

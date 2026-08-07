@@ -1,24 +1,26 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
-import { hasOffensiveContent, getModerationError } from '@/lib/moderation';
+import { getLang, msg, err } from '@/lib/api-errors';
+import { hasOffensiveContent } from '@/lib/moderation';
 import { rateLimit, getClientIp } from '@/lib/rate-limit';
 
 // Public endpoint for hosts to submit testimonials (no admin auth)
 export async function POST(request: Request) {
+  const lang = getLang(request);
   // Rate limit: 5 submissions per minute per IP
   if (!rateLimit(`testimonial:${getClientIp(request)}`, 5, 60_000)) {
-    return NextResponse.json({ error: 'Terlalu banyak permintaan. Coba lagi nanti.' }, { status: 429 });
+    return err('RATE_LIMIT', 429, lang);
   }
 
   try {
     const { name, role, message, rating, code } = await request.json();
     if (!name || !message) {
-      return NextResponse.json({ error: 'Nama dan pesan wajib diisi.' }, { status: 400 });
+      return err('NAME_MESSAGE_REQUIRED', 400, lang);
     }
 
     // Content moderation check
     if (hasOffensiveContent(name, role, message)) {
-      return NextResponse.json({ error: getModerationError() }, { status: 422 });
+      return err('MODERATION', 422, lang);
     }
 
     const testimonial = await prisma.testimonial.create({
@@ -34,6 +36,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ testimonial }, { status: 201 });
   } catch (error: any) {
     console.error(error);
-    return NextResponse.json({ error: 'Terjadi kesalahan server.' }, { status: 500 });
+    return NextResponse.json({ error: msg('SERVER_ERROR', lang) }, { status: 500 });
   }
 }

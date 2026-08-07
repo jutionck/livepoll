@@ -1,13 +1,15 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
+import { getLang, msg, err } from '@/lib/api-errors';
 
 export async function GET(request: Request) {
+  const lang = getLang(request);
   try {
     const { searchParams } = new URL(request.url);
     const code = searchParams.get('code')?.toUpperCase();
 
     if (!code) {
-      return NextResponse.json({ error: 'Kode sesi wajib diisi.' }, { status: 400 });
+      return err('CODE_REQUIRED', 400, lang);
     }
 
     const joined = await prisma.joinedParticipant.findMany({
@@ -27,6 +29,6 @@ export async function GET(request: Request) {
     });
   } catch (error: any) {
     console.error(error);
-    return NextResponse.json({ error: error.message || 'Terjadi kesalahan server.' }, { status: 500 });
+    return NextResponse.json({ error: error.message || msg('SERVER_ERROR', lang) }, { status: 500 });
   }
 }

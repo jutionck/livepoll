@@ -27,7 +27,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import { ThemeToggle } from './ThemeToggle';
 import { LanguageToggle } from './LanguageToggle';
 import { HostAuth } from './HostAuth';
-import { API_BASE_URL, getHostId, getAuthToken } from '../config';
+import { API_BASE_URL, apiFetch, getHostId, getAuthToken } from '../config';
 
 interface LandingProps {
   navigate: (path: string) => void;
@@ -55,7 +55,7 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
     const headers: Record<string, string> = { 'X-Host-Id': hostId };
     const token = getAuthToken();
     if (token) headers['X-Host-Account-Token'] = token;
-    fetch(`${API_BASE_URL}/my-sessions`, { headers })
+    apiFetch(`${API_BASE_URL}/my-sessions`, { headers })
       .then((r) => r.json())
       .then((d) => {
         if (Array.isArray(d.sessions)) setMySessions(d.sessions);
@@ -68,7 +68,7 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
   }, []);
 
   useEffect(() => {
-    fetch(`${API_BASE_URL}/testimonials`)
+    apiFetch(`${API_BASE_URL}/testimonials`)
       .then((r) => r.json())
       .then((d) => {
         if (d.testimonials) setTestimonials(d.testimonials);
@@ -90,7 +90,7 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
   const siteUrl = `https://livepoll.mipdevp.com/${locale}`;
 
   useEffect(() => {
-    fetch(`${API_BASE_URL}/stats`)
+    apiFetch(`${API_BASE_URL}/stats`)
       .then((res) => res.json())
       .then((data) => setStats(data))
       .catch(() => {});
@@ -107,7 +107,7 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
     if (demoLoading) return;
     setDemoLoading(true);
     try {
-      const res = await fetch(`${API_BASE_URL}/create-session`, {
+      const res = await apiFetch(`${API_BASE_URL}/create-session`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

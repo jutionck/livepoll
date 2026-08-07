@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { LogIn, LogOut, UserCheck, Loader2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { API_BASE_URL, getAuthToken, setAuthToken, getAuthEmail, setAuthEmail } from '../config';
+import { API_BASE_URL, apiFetch, getAuthToken, setAuthToken, getAuthEmail, setAuthEmail } from '../config';
 
 interface HostAuthProps {
   compact?: boolean;
@@ -22,7 +22,7 @@ export const HostAuth: React.FC<HostAuthProps> = ({ compact = false, onAuthChang
   useEffect(() => {
     const token = getAuthToken();
     if (!token) return;
-    fetch(`${API_BASE_URL}/host-auth/me`, { headers: { 'X-Host-Account-Token': token } })
+    apiFetch(`${API_BASE_URL}/host-auth/me`, { headers: { 'X-Host-Account-Token': token } })
       .then((r) => r.json())
       .then((d) => {
         if (d.account) {
@@ -41,7 +41,7 @@ export const HostAuth: React.FC<HostAuthProps> = ({ compact = false, onAuthChang
     setLoading(true);
     setError('');
     try {
-      const res = await fetch(`${API_BASE_URL}/host-auth/${mode}`, {
+      const res = await apiFetch(`${API_BASE_URL}/host-auth/${mode}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: email.trim(), password }),

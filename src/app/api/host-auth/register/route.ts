@@ -1,11 +1,13 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
+import { getLang, msg, err } from '@/lib/api-errors';
 import { hashPassword, generateAuthToken } from '@/lib/host-auth';
 import { rateLimit, getClientIp } from '@/lib/rate-limit';
 
 export async function POST(request: Request) {
+  const lang = getLang(request);
   if (!rateLimit(`host-register:${getClientIp(request)}`, 5, 600_000)) {
-    return NextResponse.json({ error: 'Terlalu banyak permintaan. Coba lagi nanti.' }, { status: 429 });
+    return err('RATE_LIMIT', 429, lang);
   }
 
   try {
@@ -15,15 +17,15 @@ export async function POST(request: Request) {
       .toLowerCase();
 
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
-      return NextResponse.json({ error: 'Format email tidak valid.' }, { status: 400 });
+      return err('INVALID_EMAIL', 400, lang);
     }
     if (!password || String(password).length < 6) {
-      return NextResponse.json({ error: 'Password minimal 6 karakter.' }, { status: 400 });
+      return err('PASSWORD_TOO_SHORT', 400, lang);
     }
 
     const existing = await prisma.hostAccount.findUnique({ where: { email: cleanEmail } });
     if (existing) {
-      return NextResponse.json({ error: 'Email sudah terdaftar. Silakan masuk.' }, { status: 409 });
+      return err('EMAIL_EXISTS', 409, lang);
     }
 
     const { token, hash } = generateAuthToken();
@@ -39,6 +41,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ token, account });
   } catch (error: any) {
     console.error(error);
-    return NextResponse.json({ error: error.message || 'Terjadi kesalahan server.' }, { status: 500 });
+    return NextResponse.json({ error: error.message || msg('SERVER_ERROR', lang) }, { status: 500 });
   }
 }

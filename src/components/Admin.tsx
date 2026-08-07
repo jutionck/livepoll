@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Lock, Plus, Trash2, Star, LogOut } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { API_BASE_URL } from '../config';
+import { API_BASE_URL, apiFetch } from '../config';
 import { LanguageToggle } from './LanguageToggle';
 
 interface AdminProps {
@@ -41,7 +41,7 @@ export const Admin: React.FC<AdminProps> = ({ navigate }) => {
 
   const loadTestimonials = async (tkn: string) => {
     try {
-      const res = await fetch(`${API_BASE_URL}/testimonials`);
+      const res = await apiFetch(`${API_BASE_URL}/testimonials`);
       const data = await res.json();
       if (res.ok) setTestimonials(data.testimonials || []);
     } catch {
@@ -52,7 +52,7 @@ export const Admin: React.FC<AdminProps> = ({ navigate }) => {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const res = await fetch(`${API_BASE_URL}/testimonials`, {
+      const res = await apiFetch(`${API_BASE_URL}/testimonials`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -80,7 +80,7 @@ export const Admin: React.FC<AdminProps> = ({ navigate }) => {
     setSaving(true);
     setError('');
     try {
-      const res = await fetch(`${API_BASE_URL}/testimonials`, {
+      const res = await apiFetch(`${API_BASE_URL}/testimonials`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -102,7 +102,7 @@ export const Admin: React.FC<AdminProps> = ({ navigate }) => {
   const handleDelete = async (id: string) => {
     if (!window.confirm(t('deleteConfirm'))) return;
     try {
-      const res = await fetch(`${API_BASE_URL}/testimonials/${id}`, {
+      const res = await apiFetch(`${API_BASE_URL}/testimonials/${id}`, {
         method: 'DELETE',
         headers: { 'X-Admin-Token': token },
       });
