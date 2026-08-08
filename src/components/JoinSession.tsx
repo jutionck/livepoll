@@ -140,8 +140,16 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
     if (savedVote) {
       try {
         const parsed = JSON.parse(savedVote);
-        setSelectedVote(parsed.vote);
-        setHasVoted(parsed.submitted);
+        // Only restore "already voted" state if the session version matches —
+        // otherwise it's a new turn of the same code (fresh event).
+        const fresh = parsed.version !== session.version;
+        if (!fresh) {
+          setSelectedVote(parsed.vote);
+          setHasVoted(parsed.submitted);
+        } else {
+          setSelectedVote(session.active_question.type === 'multiple_selection' ? [] : null);
+          setHasVoted(false);
+        }
       } catch {
         setSelectedVote(null);
         setHasVoted(false);
@@ -188,7 +196,10 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Gagal.');
-      localStorage.setItem(`vote_${code}_${activeQId}`, JSON.stringify({ vote: selectedVote, submitted: true }));
+      localStorage.setItem(
+        `vote_${code}_${activeQId}`,
+        JSON.stringify({ vote: selectedVote, submitted: true, version: session.version }),
+      );
       setHasVoted(true);
     } catch (err: any) {
       alert(err.message || t('sendError'));
@@ -228,7 +239,9 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
 
   const activeQuestion = session.active_question;
   const isSessionClosed = session.status === 'closed';
-  const isClosed = isSessionClosed || (timeLeft !== null && timeLeft <= 0);
+  // "Closed" only counts when a question was actually shown; a session created
+  // with "start later" (closed, no active question) should show the waiting state.
+  const isClosed = isSessionClosed ? !!activeQuestion : timeLeft !== null && timeLeft <= 0;
   const needsName = session.is_quiz && !nameDone && !hasVoted;
 
   return (
@@ -257,9 +270,11 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
           <LanguageToggle />
           <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
           <div className="flex items-center gap-1.5 shrink-0">
-            <span className={`w-1.5 h-1.5 rounded-full ${isClosed ? 'bg-amber-400' : 'bg-green-500'}`}></span>
+            <span
+              className={`w-1.5 h-1.5 rounded-full ${isClosed ? 'bg-amber-400' : session.status === 'closed' ? 'bg-slate-400' : 'bg-green-500'}`}
+            ></span>
             <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
-              {isClosed ? t('closed') : t('votingOpen')}
+              {isClosed ? t('closed') : session.status === 'closed' ? t('waitingShort') : t('votingOpen')}
             </span>
           </div>
         </div>

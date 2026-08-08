@@ -1,37 +1,31 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
-import { getLang, msg, err } from '@/lib/api-errors';
+import { getLang, msg } from '@/lib/api-errors';
 import crypto from 'crypto';
 
 export async function GET(request: Request) {
   const lang = getLang(request);
   try {
     const accountToken = request.headers.get('X-Host-Account-Token') || '';
-    const hostId = request.headers.get('X-Host-Id') || '';
 
-    let accountId: string | null = null;
-    if (accountToken) {
-      const account = await prisma.hostAccount.findFirst({
-        where: { authTokenHash: crypto.createHash('sha256').update(accountToken).digest('hex') },
-        select: { id: true },
-      });
-      accountId = account?.id ?? null;
+    // Sessions are only listed for a logged-in account and owned by it.
+    if (!accountToken) {
+      return NextResponse.json({ account_id: null, sessions: [] });
     }
 
-    const hostIdHash = hostId ? crypto.createHash('sha256').update(hostId).digest('hex') : null;
+    const account = await prisma.hostAccount.findFirst({
+      where: { authTokenHash: crypto.createHash('sha256').update(accountToken).digest('hex') },
+      select: { id: true },
+    });
 
-    if (!accountId && !hostIdHash) {
+    if (!account) {
       return NextResponse.json({ account_id: null, sessions: [] });
     }
 
     const sessions = await prisma.session.findMany({
       where: {
         expiresAt: { gt: new Date() },
-        OR: accountId
-          ? [{ hostAccountId: accountId }, ...(hostIdHash ? [{ hostIdHash }] : [])]
-          : hostIdHash
-            ? [{ hostIdHash }]
-            : [],
+        hostAccountId: account.id,
       },
       orderBy: { createdAt: 'desc' },
       select: {
@@ -44,7 +38,7 @@ export async function GET(request: Request) {
     });
 
     return NextResponse.json({
-      account_id: accountId ?? null,
+      account_id: account.id,
       sessions: sessions.map((s) => ({
         code: s.code,
         title: s.title,

@@ -75,7 +75,7 @@
     "ctaDemo": "Try Live Demo",
     "ctaDemoLoading": "Preparing demo...",
     "mySessions": "My Sessions",
-    "mySessionsEmpty": "You haven't created any sessions yet in this browser.",
+    "mySessionsEmpty": "You don't have any saved sessions yet.",
     "mySessionsOpen": "Open",
     "mySessionsQuestions": "questions",
     "faqTitle": "Frequently Asked Questions",
@@ -140,6 +140,7 @@
     "session": "Session",
     "votingOpen": "Active",
     "closed": "Closed",
+    "waitingShort": "Waiting",
     "waitingTitle": "Waiting for Question",
     "waitingDesc": "Session is active. This page will update automatically when a question is shown.",
     "votingClosedTitle": "Voting Closed",
@@ -228,7 +229,9 @@
     "startNow": "Start Now",
     "startLater": "Start Later",
     "startNowHint": "Voting opens immediately and the first question is shown on the presentation screen.",
-    "startLaterHint": "The session is created without opening voting. Start it manually from the host panel."
+    "startLaterHint": "The session is created without opening voting. Start it manually from the host panel.",
+    "mySessions": "My Sessions",
+    "mySessionsQuestions": "questions"
   },
   "host": {
     "votingOpen": "Voting Open",
@@ -278,7 +281,8 @@
     "salah": "Wrong",
     "next": "Next Question",
     "back": "Back",
-    "loadSessionError": "Failed to load session."
+    "loadSessionError": "Failed to load session.",
+    "autoNext": "Next up in {n}s — {title}"
   },
   "presentation": {
     "title": "Presentation Screen",

@@ -44,6 +44,8 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
   const [showResetModal, setShowResetModal] = useState(false);
   const [notification, setNotification] = useState<{ type: 'error' | 'success'; message: string } | null>(null);
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
+  const [autoNext, setAutoNext] = useState<{ qId: string; title: string; count: number } | null>(null);
+  const autoNextRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [showTestimonial, setShowTestimonial] = useState(false);
   const [testimonialDone, setTestimonialDone] = useState(() =>
     typeof window !== 'undefined' ? localStorage.getItem(`testimonial_done_${code}`) === '1' : false,
@@ -120,9 +122,15 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
 
   const resultsData = resultsQuery.data ?? null;
 
-  // Countdown timer effect
+  // Track whether the session has ever been active (voting opened)
+  const everActiveRef = useRef(false);
   useEffect(() => {
-    if (session?.status === 'closed' && !testimonialDone && !showTestimonial) {
+    if (session?.status === 'active') everActiveRef.current = true;
+  }, [session?.status]);
+
+  // Testimonial modal: only after the session was actually used (was active, then closed)
+  useEffect(() => {
+    if (session?.status === 'closed' && everActiveRef.current && !testimonialDone && !showTestimonial) {
       setShowTestimonial(true);
     }
   }, [session?.status, testimonialDone, showTestimonial]);
@@ -154,11 +162,54 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
       setTimeLeft(left);
       if (left === 0 && session.status === 'active') {
         handleToggleStatus('closed');
+        const questions = Object.values(session.questions || {});
+        const idx = questions.findIndex((q) => q.id === session.active_question_id);
+        const next = idx !== -1 ? questions[idx + 1] : undefined;
+        if (next) scheduleAutoNext(next);
       }
     }, 1000);
 
     return () => clearInterval(timerInterval);
   }, [session?.active_question_id, session?.active_question_activated_at, session?.status]);
+
+  // Clear pending auto-next on unmount
+  useEffect(
+    () => () => {
+      if (autoNextRef.current) clearTimeout(autoNextRef.current);
+    },
+    [],
+  );
+
+  // 3s loading countdown, then automatically start the next question
+  const scheduleAutoNext = (next: { id: string; title: string }) => {
+    if (autoNextRef.current) return;
+    setAutoNext({ qId: next.id, title: next.title, count: 3 });
+    const startedAt = Date.now();
+    const scheduleTick = () => {
+      autoNextRef.current = setTimeout(tick, 1000);
+    };
+    const tick = () => {
+      const remaining = Math.max(0, 3 - Math.ceil((Date.now() - startedAt) / 1000));
+      if (remaining <= 0) {
+        autoNextRef.current = null;
+        setAutoNext(null);
+        setSelectedQuestionId(next.id);
+        startVoteFor(next.id);
+        return;
+      }
+      setAutoNext((prev) => (prev ? { ...prev, count: remaining } : prev));
+      scheduleTick();
+    };
+    scheduleTick();
+  };
+
+  const cancelAutoNext = () => {
+    if (autoNextRef.current) {
+      clearTimeout(autoNextRef.current);
+      autoNextRef.current = null;
+    }
+    setAutoNext(null);
+  };
 
   const apiPost = async (endpoint: string, body: any) => {
     const res = await apiFetch(`${API_BASE_URL}/${endpoint}`, {
@@ -185,12 +236,14 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
   };
 
   const handleStartVote = () => {
+    cancelAutoNext();
     const qId = selectedQuestionId || Object.values(session?.questions || {})[0]?.id;
     if (!qId) return;
     startVoteFor(qId);
   };
 
   const handleNextQuestion = () => {
+    cancelAutoNext();
     const questions = Object.values(session?.questions || {});
     const idx = questions.findIndex((q) => q.id === selectedQuestionId);
     const next = idx !== -1 ? questions[idx + 1] : undefined;
@@ -200,6 +253,7 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
   };
 
   const handleToggleStatus = async (newStatus: 'active' | 'closed') => {
+    cancelAutoNext();
     try {
       await apiPost('close-session', { code, status: newStatus });
       await queryClient.invalidateQueries({ queryKey: ['session', code] });
@@ -598,6 +652,18 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
         </div>
       </div>
 
+      {/* Auto-next countdown banner */}
+      {autoNext && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-45 animate-fade-in px-4">
+          <div className="flex items-center gap-3 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 px-4 py-2.5 rounded-full shadow-lg max-w-full">
+            <div className="w-5 h-5 border-2 border-white/30 dark:border-slate-900/30 border-t-white dark:border-t-slate-900 rounded-full animate-spin shrink-0"></div>
+            <span className="text-xs font-bold truncate">
+              {t('autoNext', { n: autoNext.count, title: autoNext.title })}
+            </span>
+          </div>
+        </div>
+      )}
+
       {/* Custom Notification Toast */}
       {notification && (
         <div className="fixed top-16 right-6 z-35 animate-fade-in">
@@ -630,7 +696,7 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
               <button
                 onClick={() => {
                   setShowExitModal(false);
-                  navigate('/join');
+                  navigate('/');
                 }}
                 className="px-3 py-1.5 text-xs font-semibold text-white dark:text-slate-900 rounded-md bg-slate-900 dark:bg-slate-100 hover:bg-slate-800 dark:hover:bg-slate-200 transition-colors"
               >

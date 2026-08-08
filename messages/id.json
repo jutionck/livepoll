@@ -75,7 +75,7 @@
     "ctaDemo": "Coba Demo Langsung",
     "ctaDemoLoading": "Menyiapkan demo...",
     "mySessions": "Sesi Saya",
-    "mySessionsEmpty": "Anda belum membuat sesi apa pun di browser ini.",
+    "mySessionsEmpty": "Anda belum memiliki sesi yang tersimpan.",
     "mySessionsOpen": "Buka",
     "mySessionsQuestions": "pertanyaan",
     "faqTitle": "Pertanyaan Umum (FAQ)",
@@ -140,6 +140,7 @@
     "session": "Sesi",
     "votingOpen": "Aktif",
     "closed": "Ditutup",
+    "waitingShort": "Menunggu",
     "waitingTitle": "Menunggu Pertanyaan",
     "waitingDesc": "Sesi aktif. Halaman akan diperbarui otomatis saat pertanyaan ditampilkan.",
     "votingClosedTitle": "Voting Ditutup",
@@ -228,7 +229,9 @@
     "startNow": "Mulai Sekarang",
     "startLater": "Mulai Nanti",
     "startNowHint": "Voting langsung dibuka dan pertanyaan pertama tampil di layar presentasi.",
-    "startLaterHint": "Sesi dibuat tanpa membuka voting. Mulai kapan saja dari panel host."
+    "startLaterHint": "Sesi dibuat tanpa membuka voting. Mulai kapan saja dari panel host.",
+    "mySessions": "Sesi Saya",
+    "mySessionsQuestions": "pertanyaan"
   },
   "host": {
     "votingOpen": "Voting Dibuka",
@@ -278,7 +281,8 @@
     "salah": "Salah",
     "next": "Soal Berikutnya",
     "back": "Kembali",
-    "loadSessionError": "Gagal memuat sesi."
+    "loadSessionError": "Gagal memuat sesi.",
+    "autoNext": "Berikutnya dalam {n} detik — {title}"
   },
   "presentation": {
     "title": "Layar Presentasi",

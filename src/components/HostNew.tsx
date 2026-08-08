@@ -1,7 +1,18 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Trash2, ArrowLeft, Play, AlertCircle, Plus, GripVertical, ChevronDown, Clock } from 'lucide-react';
+import {
+  Trash2,
+  ArrowLeft,
+  Play,
+  AlertCircle,
+  Plus,
+  GripVertical,
+  ChevronDown,
+  Clock,
+  Layers,
+  ChevronRight,
+} from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { API_BASE_URL, apiFetch, getHostId, getAuthToken } from '../config';
 
@@ -98,6 +109,27 @@ export const HostNew: React.FC<HostNewProps> = ({ navigate, theme, toggleTheme }
   const [questions, setQuestions] = useState<QuestionDraft[]>([]);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [mySessions, setMySessions] = useState<
+    { code: string; title: string; status: string; question_count: number }[] | null
+  >(null);
+
+  const loadMySessions = () => {
+    const hostId = getHostId();
+    if (!hostId) return;
+    const headers: Record<string, string> = { 'X-Host-Id': hostId };
+    const token = getAuthToken();
+    if (token) headers['X-Host-Account-Token'] = token;
+    apiFetch(`${API_BASE_URL}/my-sessions`, { headers })
+      .then((r) => r.json())
+      .then((d) => {
+        if (Array.isArray(d.sessions)) setMySessions(d.sessions);
+      })
+      .catch(() => {});
+  };
+
+  useEffect(() => {
+    loadMySessions();
+  }, []);
 
   useEffect(() => {
     const savedDraft = localStorage.getItem('host_session_draft');
@@ -272,9 +304,38 @@ export const HostNew: React.FC<HostNewProps> = ({ navigate, theme, toggleTheme }
       </nav>
 
       <div className="max-w-3xl mx-auto px-4 py-8 w-full">
-        {/* Optional host login (saves sessions to account) */}
-        <div className="mb-6">
-          <HostAuth compact />
+        {/* Optional host login (saves sessions to account) + my sessions */}
+        <div className="mb-6 space-y-3">
+          <HostAuth compact onAuthChange={() => loadMySessions()} />
+          {mySessions !== null && mySessions.length > 0 && (
+            <div className="space-y-2">
+              <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider flex items-center gap-2">
+                <Layers size={12} /> {t('mySessions')}
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {mySessions.map((s) => (
+                  <button
+                    key={s.code}
+                    onClick={() => navigate(`/host/${s.code}`)}
+                    className="flex items-center justify-between gap-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 rounded-xl px-4 py-3 text-left transition-colors animate-fade-in"
+                  >
+                    <span className="min-w-0">
+                      <span className="block text-xs font-bold text-slate-900 dark:text-white truncate">{s.title}</span>
+                      <span className="block text-[10px] font-bold text-slate-400 dark:text-slate-500 mt-0.5 font-mono">
+                        {s.code} · {s.question_count} {t('mySessionsQuestions')}
+                      </span>
+                    </span>
+                    <span className="flex items-center gap-1.5 shrink-0">
+                      <span
+                        className={`w-1.5 h-1.5 rounded-full ${s.status === 'active' ? 'bg-green-500' : 'bg-amber-400'}`}
+                      ></span>
+                      <ChevronRight size={14} className="text-slate-300 dark:text-slate-600" />
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         {error && (
