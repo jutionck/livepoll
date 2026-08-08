@@ -27,7 +27,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import { ThemeToggle } from './ThemeToggle';
 import { LanguageToggle } from './LanguageToggle';
 import { HostAuth } from './HostAuth';
-import { API_BASE_URL, apiFetch, getHostId, getAuthToken } from '../config';
+import { API_BASE_URL, apiFetch, getHostId, getAuthToken, getAuthEmail } from '../config';
 
 interface LandingProps {
   navigate: (path: string) => void;
@@ -48,6 +48,12 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
     { code: string; title: string; status: string; question_count: number }[] | null
   >(null);
   const [accountEmail, setAccountEmail] = useState<string | null>(null);
+
+  // Restore logged-in state on load (so the sessions section always appears for logged-in hosts)
+  useEffect(() => {
+    const savedEmail = getAuthEmail();
+    if (savedEmail) setAccountEmail(savedEmail);
+  }, []);
 
   const loadMySessions = () => {
     const hostId = getHostId();
@@ -246,7 +252,7 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
       </section>
 
       {/* My Sessions (from DB) */}
-      {mySessions !== null && (mySessions.length > 0 || accountEmail !== null) && (
+      {(accountEmail !== null || (mySessions !== null && mySessions.length > 0)) && (
         <section className="py-8 px-6 border-b border-slate-200/60 dark:border-slate-800/60">
           <div className="max-w-5xl mx-auto">
             <h3 className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-3 flex items-center gap-2">
@@ -261,7 +267,7 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
                 }}
               />
             </div>
-            {mySessions.length === 0 ? (
+            {!mySessions || mySessions.length === 0 ? (
               <p className="text-xs text-slate-400 dark:text-slate-500">{t('mySessionsEmpty')}</p>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
