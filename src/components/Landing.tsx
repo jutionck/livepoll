@@ -22,6 +22,8 @@ import {
   Quote,
   Heart,
   Code,
+  Trophy,
+  UserCheck,
 } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { ThemeToggle } from './ThemeToggle';
@@ -508,6 +510,21 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
                 icon: CheckCircle,
                 title: t('feature6Title'),
                 desc: t('feature6Desc'),
+              },
+              {
+                icon: Trophy,
+                title: t('feature7Title'),
+                desc: t('feature7Desc'),
+              },
+              {
+                icon: UserCheck,
+                title: t('feature8Title'),
+                desc: t('feature8Desc'),
+              },
+              {
+                icon: Layers,
+                title: t('feature9Title'),
+                desc: t('feature9Desc'),
               },
             ].map((feat, idx) => (
               <div
