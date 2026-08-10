@@ -288,7 +288,10 @@
     "next": "Soal Berikutnya",
     "back": "Kembali",
     "loadSessionError": "Gagal memuat sesi.",
-    "autoNext": "Berikutnya dalam {n} detik — {title}"
+    "autoNext": "Berikutnya dalam {n} detik — {title}",
+    "exportExcel": "Unduh Excel",
+    "cloneSession": "Salin",
+    "cloneMessage": "Sesi disalin. Kode baru: {code}"
   },
   "presentation": {
     "title": "Layar Presentasi",

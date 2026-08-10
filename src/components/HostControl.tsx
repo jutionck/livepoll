@@ -18,9 +18,10 @@ import {
   Lock,
   Star,
   Trophy,
+  Download,
 } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
-import { API_BASE_URL, apiFetch, getJoinUrl } from '../config';
+import { API_BASE_URL, apiFetch, getJoinUrl, getHostId, getAuthToken } from '../config';
 import type { Session } from '../types';
 
 import { ThemeToggle } from './ThemeToggle';
@@ -301,6 +302,35 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
     }
   };
 
+  const exportExcel = async () => {
+    try {
+      const res = await apiFetch(`${API_BASE_URL}/quiz-scores?code=${code}&format=xls`, {
+        headers: { 'X-Host-Token': hostTokenSafe },
+      });
+      if (!res.ok) throw new Error(await dataError(res));
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `nilai-${code}.xls`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    } catch (err: any) {
+      showNotification(err.message || t('loadSessionError'));
+    }
+  };
+
+  const dataError = async (res: Response) => {
+    try {
+      const d = await res.json();
+      return d.error || 'Gagal export.';
+    } catch {
+      return 'Gagal export.';
+    }
+  };
+
   const fetchLeaderboard = async () => {
     try {
       const res = await apiFetch(`${API_BASE_URL}/quiz-scores?code=${code}`, {
@@ -310,6 +340,27 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
       if (!res.ok) throw new Error(data.error || 'Gagal.');
       setLeaderboard(data.leaderboard || []);
       setShowLeaderboard(true);
+    } catch (err: any) {
+      showNotification(err.message);
+    }
+  };
+
+  const handleCloneSession = async () => {
+    try {
+      const res = await apiFetch(`${API_BASE_URL}/clone-session`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Host-Token': hostTokenSafe },
+        body: JSON.stringify({
+          code,
+          host_id: getHostId(),
+          auth_token: getAuthToken() || undefined,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Gagal.');
+      localStorage.setItem(`host_token_${data.code}`, data.host_token);
+      showNotification(t('cloneMessage', { code: data.code }), 'success');
+      navigate(`/host/${data.code}`);
     } catch (err: any) {
       showNotification(err.message);
     }
@@ -559,6 +610,13 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
                   <Trophy size={12} /> {t('leaderboard')}
                 </button>
               )}
+              <button
+                onClick={handleCloneSession}
+                className="bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800 px-3 py-1.5 rounded-lg font-semibold text-xs flex items-center gap-1.5 transition-colors"
+                title={t('cloneSession')}
+              >
+                <Copy size={12} /> {t('cloneSession')}
+              </button>
             </div>
           </div>
 
@@ -715,12 +773,20 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
               <h3 className="text-sm font-bold flex items-center gap-2">
                 <Trophy size={16} className="text-amber-400" /> {t('leaderboard')}
               </h3>
-              <button
-                onClick={() => setShowLeaderboard(false)}
-                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 text-xs font-bold transition-colors"
-              >
-                ✕
-              </button>
+              <div className="flex items-center gap-1.5">
+                <button
+                  onClick={exportExcel}
+                  className="flex items-center gap-1 bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-900/40 text-emerald-700 dark:text-emerald-400 px-2.5 py-1.5 rounded-lg text-[10px] font-bold transition-colors hover:bg-emerald-100 dark:hover:bg-emerald-950/40"
+                >
+                  <Download size={12} /> {t('exportExcel')}
+                </button>
+                <button
+                  onClick={() => setShowLeaderboard(false)}
+                  className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 text-xs font-bold transition-colors"
+                >
+                  ✕
+                </button>
+              </div>
             </div>
 
             {leaderboard.length === 0 ? (

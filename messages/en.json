@@ -288,7 +288,10 @@
     "next": "Next Question",
     "back": "Back",
     "loadSessionError": "Failed to load session.",
-    "autoNext": "Next up in {n}s — {title}"
+    "autoNext": "Next up in {n}s — {title}",
+    "exportExcel": "Export Excel",
+    "cloneSession": "Copy",
+    "cloneMessage": "Session copied. New code: {code}"
   },
   "presentation": {
     "title": "Presentation Screen",
