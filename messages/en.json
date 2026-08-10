@@ -291,7 +291,9 @@
     "autoNext": "Next up in {n}s — {title}",
     "exportExcel": "Export Excel",
     "cloneSession": "Copy",
-    "cloneMessage": "Session copied. New code: {code}"
+    "cloneMessage": "Session copied. New code: {code}",
+    "shareResults": "Share Results",
+    "copied2": "Copied!"
   },
   "presentation": {
     "title": "Presentation Screen",
@@ -324,6 +326,19 @@
     "seeAll": "See All Rankings",
     "joinedTitle": "Joined Participants",
     "back": "Back"
+  },
+  "results": {
+    "title": "Session Results",
+    "scoreboard": "Scoreboard",
+    "questionBreakdown": "Question Breakdown",
+    "noData": "No results yet.",
+    "shareLink": "Share Link",
+    "copied": "Copied!",
+    "back": "Back",
+    "loading": "Loading...",
+    "errorTitle": "Results not found.",
+    "correctLabel": "Correct",
+    "responses": "answers"
   },
   "admin": {
     "title": "Admin Panel",

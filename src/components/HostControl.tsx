@@ -19,9 +19,10 @@ import {
   Star,
   Trophy,
   Download,
+  Link2,
 } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
-import { API_BASE_URL, apiFetch, getJoinUrl, getHostId, getAuthToken } from '../config';
+import { API_BASE_URL, apiFetch, getJoinUrl, getHostId, getAuthToken, getResultsUrl } from '../config';
 import type { Session } from '../types';
 
 import { ThemeToggle } from './ThemeToggle';
@@ -774,6 +775,17 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
                 <Trophy size={16} className="text-amber-400" /> {t('leaderboard')}
               </h3>
               <div className="flex items-center gap-1.5">
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText(getResultsUrl(code)).then(() => {
+                      setCopied(true);
+                      setTimeout(() => setCopied(false), 2000);
+                    });
+                  }}
+                  className="flex items-center gap-1 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 px-2.5 py-1.5 rounded-lg text-[10px] font-bold transition-colors hover:bg-slate-100 dark:hover:bg-slate-700"
+                >
+                  <Link2 size={12} /> {copied ? t('copied2') : t('shareResults')}
+                </button>
                 <button
                   onClick={exportExcel}
                   className="flex items-center gap-1 bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-900/40 text-emerald-700 dark:text-emerald-400 px-2.5 py-1.5 rounded-lg text-[10px] font-bold transition-colors hover:bg-emerald-100 dark:hover:bg-emerald-950/40"

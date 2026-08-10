@@ -291,7 +291,9 @@
     "autoNext": "Berikutnya dalam {n} detik — {title}",
     "exportExcel": "Unduh Excel",
     "cloneSession": "Salin",
-    "cloneMessage": "Sesi disalin. Kode baru: {code}"
+    "cloneMessage": "Sesi disalin. Kode baru: {code}",
+    "shareResults": "Bagikan Hasil",
+    "copied2": "Disalin!"
   },
   "presentation": {
     "title": "Layar Presentasi",
@@ -324,6 +326,19 @@
     "seeAll": "Lihat Semua Peringkat",
     "joinedTitle": "Peserta Bergabung",
     "back": "Kembali"
+  },
+  "results": {
+    "title": "Hasil Sesi",
+    "scoreboard": "Papan Skor",
+    "questionBreakdown": "Rincian Per Soal",
+    "noData": "Belum ada hasil.",
+    "shareLink": "Bagikan Link",
+    "copied": "Disalin!",
+    "back": "Kembali",
+    "loading": "Memuat...",
+    "errorTitle": "Hasil tidak ditemukan.",
+    "correctLabel": "Benar",
+    "responses": "jawaban"
   },
   "admin": {
     "title": "Admin Panel",

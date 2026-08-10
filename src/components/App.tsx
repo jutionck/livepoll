@@ -9,6 +9,7 @@ import { Presentation } from './Presentation';
 import { Join } from './Join';
 import { JoinSession } from './JoinSession';
 import { Admin } from './Admin';
+import { ResultsPage } from './ResultsPage';
 
 export default function App() {
   const pathname = usePathname();
@@ -77,6 +78,12 @@ export default function App() {
   if (joinMatch) {
     const code = joinMatch[1].toUpperCase();
     return <JoinSession code={code} navigate={navigate} theme={theme} toggleTheme={toggleTheme} />;
+  }
+
+  const hasilMatch = pathname.match(/^\/hasil\/([A-Za-z0-9]+)$/);
+  if (hasilMatch) {
+    const code = hasilMatch[1].toUpperCase();
+    return <ResultsPage code={code} navigate={navigate} theme={theme} toggleTheme={toggleTheme} />;
   }
 
   return <Landing navigate={navigate} theme={theme} toggleTheme={toggleTheme} />;

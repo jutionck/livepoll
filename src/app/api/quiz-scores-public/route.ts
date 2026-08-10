@@ -74,10 +74,57 @@ export async function GET(request: Request) {
       }))
       .sort((a, b) => b.points - a.points || a.name.localeCompare(b.name));
 
+    // Per-question breakdown for the public results page
+    const questionStats = questions.map((q) => {
+      const qVotes = votes.filter((v) => v.questionId === q.qId);
+      const opts = (q.options as Record<string, string>) ?? {};
+      const counts: Record<string, number> = {};
+      Object.keys(opts).forEach((k) => {
+        counts[k] = 0;
+      });
+
+      let correctArr: string[] | null = null;
+      if (q.correctAnswer) {
+        correctArr = JSON.parse(JSON.stringify(q.correctAnswer)) as string[];
+      }
+
+      let correctCount = 0;
+      qVotes.forEach((v) => {
+        const raw = JSON.parse(JSON.stringify(v.vote)) as string | string[];
+        const arr = Array.isArray(raw) ? raw : [raw];
+        arr.forEach((k) => {
+          if (k in counts) counts[k]++;
+        });
+        if (correctArr) {
+          const set = new Set(arr);
+          if (correctArr.length === set.size && correctArr.every((x) => set.has(x))) correctCount++;
+        }
+      });
+
+      const labels = Object.fromEntries(Object.entries(opts).map(([k, v]) => [k, String(v)]));
+
+      return {
+        question_id: q.qId,
+        title: q.title,
+        type: q.type,
+        has_answer: !!q.correctAnswer,
+        correct_answer: correctArr ? correctArr.map((k) => labels[k] || k) : null,
+        total_answers: qVotes.length,
+        correct_count: correctCount,
+        options: Object.entries(opts).map(([k, label]) => ({
+          key: k,
+          label: String(label),
+          count: counts[k] ?? 0,
+        })),
+      };
+    });
+
     return NextResponse.json({
       code,
+      title: session.title,
       is_quiz: isQuiz,
       leaderboard,
+      question_stats: questionStats,
     });
   } catch (error: any) {
     console.error(error);

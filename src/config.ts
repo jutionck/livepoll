@@ -7,6 +7,12 @@ export const getClientLang = (): 'id' | 'en' => {
   return m && m[1] === 'en' ? 'en' : 'id';
 };
 
+// Shareable public results page URL
+export const getResultsUrl = (code: string): string => {
+  if (typeof window === 'undefined') return '';
+  return `${window.location.origin}/hasil/${code}`;
+};
+
 // Fetch wrapper that tells the API which language to use for error messages
 export const apiFetch = (path: string, init?: RequestInit) => {
   const clean = path.replace(/^\/api/, '');
