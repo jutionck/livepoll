@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { LogIn, LogOut, UserCheck, Loader2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { API_BASE_URL, apiFetch, getAuthToken, setAuthToken, getAuthEmail, setAuthEmail } from '../config';
+import { API_BASE_URL, apiFetch, getAuthToken, setAuthToken, getAuthEmail, setAuthEmail, getHostId } from '../config';
 
 interface HostAuthProps {
   compact?: boolean;
@@ -28,12 +28,27 @@ export const HostAuth: React.FC<HostAuthProps> = ({ compact = false, onAuthChang
         if (d.account) {
           setAccount(d.account);
           setAuthEmail(d.account.email);
-          onAuthChange?.(d.account);
+          claimGuestSessions(token).then(() => onAuthChange?.(d.account));
         }
       })
       .catch(() => {});
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Attach guest sessions from this browser to the account
+  const claimGuestSessions = async (token: string) => {
+    try {
+      await apiFetch(`${API_BASE_URL}/host-auth/claim`, {
+        method: 'POST',
+        headers: {
+          'X-Host-Id': getHostId(),
+          'X-Host-Account-Token': token,
+        },
+      });
+    } catch {
+      // silent
+    }
+  };
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,6 +67,7 @@ export const HostAuth: React.FC<HostAuthProps> = ({ compact = false, onAuthChang
       setAuthEmail(data.account.email);
       setAccount(data.account);
       setPassword('');
+      await claimGuestSessions(data.token);
       onAuthChange?.(data.account);
     } catch (err: any) {
       setError(err.message || t('genericError'));
