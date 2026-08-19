@@ -116,9 +116,7 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
 
   const isSelfPaced = session?.pace_mode === 'self_paced';
   const questionsList: any[] = isSelfPaced ? Object.values(session?.questions || {}) : [];
-  const activeQuestion = isSelfPaced
-    ? (questionsList[selfPacedIndex] || null)
-    : (session?.active_question || null);
+  const activeQuestion = isSelfPaced ? questionsList[selfPacedIndex] || null : session?.active_question || null;
 
   // Check self-paced completion state
   useEffect(() => {
@@ -395,9 +393,7 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
             <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-6 text-center shadow-sm animate-fade-in text-slate-900 dark:text-white">
               <CheckCircle className="text-emerald-500 mx-auto mb-3" size={36} />
               <h2 className="text-base font-bold mb-1">{t('completionTitle')}</h2>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mb-6 leading-relaxed">
-                {t('completionDesc')}
-              </p>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mb-6 leading-relaxed">{t('completionDesc')}</p>
               <button
                 type="button"
                 onClick={() => {
@@ -430,9 +426,7 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
               {/* Stepper Progress Bar */}
               <div className="mb-4">
                 <div className="flex items-center justify-between text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1.5">
-                  <span>
-                    {t('questionProgress', { current: selfPacedIndex + 1, total: questionsList.length })}
-                  </span>
+                  <span>{t('questionProgress', { current: selfPacedIndex + 1, total: questionsList.length })}</span>
                   <span className="bg-purple-50 dark:bg-purple-950/40 text-purple-600 dark:text-purple-400 border border-purple-200 dark:border-purple-800 px-1.5 py-0.5 rounded text-[9px]">
                     {activeQuestion.type === 'rating'
                       ? t('typeRating')

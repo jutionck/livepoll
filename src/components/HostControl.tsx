@@ -477,9 +477,7 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
             <span className="bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 font-bold px-2 py-1 rounded text-xs tracking-wider shrink-0">
               {code}
             </span>
-            <span className="text-xs font-bold text-slate-900 dark:text-white truncate">
-              LivePoll Host
-            </span>
+            <span className="text-xs font-bold text-slate-900 dark:text-white truncate">LivePoll Host</span>
           </div>
           <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
@@ -494,9 +492,7 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
               <Key size={24} />
             </div>
             <h2 className="text-base font-bold mb-1.5">{t('enterTokenTitle')}</h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mb-6 leading-relaxed">
-              {t('enterTokenDesc')}
-            </p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mb-6 leading-relaxed">{t('enterTokenDesc')}</p>
 
             <form
               onSubmit={(e) => {
@@ -1167,9 +1163,7 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
               </button>
             </div>
 
-            <p className="text-xs text-slate-500 dark:text-slate-400 mb-4 leading-relaxed">
-              {t('tokenModalDesc')}
-            </p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mb-4 leading-relaxed">{t('tokenModalDesc')}</p>
 
             <div className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-3 mb-3">
               <p className="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1">

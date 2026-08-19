@@ -573,7 +573,9 @@ export const Presentation: React.FC<PresentationProps> = ({ code, navigate, them
               {t('joinLink')}
             </p>
             <p className="font-mono text-slate-800 dark:text-white text-[11px] font-medium break-all select-all mb-4 px-2.5 py-1 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-900 rounded-lg w-full">
-              {joinUrl ? joinUrl.replace(/^https?:\/\//, '') : `${typeof window !== 'undefined' ? window.location.host : ''}/${locale}/join/${code}`}
+              {joinUrl
+                ? joinUrl.replace(/^https?:\/\//, '')
+                : `${typeof window !== 'undefined' ? window.location.host : ''}/${locale}/join/${code}`}
             </p>
             <div className="w-full border-t border-slate-200 dark:border-slate-900 pt-4">
               <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">{t('sessionCode')}</p>

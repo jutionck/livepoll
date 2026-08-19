@@ -196,12 +196,13 @@ export async function GET(request: Request) {
         sheet('Lembar Jawaban', jawaban) +
         `</Workbook>`;
 
-      const slug = (session.title || code)
-        .toLowerCase()
-        .trim()
-        .replace(/[^\w\s-]/g, '')
-        .replace(/[\s_-]+/g, '-')
-        .replace(/^-+|-+$/g, '') || `session-${code.toLowerCase()}`;
+      const slug =
+        (session.title || code)
+          .toLowerCase()
+          .trim()
+          .replace(/[^\w\s-]/g, '')
+          .replace(/[\s_-]+/g, '-')
+          .replace(/^-+|-+$/g, '') || `session-${code.toLowerCase()}`;
 
       return new NextResponse(xml, {
         headers: {

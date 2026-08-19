@@ -23,16 +23,12 @@ export const isHostAuthorized = async (
   try {
     const url = new URL(request.url);
     const tokenHeader =
-      request.headers.get('X-Host-Token') ||
-      url.searchParams.get('host_token') ||
-      url.searchParams.get('token') ||
-      '';
+      request.headers.get('X-Host-Token') || url.searchParams.get('host_token') || url.searchParams.get('token') || '';
     if (tokenHeader) {
       const hash = crypto.createHash('sha256').update(tokenHeader).digest('hex');
       if (hash === session.hostTokenHash) return true;
     }
-    const accountToken =
-      request.headers.get('X-Host-Account-Token') || url.searchParams.get('account_token') || '';
+    const accountToken = request.headers.get('X-Host-Account-Token') || url.searchParams.get('account_token') || '';
     if (accountToken && session.hostAccountId) {
       const accountHash = hashAuthToken(accountToken);
       const account = await prisma.hostAccount.findFirst({

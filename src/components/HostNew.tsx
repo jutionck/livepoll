@@ -585,9 +585,7 @@ export const HostNew: React.FC<HostNewProps> = ({ navigate, theme, toggleTheme }
                 }`}
               >
                 <div className="flex items-center justify-between mb-1">
-                  <span className="text-xs font-bold text-slate-900 dark:text-white">
-                    {t('paceModePresenter')}
-                  </span>
+                  <span className="text-xs font-bold text-slate-900 dark:text-white">{t('paceModePresenter')}</span>
                   {paceMode === 'presenter' && (
                     <span className="w-2 h-2 rounded-full bg-slate-900 dark:bg-white shrink-0" />
                   )}
@@ -607,9 +605,7 @@ export const HostNew: React.FC<HostNewProps> = ({ navigate, theme, toggleTheme }
                 }`}
               >
                 <div className="flex items-center justify-between mb-1">
-                  <span className="text-xs font-bold text-slate-900 dark:text-white">
-                    {t('paceModeSelfPaced')}
-                  </span>
+                  <span className="text-xs font-bold text-slate-900 dark:text-white">{t('paceModeSelfPaced')}</span>
                   {paceMode === 'self_paced' && (
                     <span className="w-2 h-2 rounded-full bg-slate-900 dark:bg-white shrink-0" />
                   )}

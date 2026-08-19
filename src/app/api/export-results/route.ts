@@ -226,9 +226,7 @@ export async function GET(request: Request) {
 
     // Header Meta
     summaryRows.push(row(cell('LAPORAN HASIL POLLING LIVEPOLL', 'String', 'Title', 5), 24));
-    summaryRows.push(
-      row(cell('Judul Sesi:', 'String', 'MetaLabel') + cell(session.title, 'String', 'MetaVal', 4), 18),
-    );
+    summaryRows.push(row(cell('Judul Sesi:', 'String', 'MetaLabel') + cell(session.title, 'String', 'MetaVal', 4), 18));
     summaryRows.push(
       row(
         cell('Kode Sesi:', 'String', 'MetaLabel') +
@@ -330,7 +328,9 @@ export async function GET(request: Request) {
     summaryRows.push(row('', 12)); // Spacer
 
     // Detailed Breakdown with Visual Progress Bars per Question
-    summaryRows.push(row(cell('II. RINCIAN PERSENTASE & GRAFIK DISTRIBUSI PER SOAL', 'String', 'SectionBanner', 5), 20));
+    summaryRows.push(
+      row(cell('II. RINCIAN PERSENTASE & GRAFIK DISTRIBUSI PER SOAL', 'String', 'SectionBanner', 5), 20),
+    );
     summaryRows.push(row('', 8));
 
     questions.forEach((q, idx) => {
@@ -345,15 +345,7 @@ export async function GET(request: Request) {
 
       // Question Title Banner
       summaryRows.push(
-        row(
-          cell(
-            `Q${idx + 1}: ${q.title}  [${typeLabel} • ${totalV} Respon]`,
-            'String',
-            'QBanner',
-            5,
-          ),
-          22,
-        ),
+        row(cell(`Q${idx + 1}: ${q.title}  [${typeLabel} • ${totalV} Respon]`, 'String', 'QBanner', 5), 22),
       );
 
       // Sub-table Header
@@ -456,9 +448,7 @@ export async function GET(request: Request) {
                 cell(count, 'Number', 'TdNum') +
                 cell(`${pct}%`, 'String', 'TdPct') +
                 cell(makeBar(pct), 'String', 'TdBar') +
-                (isCorrectKey
-                  ? cell('✓ Kunci Jawaban', 'String', 'TdCorrect')
-                  : cell('-', 'String', 'TdCenter')),
+                (isCorrectKey ? cell('✓ Kunci Jawaban', 'String', 'TdCorrect') : cell('-', 'String', 'TdCenter')),
               19,
             ),
           );
@@ -667,12 +657,13 @@ export async function GET(request: Request) {
       (quizLeaderboardSheet || '') +
       `</Workbook>`;
 
-    const slug = (session.title || code)
-      .toLowerCase()
-      .trim()
-      .replace(/[^\w\s-]/g, '')
-      .replace(/[\s_-]+/g, '-')
-      .replace(/^-+|-+$/g, '') || `session-${code.toLowerCase()}`;
+    const slug =
+      (session.title || code)
+        .toLowerCase()
+        .trim()
+        .replace(/[^\w\s-]/g, '')
+        .replace(/[\s_-]+/g, '-')
+        .replace(/^-+|-+$/g, '') || `session-${code.toLowerCase()}`;
 
     return new NextResponse(xml, {
       headers: {
