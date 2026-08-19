@@ -294,7 +294,10 @@ export async function GET(request: Request) {
         });
         const sorted = Object.entries(wordFreq).sort((a, b) => b[1] - a[1]);
         if (sorted.length > 0) {
-          const top = sorted.slice(0, 3).map(([w, c]) => `"${w}" (${c})`).join(', ');
+          const top = sorted
+            .slice(0, 3)
+            .map(([w, c]) => `"${w}" (${c})`)
+            .join(', ');
           topSummary = `${sorted.length} kata unik. Terbanyak: ${top}`;
         } else {
           topSummary = 'Belum ada respon teks';
