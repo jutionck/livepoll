@@ -43,7 +43,12 @@ export const Presentation: React.FC<PresentationProps> = ({ code, navigate, them
     refetchInterval: 2000,
   });
 
-  const session = sessionQuery.data ?? null;
+  const [browsingQId, setBrowsingQId] = useState<string | null>(null);
+
+  const questionsList: any[] = session ? Object.values(session.questions || {}) : [];
+  const currentViewQId = browsingQId || session?.active_question_id || questionsList[0]?.id || '';
+  const isViewingActive = !browsingQId || browsingQId === session?.active_question_id;
+  const currentIdx = questionsList.findIndex((q) => q.id === currentViewQId);
 
   // Results query with 1s polling
   const fetchResults = async (qId: string) => {
@@ -56,10 +61,10 @@ export const Presentation: React.FC<PresentationProps> = ({ code, navigate, them
   };
 
   const resultsQuery = useQuery({
-    queryKey: ['results', code, session?.active_question_id],
-    queryFn: () => fetchResults(session!.active_question_id),
+    queryKey: ['results', code, currentViewQId],
+    queryFn: () => fetchResults(currentViewQId),
     refetchInterval: 1000,
-    enabled: !!session?.active_question_id,
+    enabled: !!currentViewQId,
   });
 
   const resultsData = resultsQuery.data ?? null;
@@ -208,7 +213,7 @@ export const Presentation: React.FC<PresentationProps> = ({ code, navigate, them
     );
   }
 
-  const activeQuestion = session.status === 'active' ? session.active_question : null;
+  const activeQuestion = session?.questions?.[currentViewQId] || session?.active_question || null;
   const joinUrl = getJoinUrl(code, locale);
   const totalVotes = resultsData?.total_votes || 0;
 
@@ -375,6 +380,54 @@ export const Presentation: React.FC<PresentationProps> = ({ code, navigate, them
             </div>
           ) : activeQuestion ? (
             <>
+              {/* Question Stepper / Browsing bar for presenter */}
+              {questionsList.length > 1 && (
+                <div className="flex items-center justify-between gap-2 flex-wrap mb-1">
+                  <div className="flex items-center gap-1.5 bg-white/80 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-lg p-1">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (currentIdx > 0) {
+                          setBrowsingQId(questionsList[currentIdx - 1].id);
+                        }
+                      }}
+                      disabled={currentIdx <= 0}
+                      className="px-2 py-1 text-xs font-bold rounded text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                      title={t('prevQuestion')}
+                    >
+                      ← {t('prevQuestion')}
+                    </button>
+                    <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 px-1.5 uppercase tracking-wider">
+                      {t('questionNav', { current: currentIdx + 1, total: questionsList.length })}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (currentIdx < questionsList.length - 1) {
+                          setBrowsingQId(questionsList[currentIdx + 1].id);
+                        }
+                      }}
+                      disabled={currentIdx >= questionsList.length - 1}
+                      className="px-2 py-1 text-xs font-bold rounded text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                      title={t('nextQuestion')}
+                    >
+                      {t('nextQuestion')} →
+                    </button>
+                  </div>
+
+                  {!isViewingActive && (
+                    <button
+                      type="button"
+                      onClick={() => setBrowsingQId(null)}
+                      className="text-xs font-bold bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 px-2.5 py-1.5 rounded-lg hover:bg-amber-100 dark:hover:bg-amber-900/50 transition-colors animate-pulse flex items-center gap-1.5"
+                    >
+                      <span className="w-2 h-2 rounded-full bg-amber-500" />
+                      {t('backToActive')}
+                    </button>
+                  )}
+                </div>
+              )}
+
               <div className="flex items-center justify-between gap-2">
                 <span className="inline-block text-[9px] sm:text-[10px] font-bold bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 px-2 py-0.5 rounded uppercase tracking-wider mb-3">
                   {activeQuestion.type === 'rating'
@@ -383,7 +436,7 @@ export const Presentation: React.FC<PresentationProps> = ({ code, navigate, them
                       ? t('typeMultiple')
                       : t('typeSingle')}
                 </span>
-                {timeLeft !== null && (
+                {timeLeft !== null && isViewingActive && (
                   <span
                     className={`inline-block text-[9px] sm:text-[10px] font-bold px-2 py-0.5 rounded border uppercase tracking-wider mb-3 ${timeLeft > 0 ? 'bg-red-50 dark:bg-red-950/60 border-red-200 dark:border-red-900/50 text-red-700 dark:text-red-400 animate-pulse' : 'bg-slate-100 dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-400 dark:text-slate-500'}`}
                   >

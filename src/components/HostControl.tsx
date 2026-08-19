@@ -63,6 +63,7 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
 
   const [hostToken, setHostToken] = useState<string | null>(null);
   const [manualTokenInput, setManualTokenInput] = useState('');
+  const [showTokenModal, setShowTokenModal] = useState(false);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -461,63 +462,90 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
 
   if (accessError) {
     return (
-      <div className="min-h-screen bg-dots flex items-center justify-center p-4 sm:p-6 text-slate-900 dark:text-white">
-        <div className="max-w-md w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 sm:p-8 shadow-sm text-center">
-          <div className="w-12 h-12 bg-amber-50 dark:bg-amber-950/30 text-amber-600 dark:text-amber-400 rounded-xl flex items-center justify-center mx-auto mb-4 border border-amber-200 dark:border-amber-900/40">
-            <Key size={24} />
-          </div>
-          <h2 className="text-base font-bold mb-1.5">{t('enterTokenTitle')}</h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mb-6 leading-relaxed">
-            {t('enterTokenDesc')}
-          </p>
-
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              const trimmed = manualTokenInput.trim();
-              if (!trimmed) return;
-              localStorage.setItem(`host_token_${code}`, trimmed);
-              setHostToken(trimmed);
-            }}
-            className="space-y-3 mb-6"
-          >
-            <input
-              type="text"
-              value={manualTokenInput}
-              onChange={(e) => setManualTokenInput(e.target.value)}
-              placeholder={t('tokenPlaceholder')}
-              autoFocus
-              className="w-full px-3.5 py-3 border border-slate-200 dark:border-slate-700 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white font-mono focus:outline-none focus:border-slate-400 dark:focus:border-slate-500"
-            />
+      <div className="min-h-screen bg-dots flex flex-col font-sans">
+        {/* Top Navbar */}
+        <header className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 py-3.5 px-4 sm:px-6 flex items-center justify-between sticky top-0 z-20">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
             <button
-              type="submit"
-              disabled={!manualTokenInput.trim()}
-              className="w-full bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-slate-200 text-white dark:text-slate-900 font-bold text-xs py-3 rounded-xl disabled:opacity-40 transition-colors"
+              onClick={() => navigate('/')}
+              className="text-slate-400 hover:text-slate-950 dark:hover:text-white transition-colors p-1"
+              aria-label={t('back')}
+              title={t('back')}
             >
-              {t('submitToken')}
+              <LogOut size={16} />
             </button>
-          </form>
-
-          <div className="border-t border-slate-100 dark:border-slate-800 pt-5 mb-5 text-left">
-            <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-2.5 text-center">
-              {t('loginToAccess')}
-            </p>
-            <HostAuth
-              compact
-              onAuthChange={() => {
-                queryClient.invalidateQueries({ queryKey: ['session', code] });
-              }}
-            />
+            <span className="bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 font-bold px-2 py-1 rounded text-xs tracking-wider shrink-0">
+              {code}
+            </span>
+            <span className="text-xs font-bold text-slate-900 dark:text-white truncate">
+              LivePoll Host
+            </span>
           </div>
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
+            <LanguageToggle />
+          </div>
+        </header>
 
-          <button
-            type="button"
-            onClick={() => navigate('/')}
-            className="text-xs font-semibold text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
-          >
-            {t('back')}
-          </button>
-        </div>
+        {/* Main Content */}
+        <main className="flex-1 max-w-md w-full mx-auto p-4 sm:p-6 flex flex-col justify-center animate-fade-in text-slate-900 dark:text-white">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 sm:p-8 shadow-sm text-center">
+            <div className="w-12 h-12 bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 rounded-xl flex items-center justify-center mx-auto mb-4 border border-amber-200 dark:border-amber-900/50">
+              <Key size={24} />
+            </div>
+            <h2 className="text-base font-bold mb-1.5">{t('enterTokenTitle')}</h2>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mb-6 leading-relaxed">
+              {t('enterTokenDesc')}
+            </p>
+
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                const trimmed = manualTokenInput.trim();
+                if (!trimmed) return;
+                localStorage.setItem(`host_token_${code}`, trimmed);
+                setHostToken(trimmed);
+              }}
+              className="space-y-3 mb-6"
+            >
+              <input
+                type="text"
+                value={manualTokenInput}
+                onChange={(e) => setManualTokenInput(e.target.value)}
+                placeholder={t('tokenPlaceholder')}
+                autoFocus
+                className="w-full px-3.5 py-3 border border-slate-200 dark:border-slate-700 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white font-mono focus:outline-none focus:border-slate-400 dark:focus:border-slate-500"
+              />
+              <button
+                type="submit"
+                disabled={!manualTokenInput.trim()}
+                className="w-full bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-slate-200 text-white dark:text-slate-900 font-bold text-xs py-3 rounded-xl disabled:opacity-40 transition-colors"
+              >
+                {t('submitToken')}
+              </button>
+            </form>
+
+            <div className="border-t border-slate-100 dark:border-slate-800 pt-5 mb-5 text-left">
+              <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-2.5 text-center">
+                {t('loginToAccess')}
+              </p>
+              <HostAuth
+                compact
+                onAuthChange={() => {
+                  queryClient.invalidateQueries({ queryKey: ['session', code] });
+                }}
+              />
+            </div>
+
+            <button
+              type="button"
+              onClick={() => navigate('/')}
+              className="text-xs font-semibold text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
+            >
+              {t('back')}
+            </button>
+          </div>
+        </main>
       </div>
     );
   }
@@ -560,6 +588,14 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
           </div>
         </div>
         <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+          <button
+            onClick={() => setShowTokenModal(true)}
+            className="flex items-center gap-1.5 px-2 sm:px-2.5 py-1.5 rounded-lg text-xs font-bold border bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800 hover:bg-amber-100 dark:hover:bg-amber-900/40 transition-colors"
+            title={t('tokenModalTitle')}
+          >
+            <Key size={12} />
+            <span className="hidden sm:inline">{t('tokenModalTitle')}</span>
+          </button>
           <button
             onClick={handleTogglePaceMode}
             className={`flex items-center gap-1.5 px-2 sm:px-2.5 py-1.5 rounded-lg text-xs font-bold border transition-colors ${
@@ -1108,6 +1144,72 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
                 {t('resetConfirm')}
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Host Token Info Modal */}
+      {showTokenModal && (
+        <div className="fixed inset-0 bg-slate-900/40 dark:bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4 z-45 animate-fade-in">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 max-w-sm w-full shadow-xl text-slate-900 dark:text-white">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 rounded-lg bg-amber-100 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 flex items-center justify-center">
+                  <Key size={14} />
+                </div>
+                <h3 className="text-sm font-bold">{t('tokenModalTitle')}</h3>
+              </div>
+              <button
+                onClick={() => setShowTokenModal(false)}
+                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xs font-bold p-1"
+              >
+                ✕
+              </button>
+            </div>
+
+            <p className="text-xs text-slate-500 dark:text-slate-400 mb-4 leading-relaxed">
+              {t('tokenModalDesc')}
+            </p>
+
+            <div className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-3 mb-3">
+              <p className="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1">
+                Token Host (24 Jam)
+              </p>
+              <div className="flex items-center justify-between gap-2">
+                <code className="text-xs font-mono font-bold text-slate-900 dark:text-slate-100 truncate">
+                  {hostTokenSafe}
+                </code>
+                <button
+                  type="button"
+                  onClick={() => {
+                    navigator.clipboard.writeText(hostTokenSafe);
+                    setCopied(true);
+                    setTimeout(() => setCopied(false), 2000);
+                  }}
+                  className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 px-2.5 py-1 rounded-md text-[10px] font-bold shrink-0 transition-colors flex items-center gap-1"
+                >
+                  {copied ? <Check size={12} className="text-emerald-500" /> : <Copy size={12} />}
+                  <span>{copied ? t('tokenCopied') : t('copyToken')}</span>
+                </button>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={handleCopyHostLink}
+              className="w-full bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-slate-200 text-white dark:text-slate-900 font-bold text-xs py-2.5 rounded-xl flex items-center justify-center gap-1.5 transition-colors mb-2"
+            >
+              <Link2 size={14} />
+              <span>{t('copyHostLink')}</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setShowTokenModal(false)}
+              className="w-full text-xs font-semibold text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 py-2 transition-colors"
+            >
+              {t('back')}
+            </button>
           </div>
         </div>
       )}
