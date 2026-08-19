@@ -181,15 +181,17 @@
     "shareCopy": "Copy Link",
     "shareWhatsapp": "WhatsApp",
     "nameTitle": "Enter Your Name",
-    "nameDesc": "Your name will be shown on the leaderboard and used for scoring.",
-    "namePlaceholder": "Your name...",
-    "nameStart": "Start Quiz",
+    "nameDesc": "Your name will appear on the poll recap (optional).",
+    "nameDescQuiz": "Your name will be shown on the leaderboard and used for scoring.",
+    "namePlaceholder": "Your name (optional)...",
+    "nameStart": "Join Poll",
+    "nameStartQuiz": "Start Quiz",
+    "nameSkip": "Skip & Continue",
     "nameRequired": "Please enter your name to continue.",
     "shareTelegram": "Telegram",
     "shareX": "X (Twitter)",
     "shareClose": "Close",
-    "nameLabel": "Your Name (optional)",
-    "namePlaceholder": "Enter your name"
+    "nameLabel": "Your Name (optional)"
   },
   "hostNew": {
     "title": "Create New Session",

@@ -75,14 +75,19 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
   }, []);
 
   const handleSubmitName = () => {
-    if (!participantName.trim()) {
-      setNameError(true);
-      return;
+    const trimmed = participantName.trim();
+    if (trimmed) {
+      localStorage.setItem('participant_name', trimmed);
     }
-    localStorage.setItem('participant_name', participantName.trim());
     localStorage.setItem(`name_done_${code}`, '1');
     setNameDone(true);
-    notifyJoin(participantName.trim());
+    notifyJoin(trimmed || undefined);
+  };
+
+  const handleSkipName = () => {
+    localStorage.setItem(`name_done_${code}`, '1');
+    setNameDone(true);
+    notifyJoin(undefined);
   };
 
   // Session query with 2s polling
@@ -242,7 +247,7 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
   // "Closed" only counts when a question was actually shown; a session created
   // with "start later" (closed, no active question) should show the waiting state.
   const isClosed = isSessionClosed ? !!activeQuestion : timeLeft !== null && timeLeft <= 0;
-  const needsName = session.is_quiz && !nameDone && !hasVoted;
+  const needsName = !nameDone && !hasVoted;
 
   return (
     <div className="min-h-screen bg-dots flex flex-col font-sans">
@@ -284,11 +289,15 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
       <main className="flex-1 max-w-sm w-full mx-auto p-4 flex flex-col justify-center animate-fade-in">
         {needsName ? (
           <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-6 text-center shadow-sm animate-fade-in">
-            <span className="inline-block text-[9px] font-bold bg-amber-100 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/50 text-amber-700 dark:text-amber-400 px-2 py-0.5 rounded uppercase tracking-wider mb-3">
-              QUIZ
-            </span>
+            {session.is_quiz && (
+              <span className="inline-block text-[9px] font-bold bg-amber-100 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/50 text-amber-700 dark:text-amber-400 px-2 py-0.5 rounded uppercase tracking-wider mb-3">
+                QUIZ
+              </span>
+            )}
             <h2 className="text-base font-bold text-slate-900 dark:text-white mb-1">{t('nameTitle')}</h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mb-5 leading-relaxed">{t('nameDesc')}</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mb-5 leading-relaxed">
+              {session.is_quiz ? t('nameDescQuiz') : t('nameDesc')}
+            </p>
 
             <input
               type="text"
@@ -302,19 +311,21 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
               }}
               placeholder={t('namePlaceholder')}
               maxLength={80}
-              className={`w-full px-3.5 py-3 border rounded-lg text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none transition-colors ${
-                nameError
-                  ? 'border-red-400 dark:border-red-500'
-                  : 'border-slate-200 dark:border-slate-700 focus:border-slate-400 dark:focus:border-slate-500'
-              }`}
+              autoFocus
+              className="w-full px-3.5 py-3 border border-slate-200 dark:border-slate-700 rounded-lg text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:border-slate-400 dark:focus:border-slate-500 transition-colors"
             />
-            {nameError && <p className="text-[11px] font-semibold text-red-500 mt-2 text-left">{t('nameRequired')}</p>}
 
             <button
               onClick={handleSubmitName}
               className="w-full mt-4 bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-slate-200 text-white dark:text-slate-900 font-bold text-sm py-3 rounded-lg transition-colors"
             >
-              {t('nameStart')}
+              {session.is_quiz ? t('nameStartQuiz') : t('nameStart')}
+            </button>
+            <button
+              onClick={handleSkipName}
+              className="w-full mt-2 text-xs font-semibold text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 py-2 transition-colors"
+            >
+              {t('nameSkip')}
             </button>
           </div>
         ) : isClosed && !hasVoted ? (

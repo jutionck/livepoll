@@ -181,15 +181,17 @@
     "shareCopy": "Salin Link",
     "shareWhatsapp": "WhatsApp",
     "nameTitle": "Masukkan Nama Anda",
-    "nameDesc": "Nama Anda akan tampil di papan peringkat dan dipakai untuk penilaian.",
-    "namePlaceholder": "Nama lengkap Anda...",
-    "nameStart": "Mulai Kuis",
+    "nameDesc": "Nama Anda akan dicatat pada rekap polling (opsional).",
+    "nameDescQuiz": "Nama Anda akan tampil di papan peringkat dan dipakai untuk penilaian.",
+    "namePlaceholder": "Nama lengkap Anda (opsional)...",
+    "nameStart": "Mulai Ikut Polling",
+    "nameStartQuiz": "Mulai Kuis",
+    "nameSkip": "Lewati & Lanjutkan",
     "nameRequired": "Silakan isi nama Anda untuk melanjutkan.",
     "shareTelegram": "Telegram",
     "shareX": "X (Twitter)",
     "shareClose": "Tutup",
-    "nameLabel": "Nama Anda (opsional)",
-    "namePlaceholder": "Masukkan nama Anda"
+    "nameLabel": "Nama Anda (opsional)"
   },
   "hostNew": {
     "title": "Buat Sesi Baru",
