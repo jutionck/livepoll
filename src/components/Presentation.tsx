@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { QRCodeSVG } from 'qrcode.react';
-import { Maximize, Minimize, Users, AlertCircle, Layers, ChevronDown } from 'lucide-react';
+import { Maximize, Minimize, Users, AlertCircle, Layers, ChevronDown, FileText, Award, Star } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { API_BASE_URL, apiFetch, getJoinUrl } from '../config';
 import type { Session } from '../types';
@@ -45,13 +45,7 @@ export const Presentation: React.FC<PresentationProps> = ({ code, navigate, them
   });
 
   const session = sessionQuery.data ?? null;
-
-  const [browsingQId, setBrowsingQId] = useState<string | null>(null);
-
-  const questionsList: any[] = session ? Object.values(session.questions || {}) : [];
-  const currentViewQId = browsingQId || session?.active_question_id || questionsList[0]?.id || '';
-  const isViewingActive = !browsingQId || browsingQId === session?.active_question_id;
-  const currentIdx = questionsList.findIndex((q) => q.id === currentViewQId);
+  const currentViewQId = session?.active_question_id || '';
 
   // Results query with 1s polling
   const fetchResults = async (qId: string) => {
@@ -237,7 +231,7 @@ export const Presentation: React.FC<PresentationProps> = ({ code, navigate, them
         <div className="flex items-center gap-2 sm:gap-3 shrink-0">
           {session.pace_mode === 'self_paced' && (
             <span className="hidden sm:inline-flex items-center gap-1 text-[10px] font-bold px-2 py-1 rounded-md bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800">
-              📝 Self-Paced
+              <FileText size={12} aria-hidden="true" /> Self-Paced
             </span>
           )}
           <div className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-2 sm:px-3 py-1.5 rounded-lg flex items-center gap-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300">
@@ -282,7 +276,11 @@ export const Presentation: React.FC<PresentationProps> = ({ code, navigate, them
                           className={`flex-1 max-w-[130px] sm:max-w-[170px] ${revealed >= 2 ? 'animate-podium-pop' : 'opacity-0'}`}
                         >
                           <div className="text-center mb-2">
-                            <span className="text-2xl sm:text-3xl block mb-1">🥈</span>
+                            <Award
+                              size={30}
+                              aria-label="Rank 2"
+                              className="mx-auto mb-1 text-slate-500 dark:text-slate-300"
+                            />
                             <p className="text-[10px] sm:text-sm font-bold text-slate-800 dark:text-slate-200 truncate">
                               {ranking[1].name}
                             </p>
@@ -302,7 +300,7 @@ export const Presentation: React.FC<PresentationProps> = ({ code, navigate, them
                           className={`flex-1 max-w-[150px] sm:max-w-[200px] ${revealed >= 3 ? 'animate-podium-pop' : 'opacity-0'}`}
                         >
                           <div className="text-center mb-2">
-                            <span className="text-3xl sm:text-4xl block mb-1">🥇</span>
+                            <Award size={36} aria-label="Rank 1" className="mx-auto mb-1 text-amber-500" />
                             <p className="text-xs sm:text-base font-black text-slate-900 dark:text-white truncate">
                               {ranking[0].name}
                             </p>
@@ -320,7 +318,11 @@ export const Presentation: React.FC<PresentationProps> = ({ code, navigate, them
                           className={`flex-1 max-w-[130px] sm:max-w-[170px] ${revealed >= 1 ? 'animate-podium-pop' : 'opacity-0'}`}
                         >
                           <div className="text-center mb-2">
-                            <span className="text-2xl sm:text-3xl block mb-1">🥉</span>
+                            <Award
+                              size={30}
+                              aria-label="Rank 3"
+                              className="mx-auto mb-1 text-orange-600 dark:text-orange-400"
+                            />
                             <p className="text-[10px] sm:text-sm font-bold text-slate-800 dark:text-slate-200 truncate">
                               {ranking[2].name}
                             </p>
@@ -384,54 +386,6 @@ export const Presentation: React.FC<PresentationProps> = ({ code, navigate, them
             </div>
           ) : activeQuestion ? (
             <>
-              {/* Question Stepper / Browsing bar for presenter */}
-              {questionsList.length > 1 && (
-                <div className="flex items-center justify-between gap-2 flex-wrap mb-1">
-                  <div className="flex items-center gap-1.5 bg-white/80 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-lg p-1">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        if (currentIdx > 0) {
-                          setBrowsingQId(questionsList[currentIdx - 1].id);
-                        }
-                      }}
-                      disabled={currentIdx <= 0}
-                      className="px-2 py-1 text-xs font-bold rounded text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-                      title={t('prevQuestion')}
-                    >
-                      ← {t('prevQuestion')}
-                    </button>
-                    <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 px-1.5 uppercase tracking-wider">
-                      {t('questionNav', { current: currentIdx + 1, total: questionsList.length })}
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        if (currentIdx < questionsList.length - 1) {
-                          setBrowsingQId(questionsList[currentIdx + 1].id);
-                        }
-                      }}
-                      disabled={currentIdx >= questionsList.length - 1}
-                      className="px-2 py-1 text-xs font-bold rounded text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-                      title={t('nextQuestion')}
-                    >
-                      {t('nextQuestion')} →
-                    </button>
-                  </div>
-
-                  {!isViewingActive && (
-                    <button
-                      type="button"
-                      onClick={() => setBrowsingQId(null)}
-                      className="text-xs font-bold bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 px-2.5 py-1.5 rounded-lg hover:bg-amber-100 dark:hover:bg-amber-900/50 transition-colors animate-pulse flex items-center gap-1.5"
-                    >
-                      <span className="w-2 h-2 rounded-full bg-amber-500" />
-                      {t('backToActive')}
-                    </button>
-                  )}
-                </div>
-              )}
-
               <div className="flex items-center justify-between gap-2">
                 <span className="inline-block text-[9px] sm:text-[10px] font-bold bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 px-2 py-0.5 rounded uppercase tracking-wider mb-3">
                   {activeQuestion.type === 'rating'
@@ -442,7 +396,7 @@ export const Presentation: React.FC<PresentationProps> = ({ code, navigate, them
                         ? t('typeOpenText')
                         : t('typeSingle')}
                 </span>
-                {timeLeft !== null && isViewingActive && (
+                {timeLeft !== null && (
                   <span
                     className={`inline-block text-[9px] sm:text-[10px] font-bold px-2 py-0.5 rounded border uppercase tracking-wider mb-3 ${timeLeft > 0 ? 'bg-red-50 dark:bg-red-950/60 border-red-200 dark:border-red-900/50 text-red-700 dark:text-red-400 animate-pulse' : 'bg-slate-100 dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-400 dark:text-slate-500'}`}
                   >
@@ -475,7 +429,7 @@ export const Presentation: React.FC<PresentationProps> = ({ code, navigate, them
                               key={s}
                               className={`text-xl sm:text-2xl ${s <= Math.round(resultsData?.average_rating || 0) ? 'text-amber-400' : 'text-slate-200 dark:text-slate-800'}`}
                             >
-                              ★
+                              <Star size={24} fill="currentColor" aria-hidden="true" />
                             </span>
                           ))}
                         </div>
@@ -491,7 +445,7 @@ export const Presentation: React.FC<PresentationProps> = ({ code, navigate, them
                           return (
                             <div key={r} className="flex items-center gap-2 sm:gap-4">
                               <span className="w-10 sm:w-12 text-[10px] sm:text-xs font-bold text-slate-500 dark:text-slate-400 text-right flex items-center justify-end gap-1">
-                                {r} ★
+                                {r} <Star size={12} fill="currentColor" aria-hidden="true" />
                               </span>
                               <div className="flex-1 h-3 sm:h-4 bg-slate-100 dark:bg-slate-900 rounded-full overflow-hidden">
                                 <div

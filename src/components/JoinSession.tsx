@@ -204,7 +204,7 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
 
   const handleOpenTextChange = (text: string) => {
     if (!isSelfPaced && hasVoted) return;
-    setSelectedVote(text.slice(0, 100));
+    setSelectedVote(text);
   };
 
   const handleSubmitVote = async () => {
@@ -473,10 +473,6 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
                       rows={3}
                       className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl text-xs sm:text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:border-slate-400 dark:focus:border-slate-500 transition-colors resize-none"
                     />
-                    <div className="flex justify-between items-center text-[10px] text-slate-400 font-medium px-1">
-                      <span>Maksimal 100 karakter</span>
-                      <span>{typeof selectedVote === 'string' ? selectedVote.length : 0} / 100</span>
-                    </div>
                   </div>
                 ) : activeQuestion.type === 'rating' ? (
                   <div className="flex items-center justify-center gap-2.5 py-4">
@@ -596,7 +592,7 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
                 ) : activeQuestion.type === 'rating' ? (
                   <div className="flex items-center gap-0.5 text-amber-500">
                     {Array.from({ length: selectedVote }).map((_, i) => (
-                      <span key={i}>★</span>
+                      <Star key={i} size={13} fill="currentColor" aria-hidden="true" />
                     ))}
                     <span className="text-slate-400 dark:text-slate-500 text-[10px] ml-1">({selectedVote}/5)</span>
                   </div>
@@ -675,10 +671,6 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
                     rows={3}
                     className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl text-xs sm:text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:border-slate-400 dark:focus:border-slate-500 transition-colors resize-none"
                   />
-                  <div className="flex justify-between items-center text-[10px] text-slate-400 font-medium px-1">
-                    <span>Maksimal 100 karakter</span>
-                    <span>{typeof selectedVote === 'string' ? selectedVote.length : 0} / 100</span>
-                  </div>
                 </div>
               ) : activeQuestion.type === 'rating' ? (
                 <div className="flex items-center justify-center gap-2.5 py-4">

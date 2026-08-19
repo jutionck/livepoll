@@ -71,9 +71,6 @@ export async function POST(request: Request) {
       if (typeof vote !== 'string' || !vote.trim()) {
         return err('INVALID_ANSWER', 400, lang);
       }
-      if (vote.trim().length > 100) {
-        return NextResponse.json({ error: 'Jawaban maksimal 100 karakter.' }, { status: 400 });
-      }
       if (hasOffensiveContent(vote)) {
         return err('MODERATION', 422, lang);
       }

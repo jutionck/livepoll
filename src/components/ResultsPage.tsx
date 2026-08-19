@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { AlertCircle, Link2, Check, ArrowLeft, Trophy, HelpCircle, Download } from 'lucide-react';
+import { AlertCircle, Link2, Check, ArrowLeft, Trophy, HelpCircle, Download, Award } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { apiFetch, getResultsUrl } from '../config';
 import { ThemeToggle } from './ThemeToggle';
@@ -132,7 +132,23 @@ export const ResultsPage: React.FC<Props> = ({ code, navigate, theme, toggleThem
                     key={p.participant_id}
                     className={`flex items-center gap-3 px-3 py-2.5 rounded-lg border text-xs ${i === 0 ? 'bg-amber-50 dark:bg-amber-950/20 border-amber-200 dark:border-amber-900/40' : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-800'}`}
                   >
-                    <b className="w-7">{i < 3 ? ['🥇', '🥈', '🥉'][i] : i + 1}</b>
+                    <b className="w-7">
+                      {i < 3 ? (
+                        <Award
+                          size={18}
+                          aria-label={`${t('rank')} ${i + 1}`}
+                          className={
+                            i === 0
+                              ? 'text-amber-500'
+                              : i === 1
+                                ? 'text-slate-500 dark:text-slate-300'
+                                : 'text-orange-600 dark:text-orange-400'
+                          }
+                        />
+                      ) : (
+                        i + 1
+                      )}
+                    </b>
                     <span className="flex-1 font-bold text-slate-800 dark:text-slate-200 truncate">
                       {p.name}
                       <small className="block text-[9px] font-normal text-slate-400">
@@ -178,7 +194,12 @@ const QuestionStat = ({ q, index, t }: { q: any; index: number; t: any }) => {
         <span className="text-slate-400 mr-1.5">Q{index + 1}</span>
         {q.title}
         <small className="ml-2 text-[9px] text-slate-400 uppercase">
-          {q.total_answers} {t('responses')} {q.has_answer && `· ✓ ${q.correct_count}`}
+          {q.total_answers} {t('responses')}
+          {q.has_answer && (
+            <span className="ml-1 inline-flex items-center gap-0.5">
+              · <Check size={10} aria-hidden="true" /> {q.correct_count}
+            </span>
+          )}
         </small>
       </p>
       <div className="space-y-1.5">
@@ -194,7 +215,8 @@ const QuestionStat = ({ q, index, t }: { q: any; index: number; t: any }) => {
                       correct ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-600 dark:text-slate-300'
                     }
                   >
-                    {o.label} {correct && '✓'}
+                    {o.label}
+                    {correct && <Check size={11} aria-hidden="true" className="ml-1 inline-block" />}
                   </span>
                   <span>{o.count}</span>
                 </div>

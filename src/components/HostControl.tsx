@@ -21,6 +21,9 @@ import {
   Download,
   Link2,
   Key,
+  FileText,
+  Mic2,
+  X,
 } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { API_BASE_URL, apiFetch, getJoinUrl, getHostId, getAuthToken, getResultsUrl } from '../config';
@@ -59,6 +62,7 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
   const [testimonialMsg, setTestimonialMsg] = useState('');
   const [testimonialSending, setTestimonialSending] = useState(false);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
+  const [showCopyMenu, setShowCopyMenu] = useState(false);
   const [leaderboard, setLeaderboard] = useState<any[]>([]);
   const [expandedParticipant, setExpandedParticipant] = useState<string | null>(null);
 
@@ -438,8 +442,9 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Gagal.');
       localStorage.setItem(`host_token_${data.code}`, data.host_token);
+      const clonedHostLink = `${window.location.origin}/${locale}/host/${data.code}?token=${data.host_token}`;
+      await navigator.clipboard.writeText(clonedHostLink);
       showNotification(t('cloneMessage', { code: data.code }), 'success');
-      navigate(`/host/${data.code}`);
     } catch (err: any) {
       showNotification(err.message);
     }
@@ -613,7 +618,8 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
             }`}
             title={session.pace_mode === 'self_paced' ? t('switchToPresenter') : t('switchToSelfPaced')}
           >
-            <span>{session.pace_mode === 'self_paced' ? '📝 ' + t('modeSelfPaced') : '🎙️ ' + t('modePresenter')}</span>
+            {session.pace_mode === 'self_paced' ? <FileText size={13} /> : <Mic2 size={13} />}
+            <span>{session.pace_mode === 'self_paced' ? t('modeSelfPaced') : t('modePresenter')}</span>
           </button>
           <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
           <LanguageToggle />
@@ -786,20 +792,47 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
                   <Trophy size={12} /> {t('leaderboard')}
                 </button>
               )}
-              <button
-                onClick={handleCopyHostLink}
-                className="bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800 px-3 py-1.5 rounded-lg font-semibold text-xs flex items-center gap-1.5 transition-colors"
-                title={t('copyHostLink')}
-              >
-                <Key size={12} /> {t('copyHostLink')}
-              </button>
-              <button
-                onClick={handleCloneSession}
-                className="bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800 px-3 py-1.5 rounded-lg font-semibold text-xs flex items-center gap-1.5 transition-colors"
-                title={t('cloneSession')}
-              >
-                <Copy size={12} /> {t('cloneSession')}
-              </button>
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => setShowCopyMenu((open) => !open)}
+                  aria-haspopup="menu"
+                  aria-expanded={showCopyMenu}
+                  className="bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800 px-3 py-1.5 rounded-lg font-semibold text-xs flex items-center gap-1.5 transition-colors"
+                >
+                  <Copy size={12} /> {t('copyActions')}
+                  <ChevronDown size={12} className={`transition-transform ${showCopyMenu ? 'rotate-180' : ''}`} />
+                </button>
+                {showCopyMenu && (
+                  <div
+                    role="menu"
+                    className="absolute right-0 top-full z-30 mt-1.5 min-w-52 overflow-hidden rounded-lg border border-slate-200 bg-white p-1 shadow-lg dark:border-slate-700 dark:bg-slate-900"
+                  >
+                    <button
+                      type="button"
+                      role="menuitem"
+                      onClick={() => {
+                        setShowCopyMenu(false);
+                        handleCopyHostLink();
+                      }}
+                      className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-xs font-semibold text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
+                    >
+                      <Key size={13} /> {t('copyHostLink')}
+                    </button>
+                    <button
+                      type="button"
+                      role="menuitem"
+                      onClick={() => {
+                        setShowCopyMenu(false);
+                        handleCloneSession();
+                      }}
+                      className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-xs font-semibold text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
+                    >
+                      <Copy size={13} /> {t('cloneSession')}
+                    </button>
+                  </div>
+                )}
+              </div>
               <button
                 onClick={exportAllResults}
                 className="bg-white dark:bg-slate-900 hover:bg-emerald-50 dark:hover:bg-emerald-950/20 text-emerald-700 dark:text-emerald-400 border border-slate-200 dark:border-slate-800 px-3 py-1.5 rounded-lg font-semibold text-xs flex items-center gap-1.5 transition-colors"
@@ -817,13 +850,6 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
                 {t('resultsTitle')}
               </h3>
               <div className="flex items-center gap-2">
-                <button
-                  onClick={exportAllResults}
-                  className="bg-emerald-50 dark:bg-emerald-950/30 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300 font-bold px-2.5 py-1 rounded text-xs flex items-center gap-1 border border-emerald-200 dark:border-emerald-800 transition-colors"
-                  title={t('exportResults')}
-                >
-                  <Download size={12} /> <span className="hidden sm:inline">{t('exportResults')}</span>
-                </button>
                 <div className="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-bold px-2.5 py-1 rounded text-xs flex items-center gap-1 border border-slate-200 dark:border-slate-700">
                   <Users size={12} /> {totalVotes} {t('responses')}
                 </div>
@@ -849,7 +875,7 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
                           key={s}
                           className={`text-xl ${s <= Math.round(resultsData?.average_rating || 0) ? 'text-amber-400' : 'text-slate-200 dark:text-slate-800'}`}
                         >
-                          ★
+                          <Star size={20} fill="currentColor" aria-hidden="true" />
                         </span>
                       ))}
                     </div>
@@ -865,7 +891,7 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
                       return (
                         <div key={r} className="flex items-center gap-3">
                           <span className="w-8 text-[11px] font-bold text-slate-400 dark:text-slate-500 text-right">
-                            {r} ★
+                            {r} <Star size={11} fill="currentColor" aria-hidden="true" />
                           </span>
                           <div className="flex-1 h-2.5 bg-slate-100 dark:bg-slate-950 rounded-full overflow-hidden">
                             <div
@@ -1000,7 +1026,7 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
                   onClick={() => setShowLeaderboard(false)}
                   className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 text-xs font-bold transition-colors"
                 >
-                  ✕
+                  <X size={15} aria-hidden="true" />
                 </button>
               </div>
             </div>
@@ -1028,7 +1054,7 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
                         }`}
                       >
                         <span className={`w-8 font-black ${idx === 0 ? 'text-amber-500' : 'text-slate-400'}`}>
-                          {idx === 0 ? '🏆' : idx + 1}
+                          {idx === 0 ? <Trophy size={16} aria-label={t('rank')} /> : idx + 1}
                         </span>
                         <span className="flex-1 ml-3 font-bold text-slate-800 dark:text-slate-200 truncate text-left">
                           {item.name}
@@ -1183,7 +1209,7 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
                 onClick={() => setShowTokenModal(false)}
                 className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xs font-bold p-1"
               >
-                ✕
+                <X size={15} aria-hidden="true" />
               </button>
             </div>
 

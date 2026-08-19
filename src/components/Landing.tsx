@@ -24,6 +24,8 @@ import {
   Code,
   Trophy,
   UserCheck,
+  Check,
+  X,
 } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { ThemeToggle } from './ThemeToggle';
@@ -583,11 +585,11 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
               <span className="text-center text-slate-400 dark:text-slate-500">{t('compareThem')}</span>
             </div>
             {[
-              { feature: t('compareFree'), we: '✓', them: '✗' },
-              { feature: t('compareLimits'), we: '✗', them: '✓' },
-              { feature: t('compareAccount'), we: '✓', them: '✗' },
-              { feature: t('compareTimer'), we: '✓', them: '✗' },
-              { feature: t('compareOpen'), we: '✓', them: '✗' },
+              { feature: t('compareFree'), we: true, them: false },
+              { feature: t('compareLimits'), we: false, them: true },
+              { feature: t('compareAccount'), we: true, them: false },
+              { feature: t('compareTimer'), we: true, them: false },
+              { feature: t('compareOpen'), we: true, them: false },
             ].map((row, idx) => (
               <div
                 key={idx}
@@ -596,8 +598,12 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
                 }`}
               >
                 <span className="text-slate-700 dark:text-slate-300">{row.feature}</span>
-                <span className="text-center text-emerald-500 font-black">{row.we}</span>
-                <span className="text-center text-red-400 font-black">{row.them}</span>
+                <span className="flex justify-center text-emerald-500">
+                  {row.we ? <Check size={16} aria-hidden="true" /> : <X size={16} aria-hidden="true" />}
+                </span>
+                <span className="flex justify-center text-red-400">
+                  {row.them ? <Check size={16} aria-hidden="true" /> : <X size={16} aria-hidden="true" />}
+                </span>
               </div>
             ))}
           </div>
