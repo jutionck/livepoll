@@ -12,6 +12,7 @@ import {
   Clock,
   Layers,
   ChevronRight,
+  Cloud,
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { API_BASE_URL, apiFetch, getHostId, getAuthToken } from '../config';
@@ -28,7 +29,7 @@ interface HostNewProps {
 
 interface QuestionDraft {
   id: string;
-  type: 'multiple_choice' | 'multiple_selection' | 'rating';
+  type: 'multiple_choice' | 'multiple_selection' | 'rating' | 'open_text';
   title: string;
   options: string[];
   timer?: number | null;
@@ -39,6 +40,7 @@ const TYPE_LABELS: Record<string, { labelKey: string; badge: string }> = {
   multiple_choice: { labelKey: 'typeSingle', badge: 'bg-slate-100 text-slate-700 border-slate-200' },
   multiple_selection: { labelKey: 'typeMultiple', badge: 'bg-slate-100 text-slate-700 border-slate-200' },
   rating: { labelKey: 'typeRating', badge: 'bg-slate-100 text-slate-700 border-slate-200' },
+  open_text: { labelKey: 'typeOpenText', badge: 'bg-indigo-50 text-indigo-700 border-indigo-200' },
 };
 
 const CustomSelect: React.FC<{
@@ -154,14 +156,14 @@ export const HostNew: React.FC<HostNewProps> = ({ navigate, theme, toggleTheme }
     }
   }, [title, questions, hostName, hostOrg, paceMode]);
 
-  const addQuestion = (type: 'multiple_choice' | 'multiple_selection' | 'rating') => {
+  const addQuestion = (type: 'multiple_choice' | 'multiple_selection' | 'rating' | 'open_text') => {
     setQuestions([
       ...questions,
       {
         id: `temp-${Date.now()}`,
         type,
         title: '',
-        options: type === 'rating' ? [] : ['', ''],
+        options: type === 'rating' || type === 'open_text' ? [] : ['', ''],
         timer: null,
       },
     ]);
@@ -179,10 +181,13 @@ export const HostNew: React.FC<HostNewProps> = ({ navigate, theme, toggleTheme }
     setQuestions(updated);
   };
 
-  const updateQuestionType = (index: number, type: 'multiple_choice' | 'multiple_selection' | 'rating') => {
+  const updateQuestionType = (
+    index: number,
+    type: 'multiple_choice' | 'multiple_selection' | 'rating' | 'open_text',
+  ) => {
     const updated = [...questions];
     updated[index].type = type;
-    if (type === 'rating') updated[index].options = [];
+    if (type === 'rating' || type === 'open_text') updated[index].options = [];
     else if (updated[index].options.length === 0) updated[index].options = ['', ''];
     setQuestions(updated);
   };
@@ -245,7 +250,7 @@ export const HostNew: React.FC<HostNewProps> = ({ navigate, theme, toggleTheme }
         setError(t('errorNoTitle', { n: i + 1 }));
         return;
       }
-      if (q.type !== 'rating' && q.options.filter((o) => o.trim()).length < 2) {
+      if (q.type !== 'rating' && q.type !== 'open_text' && q.options.filter((o) => o.trim()).length < 2) {
         setError(t('errorFewOptions', { n: i + 1 }));
         return;
       }
@@ -253,8 +258,8 @@ export const HostNew: React.FC<HostNewProps> = ({ navigate, theme, toggleTheme }
     setLoading(true);
     const formattedQuestions = questions.map((q) => {
       const qData: any = { type: q.type, title: q.title, timer: q.timer ?? null };
-      if (q.type !== 'rating') qData.options = q.options.filter((o) => o.trim());
-      if (q.type !== 'rating' && q.correctAnswer && q.correctAnswer.length > 0) {
+      if (q.type !== 'rating' && q.type !== 'open_text') qData.options = q.options.filter((o) => o.trim());
+      if (q.type !== 'rating' && q.type !== 'open_text' && q.correctAnswer && q.correctAnswer.length > 0) {
         qData.correct_answer = q.correctAnswer;
       }
       return qData;
@@ -449,6 +454,7 @@ export const HostNew: React.FC<HostNewProps> = ({ navigate, theme, toggleTheme }
                         { value: 'multiple_choice', label: t('typeSingle') },
                         { value: 'multiple_selection', label: t('typeMultiple') },
                         { value: 'rating', label: t('typeRating') },
+                        { value: 'open_text', label: t('typeOpenText') },
                       ]}
                     />
                     <CustomSelect
@@ -467,7 +473,19 @@ export const HostNew: React.FC<HostNewProps> = ({ navigate, theme, toggleTheme }
                     />
                   </div>
 
-                  {q.type !== 'rating' && (
+                  {q.type === 'open_text' && (
+                    <div className="bg-indigo-50/60 dark:bg-indigo-950/20 border border-indigo-100 dark:border-indigo-900/30 rounded-xl p-4 mt-4 text-center">
+                      <Cloud size={24} className="text-indigo-500 mx-auto mb-1.5" />
+                      <p className="text-xs font-bold text-indigo-900 dark:text-indigo-300 mb-0.5">
+                        {t('typeOpenText')}
+                      </p>
+                      <p className="text-[10px] text-slate-500 dark:text-slate-400 max-w-sm mx-auto">
+                        {t('openTextHint')}
+                      </p>
+                    </div>
+                  )}
+
+                  {q.type !== 'rating' && q.type !== 'open_text' && (
                     <div className="space-y-2 mt-4">
                       <label className="block text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-2">
                         {t('optionsLabel')}
@@ -505,7 +523,7 @@ export const HostNew: React.FC<HostNewProps> = ({ navigate, theme, toggleTheme }
                     </div>
                   )}
 
-                  {q.type !== 'rating' && q.options.filter((o) => o.trim()).length >= 2 && (
+                  {q.type !== 'rating' && q.type !== 'open_text' && q.options.filter((o) => o.trim()).length >= 2 && (
                     <div className="mt-5 border-t border-slate-100 dark:border-slate-800 pt-4">
                       <label className="block text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1">
                         {t('correctAnswerLabel')}
@@ -553,8 +571,8 @@ export const HostNew: React.FC<HostNewProps> = ({ navigate, theme, toggleTheme }
             <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
               {t('addQuestion')}
             </span>
-            <div className="flex gap-2 w-full sm:w-auto">
-              {(['multiple_choice', 'multiple_selection', 'rating'] as const).map((type) => {
+            <div className="flex gap-2 w-full sm:w-auto flex-wrap">
+              {(['multiple_choice', 'multiple_selection', 'rating', 'open_text'] as const).map((type) => {
                 const info = TYPE_LABELS[type];
                 return (
                   <button

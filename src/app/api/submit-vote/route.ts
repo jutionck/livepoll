@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { getLang, msg, err } from '@/lib/api-errors';
 import { rateLimit, getClientIp } from '@/lib/rate-limit';
+import { hasOffensiveContent } from '@/lib/moderation';
 
 export async function POST(request: Request) {
   const lang = getLang(request);
@@ -65,6 +66,16 @@ export async function POST(request: Request) {
       const voteNum = parseInt(String(vote), 10);
       if (isNaN(voteNum) || voteNum < 1 || voteNum > 5) {
         return NextResponse.json({ error: 'Rating harus antara 1-5 bintang.' }, { status: 400 });
+      }
+    } else if (question.type === 'open_text') {
+      if (typeof vote !== 'string' || !vote.trim()) {
+        return err('INVALID_ANSWER', 400, lang);
+      }
+      if (vote.trim().length > 100) {
+        return NextResponse.json({ error: 'Jawaban maksimal 100 karakter.' }, { status: 400 });
+      }
+      if (hasOffensiveContent(vote)) {
+        return err('MODERATION', 422, lang);
       }
     }
 

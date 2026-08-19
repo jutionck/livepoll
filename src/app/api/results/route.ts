@@ -22,7 +22,7 @@ export async function GET(request: Request) {
 
     const votes = await prisma.vote.findMany({
       where: { sessionCode: code, questionId: qId },
-      select: { vote: true },
+      select: { vote: true, participantName: true },
     });
 
     const totalVotes = votes.length;
@@ -84,6 +84,42 @@ export async function GET(request: Request) {
         total_votes: totalVotes,
         results,
         average_rating: average,
+        version: session?.version || 1,
+      });
+    } else if (type === 'open_text') {
+      const wordFreq: Record<string, { text: string; count: number }> = {};
+      const responsesList: { text: string; participantName: string | null }[] = [];
+
+      votes.forEach((row) => {
+        const text = String(row.vote || '').trim();
+        if (!text) return;
+        const key = text.toLowerCase();
+        if (!wordFreq[key]) {
+          wordFreq[key] = { text, count: 0 };
+        }
+        wordFreq[key].count++;
+        results[text] = (results[text] || 0) + 1;
+        responsesList.push({
+          text,
+          participantName: row.participantName || null,
+        });
+      });
+
+      const words = Object.values(wordFreq).sort((a, b) => b.count - a.count);
+
+      const session = await prisma.session.findUnique({
+        where: { code },
+        select: { version: true },
+      });
+
+      return NextResponse.json({
+        code,
+        question_id: qId,
+        question_type: type,
+        total_votes: totalVotes,
+        results,
+        words,
+        responses: responsesList,
         version: session?.version || 1,
       });
     }

@@ -1,4 +1,4 @@
-export type QuestionType = 'multiple_choice' | 'multiple_selection' | 'rating';
+export type QuestionType = 'multiple_choice' | 'multiple_selection' | 'rating' | 'open_text';
 
 export interface Question {
   id: string;

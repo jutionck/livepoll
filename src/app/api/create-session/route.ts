@@ -99,12 +99,18 @@ export async function POST(request: Request) {
 
       for (let i = 0; i < questions.length; i++) {
         const q = questions[i];
+        if (!q.title || !q.type) {
+          return err('DATA_INCOMPLETE', 400, lang);
+        }
+        if (q.type !== 'rating' && q.type !== 'open_text' && (!Array.isArray(q.options) || q.options.length < 2)) {
+          return err('DATA_INCOMPLETE', 400, lang);
+        }
         const qId = `q${i + 1}`;
         const timerVal = q.timer !== undefined ? q.timer : null;
 
         // Convert array options to key-value object
         const optionsObj: Record<string, string> = {};
-        if (q.type !== 'rating' && Array.isArray(q.options)) {
+        if (q.type !== 'rating' && q.type !== 'open_text' && Array.isArray(q.options)) {
           q.options.forEach((opt: string, idx: number) => {
             const trimmed = opt.trim();
             if (trimmed) {

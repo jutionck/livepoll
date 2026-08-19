@@ -11,6 +11,7 @@ import type { Session } from '../types';
 import { ThemeToggle } from './ThemeToggle';
 import { LanguageToggle } from './LanguageToggle';
 import { Fireworks } from './Fireworks';
+import { WordCloudVisualizer } from './WordCloudVisualizer';
 
 interface PresentationProps {
   code: string;
@@ -437,7 +438,9 @@ export const Presentation: React.FC<PresentationProps> = ({ code, navigate, them
                     ? t('typeRating')
                     : activeQuestion.type === 'multiple_selection'
                       ? t('typeMultiple')
-                      : t('typeSingle')}
+                      : activeQuestion.type === 'open_text'
+                        ? t('typeOpenText')
+                        : t('typeSingle')}
                 </span>
                 {timeLeft !== null && isViewingActive && (
                   <span
@@ -453,7 +456,14 @@ export const Presentation: React.FC<PresentationProps> = ({ code, navigate, them
 
               <div className="bg-white/80 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-900 p-4 sm:p-6 md:p-8 rounded-2xl">
                 <div className="space-y-4 sm:space-y-6">
-                  {activeQuestion.type === 'rating' ? (
+                  {activeQuestion.type === 'open_text' ? (
+                    <WordCloudVisualizer
+                      words={resultsData?.words || []}
+                      responses={resultsData?.responses || []}
+                      totalVotes={totalVotes}
+                      isPresentation={true}
+                    />
+                  ) : activeQuestion.type === 'rating' ? (
                     <div className="flex flex-col md:flex-row items-center justify-around gap-6 sm:gap-8">
                       <div className="text-center md:border-r border-slate-200 dark:border-slate-800 md:pr-12 py-3">
                         <p className="text-4xl sm:text-5xl md:text-6xl font-black text-slate-900 dark:text-white">

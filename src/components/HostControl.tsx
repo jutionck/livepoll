@@ -29,6 +29,7 @@ import type { Session } from '../types';
 import { ThemeToggle } from './ThemeToggle';
 import { LanguageToggle } from './LanguageToggle';
 import { HostAuth } from './HostAuth';
+import { WordCloudVisualizer } from './WordCloudVisualizer';
 
 interface HostControlProps {
   code: string;
@@ -714,7 +715,13 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
               <div className="flex items-start justify-between gap-4">
                 <div>
                   <span className="inline-block text-[9px] font-bold px-2 py-0.5 rounded border uppercase tracking-wider bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-700 mb-2">
-                    {activeQuestion?.type.replace('_', ' ')}
+                    {activeQuestion?.type === 'rating'
+                      ? t('typeRating')
+                      : activeQuestion?.type === 'multiple_selection'
+                        ? t('typeMultiple')
+                        : activeQuestion?.type === 'open_text'
+                          ? t('typeOpenText')
+                          : t('typeSingle')}
                   </span>
                   <h2 className="text-base font-bold text-slate-900 dark:text-white">{activeQuestion?.title}</h2>
                 </div>
@@ -824,7 +831,13 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
             </div>
 
             <div className="space-y-4">
-              {activeQuestion?.type === 'rating' ? (
+              {activeQuestion?.type === 'open_text' ? (
+                <WordCloudVisualizer
+                  words={resultsData?.words || []}
+                  responses={resultsData?.responses || []}
+                  totalVotes={totalVotes}
+                />
+              ) : activeQuestion?.type === 'rating' ? (
                 <div className="flex flex-col md:flex-row gap-8 items-center">
                   <div className="text-center md:border-r border-slate-100 dark:border-slate-800 md:pr-8 py-3 shrink-0">
                     <p className="text-4xl font-extrabold text-slate-900 dark:text-white">

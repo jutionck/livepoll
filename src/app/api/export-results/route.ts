@@ -270,7 +270,9 @@ export async function GET(request: Request) {
           ? 'Pilihan Tunggal'
           : q.type === 'multiple_selection'
             ? 'Pilihan Ganda'
-            : 'Rating 1-5';
+            : q.type === 'open_text'
+              ? 'Teks Terbuka / Word Cloud'
+              : 'Rating 1-5';
 
       if (q.type === 'rating') {
         let sum = 0;
@@ -284,6 +286,19 @@ export async function GET(request: Request) {
         });
         const avg = count > 0 ? (sum / count).toFixed(2) : '0';
         topSummary = `Rata-rata: ${avg} / 5.0 Bintang (${count} responden)`;
+      } else if (q.type === 'open_text') {
+        const wordFreq: Record<string, number> = {};
+        qVotes.forEach((v) => {
+          const text = String(v.vote || '').trim();
+          if (text) wordFreq[text] = (wordFreq[text] || 0) + 1;
+        });
+        const sorted = Object.entries(wordFreq).sort((a, b) => b[1] - a[1]);
+        if (sorted.length > 0) {
+          const top = sorted.slice(0, 3).map(([w, c]) => `"${w}" (${c})`).join(', ');
+          topSummary = `${sorted.length} kata unik. Terbanyak: ${top}`;
+        } else {
+          topSummary = 'Belum ada respon teks';
+        }
       } else {
         const options = (q.options as Record<string, string>) || {};
         const counts: Record<string, number> = {};
@@ -341,7 +356,9 @@ export async function GET(request: Request) {
           ? 'Pilihan Tunggal'
           : q.type === 'multiple_selection'
             ? 'Pilihan Ganda'
-            : 'Rating 1-5';
+            : q.type === 'open_text'
+              ? 'Teks Terbuka / Word Cloud'
+              : 'Rating 1-5';
 
       // Question Title Banner
       summaryRows.push(
@@ -407,6 +424,40 @@ export async function GET(request: Request) {
               cell(totalV, 'Number', 'TdTotal') +
               cell('100%', 'String', 'TdTotal') +
               cell(`Skor: ${avg} / 5.0`, 'String', 'TdTotal') +
+              cell('-', 'String', 'TdTotal'),
+            20,
+          ),
+        );
+      } else if (q.type === 'open_text') {
+        const wordFreq: Record<string, number> = {};
+        qVotes.forEach((v) => {
+          const text = String(v.vote || '').trim();
+          if (text) wordFreq[text] = (wordFreq[text] || 0) + 1;
+        });
+
+        const sorted = Object.entries(wordFreq).sort((a, b) => b[1] - a[1]);
+        sorted.forEach(([w, count], wordIdx) => {
+          const pct = totalV > 0 ? Math.round((count / totalV) * 100) : 0;
+          summaryRows.push(
+            row(
+              cell(wordIdx + 1, 'Number', 'TdCenter') +
+                cell(`"${w}"`, 'String', 'Td') +
+                cell(count, 'Number', 'TdNum') +
+                cell(`${pct}%`, 'String', 'TdPct') +
+                cell(makeBar(pct), 'String', 'TdBar') +
+                cell('-', 'String', 'TdCenter'),
+              19,
+            ),
+          );
+        });
+
+        summaryRows.push(
+          row(
+            cell('TOTAL', 'String', 'TdTotal') +
+              cell(`Total ${sorted.length} Kata / Respon Unik`, 'String', 'TdTotal') +
+              cell(totalV, 'Number', 'TdTotal') +
+              cell('100%', 'String', 'TdTotal') +
+              cell(makeBar(100), 'String', 'TdBar') +
               cell('-', 'String', 'TdTotal'),
             20,
           ),
@@ -516,6 +567,8 @@ export async function GET(request: Request) {
       let answerDisplay = '';
       if (q?.type === 'rating') {
         answerDisplay = `${v.vote} Bintang (★ ${v.vote})`;
+      } else if (q?.type === 'open_text') {
+        answerDisplay = String(v.vote || '');
       } else if (Array.isArray(v.vote)) {
         answerDisplay = v.vote
           .map((k) => (options[String(k)] ? `[${String(k).toUpperCase()}] ${options[String(k)]}` : String(k)))

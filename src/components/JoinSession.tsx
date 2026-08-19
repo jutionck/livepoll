@@ -202,8 +202,19 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
     setSelectedVote(rating);
   };
 
+  const handleOpenTextChange = (text: string) => {
+    if (!isSelfPaced && hasVoted) return;
+    setSelectedVote(text.slice(0, 100));
+  };
+
   const handleSubmitVote = async () => {
-    if (!activeQuestion || selectedVote === null || (Array.isArray(selectedVote) && selectedVote.length === 0)) return;
+    if (
+      !activeQuestion ||
+      selectedVote === null ||
+      (typeof selectedVote === 'string' && !selectedVote.trim()) ||
+      (Array.isArray(selectedVote) && selectedVote.length === 0)
+    )
+      return;
     setSubmitting(true);
     const activeQId = activeQuestion.id;
     try {
@@ -435,7 +446,9 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
                       ? t('typeRating')
                       : activeQuestion.type === 'multiple_selection'
                         ? t('typeMultiple')
-                        : t('typeSingle')}
+                        : activeQuestion.type === 'open_text'
+                          ? t('typeOpenText')
+                          : t('typeSingle')}
                   </span>
                 </div>
                 <div className="w-full h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
@@ -451,7 +464,21 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
               </h2>
 
               <div className="space-y-2 mb-6">
-                {activeQuestion.type === 'rating' ? (
+                {activeQuestion.type === 'open_text' ? (
+                  <div className="space-y-2 py-1">
+                    <textarea
+                      value={typeof selectedVote === 'string' ? selectedVote : ''}
+                      onChange={(e) => handleOpenTextChange(e.target.value)}
+                      placeholder={t('openTextPlaceholder')}
+                      rows={3}
+                      className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl text-xs sm:text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:border-slate-400 dark:focus:border-slate-500 transition-colors resize-none"
+                    />
+                    <div className="flex justify-between items-center text-[10px] text-slate-400 font-medium px-1">
+                      <span>Maksimal 100 karakter</span>
+                      <span>{typeof selectedVote === 'string' ? selectedVote.length : 0} / 100</span>
+                    </div>
+                  </div>
+                ) : activeQuestion.type === 'rating' ? (
                   <div className="flex items-center justify-center gap-2.5 py-4">
                     {[1, 2, 3, 4, 5].map((star) => {
                       const activeStar = hoverRating ?? selectedVote ?? 0;
@@ -562,7 +589,11 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
                 {t('yourAnswer')}
               </span>
               <div className="font-semibold text-xs">
-                {activeQuestion.type === 'rating' ? (
+                {activeQuestion.type === 'open_text' ? (
+                  <div className="bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2 rounded-lg text-xs font-semibold break-words">
+                    &ldquo;{selectedVote}&rdquo;
+                  </div>
+                ) : activeQuestion.type === 'rating' ? (
                   <div className="flex items-center gap-0.5 text-amber-500">
                     {Array.from({ length: selectedVote }).map((_, i) => (
                       <span key={i}>★</span>
@@ -619,7 +650,9 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
                   ? t('typeRating')
                   : activeQuestion.type === 'multiple_selection'
                     ? t('typeMultiple')
-                    : t('typeSingle')}
+                    : activeQuestion.type === 'open_text'
+                      ? t('typeOpenText')
+                      : t('typeSingle')}
               </span>
               {timeLeft !== null && timeLeft > 0 && (
                 <span className="text-[9px] font-bold bg-red-50 dark:bg-red-950/20 text-red-500 dark:text-red-400 px-2 py-0.5 rounded uppercase tracking-wider border border-red-200 dark:border-red-900/50 animate-pulse">
@@ -633,7 +666,21 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
             </h2>
 
             <div className="space-y-2 mb-5">
-              {activeQuestion.type === 'rating' ? (
+              {activeQuestion.type === 'open_text' ? (
+                <div className="space-y-2 py-1">
+                  <textarea
+                    value={typeof selectedVote === 'string' ? selectedVote : ''}
+                    onChange={(e) => handleOpenTextChange(e.target.value)}
+                    placeholder={t('openTextPlaceholder')}
+                    rows={3}
+                    className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl text-xs sm:text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:border-slate-400 dark:focus:border-slate-500 transition-colors resize-none"
+                  />
+                  <div className="flex justify-between items-center text-[10px] text-slate-400 font-medium px-1">
+                    <span>Maksimal 100 karakter</span>
+                    <span>{typeof selectedVote === 'string' ? selectedVote.length : 0} / 100</span>
+                  </div>
+                </div>
+              ) : activeQuestion.type === 'rating' ? (
                 <div className="flex items-center justify-center gap-2.5 py-4">
                   {[1, 2, 3, 4, 5].map((star) => {
                     const activeStar = hoverRating ?? selectedVote ?? 0;
@@ -691,7 +738,10 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
             <button
               onClick={handleSubmitVote}
               disabled={
-                submitting || selectedVote === null || (Array.isArray(selectedVote) && selectedVote.length === 0)
+                submitting ||
+                selectedVote === null ||
+                (typeof selectedVote === 'string' && !selectedVote.trim()) ||
+                (Array.isArray(selectedVote) && selectedVote.length === 0)
               }
               className="w-full bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-slate-200 text-white dark:text-slate-900 font-semibold text-sm py-3 rounded-lg flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
             >
