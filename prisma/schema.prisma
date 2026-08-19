@@ -19,6 +19,7 @@ model Session {
   hostName                  String?  @map("host_name") @db.VarChar(100)
   hostOrg                   String?  @map("host_org") @db.VarChar(150)
   version                   Int      @default(1)
+  paceMode                  String   @default("presenter") @map("pace_mode") @db.VarChar(20)
   createdAt                 DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt                 DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
   expiresAt                 DateTime @map("expires_at") @db.Timestamptz(6)

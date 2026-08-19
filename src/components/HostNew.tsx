@@ -106,6 +106,7 @@ export const HostNew: React.FC<HostNewProps> = ({ navigate, theme, toggleTheme }
   const [title, setTitle] = useState('Sesi Polling Live');
   const [hostName, setHostName] = useState('');
   const [hostOrg, setHostOrg] = useState('');
+  const [paceMode, setPaceMode] = useState<'presenter' | 'self_paced'>('presenter');
   const [questions, setQuestions] = useState<QuestionDraft[]>([]);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -139,6 +140,7 @@ export const HostNew: React.FC<HostNewProps> = ({ navigate, theme, toggleTheme }
         if (parsed.title) setTitle(parsed.title);
         if (parsed.hostName) setHostName(parsed.hostName);
         if (parsed.hostOrg) setHostOrg(parsed.hostOrg);
+        if (parsed.paceMode) setPaceMode(parsed.paceMode);
         if (Array.isArray(parsed.questions)) setQuestions(parsed.questions);
       } catch {}
     } else {
@@ -148,9 +150,9 @@ export const HostNew: React.FC<HostNewProps> = ({ navigate, theme, toggleTheme }
 
   useEffect(() => {
     if (questions.length > 0) {
-      localStorage.setItem('host_session_draft', JSON.stringify({ title, questions, hostName, hostOrg }));
+      localStorage.setItem('host_session_draft', JSON.stringify({ title, questions, hostName, hostOrg, paceMode }));
     }
-  }, [title, questions]);
+  }, [title, questions, paceMode]);
 
   const addQuestion = (type: 'multiple_choice' | 'multiple_selection' | 'rating') => {
     setQuestions([
@@ -267,6 +269,7 @@ export const HostNew: React.FC<HostNewProps> = ({ navigate, theme, toggleTheme }
           host_name: hostName.trim(),
           host_org: hostOrg.trim(),
           host_id: getHostId(),
+          pace_mode: paceMode,
           start_now: startThisNow,
           auth_token: getAuthToken() || undefined,
         }),
@@ -566,8 +569,60 @@ export const HostNew: React.FC<HostNewProps> = ({ navigate, theme, toggleTheme }
             </div>
           </div>
 
+          {/* Pace Mode option */}
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4 shadow-sm">
+            <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-2.5">
+              {t('paceModeLabel')}
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              <button
+                type="button"
+                onClick={() => setPaceMode('presenter')}
+                className={`p-3 rounded-lg border text-left transition-all ${
+                  paceMode === 'presenter'
+                    ? 'border-slate-900 dark:border-slate-100 bg-slate-900/5 dark:bg-slate-100/10'
+                    : 'border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'
+                }`}
+              >
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-xs font-bold text-slate-900 dark:text-white">
+                    {t('paceModePresenter')}
+                  </span>
+                  {paceMode === 'presenter' && (
+                    <span className="w-2 h-2 rounded-full bg-slate-900 dark:bg-white shrink-0" />
+                  )}
+                </div>
+                <p className="text-[10px] text-slate-500 dark:text-slate-400 leading-relaxed">
+                  {t('paceModePresenterHint')}
+                </p>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setPaceMode('self_paced')}
+                className={`p-3 rounded-lg border text-left transition-all ${
+                  paceMode === 'self_paced'
+                    ? 'border-slate-900 dark:border-slate-100 bg-slate-900/5 dark:bg-slate-100/10'
+                    : 'border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'
+                }`}
+              >
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-xs font-bold text-slate-900 dark:text-white">
+                    {t('paceModeSelfPaced')}
+                  </span>
+                  {paceMode === 'self_paced' && (
+                    <span className="w-2 h-2 rounded-full bg-slate-900 dark:bg-white shrink-0" />
+                  )}
+                </div>
+                <p className="text-[10px] text-slate-500 dark:text-slate-400 leading-relaxed">
+                  {t('paceModeSelfPacedHint')}
+                </p>
+              </button>
+            </div>
+          </div>
+
           {/* Start option (action buttons) */}
-          <div className="pt-4 pb-8">
+          <div className="pt-2 pb-8">
             <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-2">
               {t('startOption')}
             </p>

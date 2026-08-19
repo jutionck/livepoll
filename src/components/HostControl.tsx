@@ -265,6 +265,18 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
     }
   };
 
+  const handleTogglePaceMode = async () => {
+    const currentMode = session?.pace_mode || 'presenter';
+    const newMode = currentMode === 'presenter' ? 'self_paced' : 'presenter';
+    try {
+      await apiPost('set-pace-mode', { code, pace_mode: newMode });
+      await queryClient.invalidateQueries({ queryKey: ['session', code] });
+      showNotification(t('notifPaceModeChanged'), 'success');
+    } catch (err: any) {
+      showNotification(err.message);
+    }
+  };
+
   const executeResetVotes = async () => {
     setShowResetModal(false);
     try {
@@ -476,6 +488,17 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
           </div>
         </div>
         <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+          <button
+            onClick={handleTogglePaceMode}
+            className={`flex items-center gap-1.5 px-2 sm:px-2.5 py-1.5 rounded-lg text-xs font-bold border transition-colors ${
+              session.pace_mode === 'self_paced'
+                ? 'bg-purple-50 dark:bg-purple-950/30 text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-800 hover:bg-purple-100 dark:hover:bg-purple-900/40'
+                : 'bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700'
+            }`}
+            title={session.pace_mode === 'self_paced' ? t('switchToPresenter') : t('switchToSelfPaced')}
+          >
+            <span>{session.pace_mode === 'self_paced' ? '📝 ' + t('modeSelfPaced') : '🎙️ ' + t('modePresenter')}</span>
+          </button>
           <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
           <LanguageToggle />
           <button

@@ -13,7 +13,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    const { title, questions, host_name, host_org, host_id, start_now, auth_token } = await request.json();
+    const { title, questions, host_name, host_org, host_id, start_now, auth_token, pace_mode } = await request.json();
 
     if (!title || !questions || !Array.isArray(questions) || questions.length === 0) {
       return err('DATA_INCOMPLETE', 400, lang);
@@ -69,6 +69,7 @@ export async function POST(request: Request) {
       hostAccountId = account?.id ?? null;
     }
     const expiresAt = new Date(Date.now() + 24 * 3600 * 1000); // 24 hours
+    const paceMode = pace_mode === 'self_paced' ? 'self_paced' : 'presenter';
     const startNow = start_now !== false;
     const status = startNow ? 'active' : 'closed';
     const firstQId = 'q1';
@@ -84,6 +85,7 @@ export async function POST(request: Request) {
           code,
           title,
           status,
+          paceMode,
           hostName: host_name ? String(host_name).slice(0, 100) : null,
           hostOrg: host_org ? String(host_org).slice(0, 150) : null,
           activeQuestionId,

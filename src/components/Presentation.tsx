@@ -226,6 +226,11 @@ export const Presentation: React.FC<PresentationProps> = ({ code, navigate, them
           </span>
         </div>
         <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+          {session.pace_mode === 'self_paced' && (
+            <span className="hidden sm:inline-flex items-center gap-1 text-[10px] font-bold px-2 py-1 rounded-md bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800">
+              📝 Self-Paced
+            </span>
+          )}
           <div className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-2 sm:px-3 py-1.5 rounded-lg flex items-center gap-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300">
             <Users size={14} className="text-slate-400 shrink-0" />
             <span>
@@ -513,7 +518,7 @@ export const Presentation: React.FC<PresentationProps> = ({ code, navigate, them
               {t('joinLink')}
             </p>
             <p className="font-mono text-slate-800 dark:text-white text-[11px] font-medium break-all select-all mb-4 px-2.5 py-1 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-900 rounded-lg w-full">
-              {window.location.host + window.location.pathname}
+              {joinUrl ? joinUrl.replace(/^https?:\/\//, '') : `${typeof window !== 'undefined' ? window.location.host : ''}/${locale}/join/${code}`}
             </p>
             <div className="w-full border-t border-slate-200 dark:border-slate-900 pt-4">
               <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">{t('sessionCode')}</p>

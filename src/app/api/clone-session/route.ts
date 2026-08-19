@@ -74,6 +74,7 @@ export async function POST(request: Request) {
           code: newCode,
           title: original.title,
           status: 'closed',
+          paceMode: original.paceMode,
           activeQuestionId: null,
           activeQuestionActivatedAt: null,
           hostTokenHash,

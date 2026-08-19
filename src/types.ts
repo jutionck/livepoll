@@ -14,6 +14,7 @@ export interface Session {
   code: string;
   title: string;
   status: 'active' | 'closed';
+  pace_mode?: 'presenter' | 'self_paced';
   is_quiz?: boolean;
   host_name?: string | null;
   host_org?: string | null;

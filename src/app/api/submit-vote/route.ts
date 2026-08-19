@@ -26,7 +26,7 @@ export async function POST(request: Request) {
       return err('VOTING_CLOSED', 400, lang);
     }
 
-    if (session.activeQuestionId !== question_id) {
+    if (session.paceMode !== 'self_paced' && session.activeQuestionId !== question_id) {
       return err('QUESTION_INACTIVE', 400, lang);
     }
 
@@ -37,8 +37,8 @@ export async function POST(request: Request) {
       return err('QUESTION_NOT_FOUND', 404, lang);
     }
 
-    // Check timer limit on server side
-    if (question.timer && session.activeQuestionActivatedAt) {
+    // Check timer limit on server side (only in presenter-led mode)
+    if (session.paceMode !== 'self_paced' && question.timer && session.activeQuestionActivatedAt) {
       const now = Math.floor(Date.now() / 1000);
       const passed = now - session.activeQuestionActivatedAt;
       if (passed > question.timer) {

@@ -47,6 +47,7 @@ export async function GET(request: Request) {
         code: session.code,
         title: session.title,
         status: session.status,
+        pace_mode: session.paceMode || 'presenter',
         host_name: session.hostName,
         host_org: session.hostOrg,
         active_question_id: session.activeQuestionId,
@@ -55,39 +56,40 @@ export async function GET(request: Request) {
         version: session.version,
       });
     } else {
-      // Get active question only
-      const activeQId = session.activeQuestionId;
-      let activeQuestion = null;
-
-      const sessionQuestions = await prisma.question.findMany({
+      const questions = await prisma.question.findMany({
         where: { sessionCode: code },
-        select: { correctAnswer: true },
+        orderBy: { qId: 'asc' },
       });
-      const isQuiz = sessionQuestions.some((q) => q.correctAnswer);
 
-      if (activeQId) {
-        const q = await prisma.question.findUnique({
-          where: { sessionCode_qId: { sessionCode: code, qId: activeQId } },
-        });
-        if (q) {
-          activeQuestion = {
-            id: q.qId,
-            type: q.type,
-            title: q.title,
-            options: q.options,
-            timer: q.timer,
-            has_answer: !!q.correctAnswer,
-          };
-        }
+      const isQuiz = questions.some((q) => q.correctAnswer);
+      const questionsMap: Record<string, any> = {};
+
+      questions.forEach((q) => {
+        questionsMap[q.qId] = {
+          id: q.qId,
+          type: q.type,
+          title: q.title,
+          options: q.options,
+          timer: q.timer,
+          has_answer: !!q.correctAnswer,
+        };
+      });
+
+      const activeQId = session.activeQuestionId || questions[0]?.qId || null;
+      let activeQuestion = null;
+      if (activeQId && questionsMap[activeQId]) {
+        activeQuestion = questionsMap[activeQId];
       }
 
       return NextResponse.json({
         code: session.code,
         title: session.title,
         status: session.status,
+        pace_mode: session.paceMode || 'presenter',
         active_question_id: activeQId,
         active_question: activeQuestion,
         active_question_activated_at: session.activeQuestionActivatedAt,
+        questions: questionsMap,
         is_quiz: isQuiz,
         version: session.version,
       });

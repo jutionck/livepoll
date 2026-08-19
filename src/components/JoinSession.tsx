@@ -46,6 +46,9 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
   );
   const [nameError, setNameError] = useState(false);
 
+  const [selfPacedIndex, setSelfPacedIndex] = useState(0);
+  const [isSelfPacedCompleted, setIsSelfPacedCompleted] = useState(false);
+
   const notifyJoin = async (name?: string) => {
     try {
       await apiFetch(`${API_BASE_URL}/join-session`, {
@@ -111,9 +114,24 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
   const session = sessionQuery.data ?? null;
   const error = sessionQuery.error as Error | null;
 
-  // Countdown timer effect
+  const isSelfPaced = session?.pace_mode === 'self_paced';
+  const questionsList: any[] = isSelfPaced ? Object.values(session?.questions || {}) : [];
+  const activeQuestion = isSelfPaced
+    ? (questionsList[selfPacedIndex] || null)
+    : (session?.active_question || null);
+
+  // Check self-paced completion state
+  useEffect(() => {
+    if (isSelfPaced && typeof window !== 'undefined' && session) {
+      const done = localStorage.getItem(`self_paced_done_${code}_${session.version}`) === '1';
+      setIsSelfPacedCompleted(done);
+    }
+  }, [isSelfPaced, code, session?.version]);
+
+  // Countdown timer effect (only in presenter mode)
   useEffect(() => {
     if (
+      isSelfPaced ||
       !session ||
       !session.active_question ||
       !session.active_question.timer ||
@@ -136,23 +154,21 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
     }, 1000);
 
     return () => clearInterval(timerInterval);
-  }, [session?.active_question_id, session?.active_question_activated_at, session?.status]);
+  }, [isSelfPaced, session?.active_question_id, session?.active_question_activated_at, session?.status]);
 
   useEffect(() => {
-    if (!session || !session.active_question) return;
-    const activeQId = session.active_question.id;
-    const savedVote = localStorage.getItem(`vote_${code}_${activeQId}`);
+    if (!session || !activeQuestion) return;
+    const qId = activeQuestion.id;
+    const savedVote = localStorage.getItem(`vote_${code}_${qId}`);
     if (savedVote) {
       try {
         const parsed = JSON.parse(savedVote);
-        // Only restore "already voted" state if the session version matches —
-        // otherwise it's a new turn of the same code (fresh event).
         const fresh = parsed.version !== session.version;
         if (!fresh) {
           setSelectedVote(parsed.vote);
           setHasVoted(parsed.submitted);
         } else {
-          setSelectedVote(session.active_question.type === 'multiple_selection' ? [] : null);
+          setSelectedVote(activeQuestion.type === 'multiple_selection' ? [] : null);
           setHasVoted(false);
         }
       } catch {
@@ -160,16 +176,18 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
         setHasVoted(false);
       }
     } else {
-      setSelectedVote(session.active_question.type === 'multiple_selection' ? [] : null);
+      setSelectedVote(activeQuestion.type === 'multiple_selection' ? [] : null);
       setHasVoted(false);
     }
-  }, [session?.active_question_id]);
+  }, [activeQuestion?.id, isSelfPaced, selfPacedIndex, session?.version]);
 
   const handleSelectionToggle = (optKey: string) => {
-    if (hasVoted) return;
-    if (session.active_question.type === 'multiple_choice') {
+    if (!isSelfPaced && hasVoted) return;
+    if (!activeQuestion) return;
+
+    if (activeQuestion.type === 'multiple_choice') {
       setSelectedVote(optKey);
-    } else if (session.active_question.type === 'multiple_selection') {
+    } else if (activeQuestion.type === 'multiple_selection') {
       const current = Array.isArray(selectedVote) ? [...selectedVote] : [];
       const idx = current.indexOf(optKey);
       if (idx > -1) current.splice(idx, 1);
@@ -179,14 +197,14 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
   };
 
   const handleRatingChange = (rating: number) => {
-    if (hasVoted) return;
+    if (!isSelfPaced && hasVoted) return;
     setSelectedVote(rating);
   };
 
   const handleSubmitVote = async () => {
-    if (selectedVote === null || (Array.isArray(selectedVote) && selectedVote.length === 0)) return;
+    if (!activeQuestion || selectedVote === null || (Array.isArray(selectedVote) && selectedVote.length === 0)) return;
     setSubmitting(true);
-    const activeQId = session.active_question.id;
+    const activeQId = activeQuestion.id;
     try {
       const response = await apiFetch(`${API_BASE_URL}/submit-vote`, {
         method: 'POST',
@@ -203,13 +221,58 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
       if (!response.ok) throw new Error(data.error || 'Gagal.');
       localStorage.setItem(
         `vote_${code}_${activeQId}`,
-        JSON.stringify({ vote: selectedVote, submitted: true, version: session.version }),
+        JSON.stringify({ vote: selectedVote, submitted: true, version: session?.version }),
       );
       setHasVoted(true);
     } catch (err: any) {
       alert(err.message || t('sendError'));
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const handleSelfPacedNext = async () => {
+    if (submitting || !activeQuestion) return;
+
+    if (selectedVote !== null && (!Array.isArray(selectedVote) || selectedVote.length > 0)) {
+      setSubmitting(true);
+      try {
+        await apiFetch(`${API_BASE_URL}/submit-vote`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            code,
+            question_id: activeQuestion.id,
+            participant_id: participantId,
+            participant_name: participantName.trim() || undefined,
+            vote: selectedVote,
+          }),
+        });
+        localStorage.setItem(
+          `vote_${code}_${activeQuestion.id}`,
+          JSON.stringify({ vote: selectedVote, submitted: true, version: session?.version }),
+        );
+        setHasVoted(true);
+      } catch (err: any) {
+        console.error(err);
+      } finally {
+        setSubmitting(false);
+      }
+    }
+
+    if (selfPacedIndex >= questionsList.length - 1) {
+      if (session) {
+        localStorage.setItem(`self_paced_done_${code}_${session.version}`, '1');
+      }
+      setIsSelfPacedCompleted(true);
+    } else {
+      setSelfPacedIndex((prev) => prev + 1);
+    }
+  };
+
+  const handleSelfPacedPrev = () => {
+    if (selfPacedIndex > 0) {
+      setSelfPacedIndex((prev) => prev - 1);
     }
   };
 
@@ -242,7 +305,6 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
     );
   }
 
-  const activeQuestion = session.active_question;
   const isSessionClosed = session.status === 'closed';
   // "Closed" only counts when a question was actually shown; a session created
   // with "start later" (closed, no active question) should show the waiting state.
@@ -328,6 +390,156 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
               {t('nameSkip')}
             </button>
           </div>
+        ) : isSelfPaced ? (
+          isSelfPacedCompleted ? (
+            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-6 text-center shadow-sm animate-fade-in text-slate-900 dark:text-white">
+              <CheckCircle className="text-emerald-500 mx-auto mb-3" size={36} />
+              <h2 className="text-base font-bold mb-1">{t('completionTitle')}</h2>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mb-6 leading-relaxed">
+                {t('completionDesc')}
+              </p>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsSelfPacedCompleted(false);
+                  setSelfPacedIndex(0);
+                }}
+                className="w-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-bold text-xs py-3 rounded-lg transition-colors mb-3"
+              >
+                {t('reviewAnswers')}
+              </button>
+              <div className="border-t border-slate-100 dark:border-slate-800 pt-4">
+                <button
+                  type="button"
+                  onClick={() => setShowShareModal(true)}
+                  className="w-full bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 font-semibold text-xs py-2.5 rounded-lg flex items-center justify-center gap-2 transition-colors"
+                >
+                  <Share2 size={14} />
+                  <span>{t('share')}</span>
+                </button>
+              </div>
+            </div>
+          ) : !activeQuestion ? (
+            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-6 text-center shadow-sm">
+              <Users className="text-slate-300 dark:text-slate-600 mx-auto mb-3 animate-pulse" size={28} />
+              <h2 className="text-sm font-bold text-slate-900 dark:text-white mb-1">{t('waitingTitle')}</h2>
+              <p className="text-xs text-slate-500 dark:text-slate-400">{t('waitingDesc')}</p>
+            </div>
+          ) : (
+            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-sm">
+              {/* Stepper Progress Bar */}
+              <div className="mb-4">
+                <div className="flex items-center justify-between text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1.5">
+                  <span>
+                    {t('questionProgress', { current: selfPacedIndex + 1, total: questionsList.length })}
+                  </span>
+                  <span className="bg-purple-50 dark:bg-purple-950/40 text-purple-600 dark:text-purple-400 border border-purple-200 dark:border-purple-800 px-1.5 py-0.5 rounded text-[9px]">
+                    {activeQuestion.type === 'rating'
+                      ? t('typeRating')
+                      : activeQuestion.type === 'multiple_selection'
+                        ? t('typeMultiple')
+                        : t('typeSingle')}
+                  </span>
+                </div>
+                <div className="w-full h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-slate-900 dark:bg-slate-100 rounded-full transition-all duration-300"
+                    style={{ width: `${((selfPacedIndex + 1) / questionsList.length) * 100}%` }}
+                  />
+                </div>
+              </div>
+
+              <h2 className="text-base font-bold text-slate-900 dark:text-white leading-snug mb-5">
+                {activeQuestion.title}
+              </h2>
+
+              <div className="space-y-2 mb-6">
+                {activeQuestion.type === 'rating' ? (
+                  <div className="flex items-center justify-center gap-2.5 py-4">
+                    {[1, 2, 3, 4, 5].map((star) => {
+                      const activeStar = hoverRating ?? selectedVote ?? 0;
+                      return (
+                        <button
+                          key={star}
+                          onClick={() => handleRatingChange(star)}
+                          onMouseEnter={() => setHoverRating(star)}
+                          onMouseLeave={() => setHoverRating(null)}
+                          className="p-1 transition-transform active:scale-90"
+                        >
+                          <Star
+                            size={36}
+                            className={`transition-colors duration-150 ${
+                              star <= activeStar
+                                ? 'fill-amber-400 text-amber-400'
+                                : 'text-slate-200 dark:text-slate-800'
+                            }`}
+                          />
+                        </button>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  Object.entries(activeQuestion.options).map(([key, label]: [string, any]) => {
+                    const isSelected =
+                      activeQuestion.type === 'multiple_selection'
+                        ? Array.isArray(selectedVote) && selectedVote.includes(key)
+                        : selectedVote === key;
+
+                    return (
+                      <button
+                        key={key}
+                        onClick={() => handleSelectionToggle(key)}
+                        className={`w-full text-left p-3.5 rounded-lg border text-xs font-medium transition-all flex items-center gap-3 ${
+                          isSelected
+                            ? 'border-slate-800 dark:border-slate-100 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 font-semibold'
+                            : 'border-slate-200 dark:border-slate-800 hover:border-slate-400 dark:hover:border-slate-700 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300'
+                        }`}
+                      >
+                        <span
+                          className={`w-5 h-5 rounded text-[10px] font-black flex items-center justify-center uppercase shrink-0 border ${
+                            isSelected
+                              ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white border-white dark:border-slate-800'
+                              : 'bg-slate-50 dark:bg-slate-800 text-slate-400 dark:text-slate-300 border-slate-200 dark:border-slate-700'
+                          }`}
+                        >
+                          {key}
+                        </span>
+                        <span className="flex-1 truncate">{label}</span>
+                      </button>
+                    );
+                  })
+                )}
+              </div>
+
+              {/* Navigation Action Buttons */}
+              <div className="flex gap-2">
+                {selfPacedIndex > 0 && (
+                  <button
+                    type="button"
+                    onClick={handleSelfPacedPrev}
+                    disabled={submitting}
+                    className="flex-1 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-semibold text-xs py-3 rounded-lg transition-colors"
+                  >
+                    {t('prevQuestion')}
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={handleSelfPacedNext}
+                  disabled={submitting}
+                  className="flex-1 bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-slate-200 text-white dark:text-slate-900 font-semibold text-xs py-3 rounded-lg flex items-center justify-center gap-2 transition-all"
+                >
+                  {submitting ? (
+                    <div className="w-4 h-4 border-2 border-white/30 dark:border-slate-900/30 border-t-white dark:border-t-slate-900 rounded-full animate-spin"></div>
+                  ) : selfPacedIndex >= questionsList.length - 1 ? (
+                    t('finishPoll')
+                  ) : (
+                    t('nextQuestion')
+                  )}
+                </button>
+              </div>
+            </div>
+          )
         ) : isClosed && !hasVoted ? (
           <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-6 text-center shadow-sm">
             <Clock className="text-slate-400 dark:text-slate-500 mx-auto mb-3" size={28} />
