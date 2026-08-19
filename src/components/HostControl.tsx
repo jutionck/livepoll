@@ -285,6 +285,7 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
   };
 
   const handleNextQuestion = () => {
+    if (session?.pace_mode === 'self_paced') return;
     cancelAutoNext();
     const questions = Object.values(session?.questions || {});
     const idx = questions.findIndex((q) => q.id === selectedQuestionId);
@@ -770,8 +771,10 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
                 if (!hasNext) return null;
                 return (
                   <button
+                    type="button"
                     onClick={handleNextQuestion}
-                    className="bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 px-3.5 py-1.5 rounded-lg font-bold text-xs flex items-center gap-1.5 transition-colors"
+                    disabled={session.pace_mode === 'self_paced'}
+                    className="bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 px-3.5 py-1.5 rounded-lg font-bold text-xs flex items-center gap-1.5 transition-colors disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-white dark:disabled:hover:bg-slate-900"
                   >
                     <SkipForward size={12} /> {t('next')}
                   </button>
