@@ -20,6 +20,7 @@ import {
   Trophy,
   Download,
   Link2,
+  Key,
 } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { API_BASE_URL, apiFetch, getJoinUrl, getHostId, getAuthToken, getResultsUrl } from '../config';
@@ -27,6 +28,7 @@ import type { Session } from '../types';
 
 import { ThemeToggle } from './ThemeToggle';
 import { LanguageToggle } from './LanguageToggle';
+import { HostAuth } from './HostAuth';
 
 interface HostControlProps {
   code: string;
@@ -60,9 +62,20 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
   const [expandedParticipant, setExpandedParticipant] = useState<string | null>(null);
 
   const [hostToken, setHostToken] = useState<string | null>(null);
+  const [manualTokenInput, setManualTokenInput] = useState('');
 
   useEffect(() => {
-    setHostToken(localStorage.getItem(`host_token_${code}`) || '');
+    if (typeof window === 'undefined') return;
+    const params = new URLSearchParams(window.location.search);
+    const urlToken = params.get('token') || params.get('host_token');
+    if (urlToken) {
+      localStorage.setItem(`host_token_${code}`, urlToken);
+      setHostToken(urlToken);
+      const cleanUrl = window.location.pathname;
+      window.history.replaceState({}, '', cleanUrl);
+    } else {
+      setHostToken(localStorage.getItem(`host_token_${code}`) || '');
+    }
   }, [code]);
 
   const hostTokenSafe = hostToken || '';
@@ -74,9 +87,12 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
 
   // Session query with 2s polling
   const fetchSession = async (): Promise<Session> => {
-    const res = await apiFetch(`${API_BASE_URL}/get-session?code=${code}`, {
-      headers: { 'X-Host-Token': hostTokenSafe },
-    });
+    const headers: Record<string, string> = {};
+    if (hostTokenSafe) headers['X-Host-Token'] = hostTokenSafe;
+    const accountToken = getAuthToken();
+    if (accountToken) headers['X-Host-Account-Token'] = accountToken;
+
+    const res = await apiFetch(`${API_BASE_URL}/get-session?code=${code}`, { headers });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || t('loadSessionError'));
     if (data.title) {
@@ -86,10 +102,10 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
   };
 
   const sessionQuery = useQuery({
-    queryKey: ['session', code],
+    queryKey: ['session', code, hostTokenSafe],
     queryFn: fetchSession,
     refetchInterval: 2000,
-    enabled: !!hostTokenSafe,
+    enabled: !!hostTokenSafe || !!getAuthToken(),
   });
 
   const session = sessionQuery.data ?? null;
@@ -214,14 +230,27 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
   };
 
   const apiPost = async (endpoint: string, body: any) => {
+    const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+    if (hostTokenSafe) headers['X-Host-Token'] = hostTokenSafe;
+    const accountToken = getAuthToken();
+    if (accountToken) headers['X-Host-Account-Token'] = accountToken;
+
     const res = await apiFetch(`${API_BASE_URL}/${endpoint}`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'X-Host-Token': hostTokenSafe },
+      headers,
       body: JSON.stringify(body),
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Gagal.');
     return data;
+  };
+
+  const handleCopyHostLink = () => {
+    if (typeof window === 'undefined') return;
+    const link = `${window.location.origin}/${locale}/host/${code}?token=${hostTokenSafe}`;
+    navigator.clipboard.writeText(link).then(() => {
+      showNotification(t('notifHostLinkCopied'), 'success');
+    });
   };
 
   const startVoteFor = async (qId: string) => {
@@ -432,16 +461,59 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
 
   if (accessError) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
-        <div className="max-w-sm w-full bg-white border border-slate-200 rounded-xl p-6 text-center shadow-sm">
-          <div className="w-12 h-12 bg-red-50 rounded-xl flex items-center justify-center mx-auto mb-4">
-            <AlertCircle className="text-red-500" size={24} />
+      <div className="min-h-screen bg-dots flex items-center justify-center p-4 sm:p-6 text-slate-900 dark:text-white">
+        <div className="max-w-md w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 sm:p-8 shadow-sm text-center">
+          <div className="w-12 h-12 bg-amber-50 dark:bg-amber-950/30 text-amber-600 dark:text-amber-400 rounded-xl flex items-center justify-center mx-auto mb-4 border border-amber-200 dark:border-amber-900/40">
+            <Key size={24} />
           </div>
-          <h2 className="text-sm font-bold text-slate-900 mb-1">{t('errorAccess')}</h2>
-          <p className="text-xs text-slate-500 mb-5">{accessError}</p>
+          <h2 className="text-base font-bold mb-1.5">{t('enterTokenTitle')}</h2>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mb-6 leading-relaxed">
+            {t('enterTokenDesc')}
+          </p>
+
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              const trimmed = manualTokenInput.trim();
+              if (!trimmed) return;
+              localStorage.setItem(`host_token_${code}`, trimmed);
+              setHostToken(trimmed);
+            }}
+            className="space-y-3 mb-6"
+          >
+            <input
+              type="text"
+              value={manualTokenInput}
+              onChange={(e) => setManualTokenInput(e.target.value)}
+              placeholder={t('tokenPlaceholder')}
+              autoFocus
+              className="w-full px-3.5 py-3 border border-slate-200 dark:border-slate-700 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white font-mono focus:outline-none focus:border-slate-400 dark:focus:border-slate-500"
+            />
+            <button
+              type="submit"
+              disabled={!manualTokenInput.trim()}
+              className="w-full bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-slate-200 text-white dark:text-slate-900 font-bold text-xs py-3 rounded-xl disabled:opacity-40 transition-colors"
+            >
+              {t('submitToken')}
+            </button>
+          </form>
+
+          <div className="border-t border-slate-100 dark:border-slate-800 pt-5 mb-5 text-left">
+            <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-2.5 text-center">
+              {t('loginToAccess')}
+            </p>
+            <HostAuth
+              compact
+              onAuthChange={() => {
+                queryClient.invalidateQueries({ queryKey: ['session', code] });
+              }}
+            />
+          </div>
+
           <button
+            type="button"
             onClick={() => navigate('/')}
-            className="w-full bg-slate-900 text-white font-semibold text-xs py-2 rounded-lg"
+            className="text-xs font-semibold text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
           >
             {t('back')}
           </button>
@@ -664,6 +736,13 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
                   <Trophy size={12} /> {t('leaderboard')}
                 </button>
               )}
+              <button
+                onClick={handleCopyHostLink}
+                className="bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800 px-3 py-1.5 rounded-lg font-semibold text-xs flex items-center gap-1.5 transition-colors"
+                title={t('copyHostLink')}
+              >
+                <Key size={12} /> {t('copyHostLink')}
+              </button>
               <button
                 onClick={handleCloneSession}
                 className="bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800 px-3 py-1.5 rounded-lg font-semibold text-xs flex items-center gap-1.5 transition-colors"

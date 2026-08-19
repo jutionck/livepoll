@@ -3,6 +3,8 @@ import prisma from '@/lib/db';
 import { getLang, msg, err } from '@/lib/api-errors';
 import crypto from 'crypto';
 
+import { isHostAuthorized } from '@/lib/host-auth';
+
 export async function GET(request: Request) {
   const lang = getLang(request);
   try {
@@ -18,10 +20,8 @@ export async function GET(request: Request) {
       return err('SESSION_NOT_FOUND_OR_EXPIRED', 404, lang);
     }
 
-    // Check host token
-    const tokenHeader = request.headers.get('X-Host-Token') || searchParams.get('host_token') || '';
-    const hash = crypto.createHash('sha256').update(tokenHeader).digest('hex');
-    const isHost = hash === session.hostTokenHash;
+    // Check host token or host account
+    const isHost = await isHostAuthorized(session, request);
 
     if (isHost) {
       // Get all questions

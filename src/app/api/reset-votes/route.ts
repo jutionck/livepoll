@@ -3,11 +3,12 @@ import prisma from '@/lib/db';
 import { getLang, msg, err } from '@/lib/api-errors';
 import crypto from 'crypto';
 
+import { isHostAuthorized } from '@/lib/host-auth';
+
 export async function POST(request: Request) {
   const lang = getLang(request);
   try {
     const { code, question_id } = await request.json();
-    const tokenHeader = request.headers.get('X-Host-Token') || '';
 
     if (!code || !question_id) {
       return err('DATA_INCOMPLETE', 400, lang);
@@ -18,8 +19,7 @@ export async function POST(request: Request) {
       return err('SESSION_NOT_FOUND', 404, lang);
     }
 
-    const hash = crypto.createHash('sha256').update(tokenHeader).digest('hex');
-    if (hash !== session.hostTokenHash) {
+    if (!(await isHostAuthorized(session, request))) {
       return err('ACCESS_DENIED', 403, lang);
     }
 
