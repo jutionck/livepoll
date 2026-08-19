@@ -43,6 +43,8 @@ export const Presentation: React.FC<PresentationProps> = ({ code, navigate, them
     refetchInterval: 2000,
   });
 
+  const session = sessionQuery.data ?? null;
+
   const [browsingQId, setBrowsingQId] = useState<string | null>(null);
 
   const questionsList: any[] = session ? Object.values(session.questions || {}) : [];
