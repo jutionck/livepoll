@@ -303,6 +303,16 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
     }
   };
 
+  const getExportFilename = () => {
+    const slug = (session?.title || code)
+      .toLowerCase()
+      .trim()
+      .replace(/[^\w\s-]/g, '')
+      .replace(/[\s_-]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+    return `${slug || `session-${code.toLowerCase()}`}.xls`;
+  };
+
   const exportAllResults = async () => {
     try {
       const res = await apiFetch(`${API_BASE_URL}/export-results?code=${code}`, {
@@ -313,7 +323,7 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `hasil-poll-${code}.xls`;
+      a.download = getExportFilename();
       document.body.appendChild(a);
       a.click();
       a.remove();
@@ -333,7 +343,7 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `nilai-${code}.xls`;
+      a.download = getExportFilename();
       document.body.appendChild(a);
       a.click();
       a.remove();

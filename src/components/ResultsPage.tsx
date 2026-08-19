@@ -44,7 +44,13 @@ export const ResultsPage: React.FC<Props> = ({ code, navigate, theme, toggleThem
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `hasil-poll-${code}.xls`;
+      const slug = (data?.title || code)
+        .toLowerCase()
+        .trim()
+        .replace(/[^\w\s-]/g, '')
+        .replace(/[\s_-]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+      a.download = `${slug || `session-${code.toLowerCase()}`}.xls`;
       document.body.appendChild(a);
       a.click();
       a.remove();

@@ -196,10 +196,17 @@ export async function GET(request: Request) {
         sheet('Lembar Jawaban', jawaban) +
         `</Workbook>`;
 
+      const slug = (session.title || code)
+        .toLowerCase()
+        .trim()
+        .replace(/[^\w\s-]/g, '')
+        .replace(/[\s_-]+/g, '-')
+        .replace(/^-+|-+$/g, '') || `session-${code.toLowerCase()}`;
+
       return new NextResponse(xml, {
         headers: {
           'Content-Type': 'application/vnd.ms-excel; charset=utf-8',
-          'Content-Disposition': `attachment; filename="nilai-${code}.xls"`,
+          'Content-Disposition': `attachment; filename="${slug}.xls"`,
         },
       });
     }
