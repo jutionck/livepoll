@@ -13,7 +13,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    const { name, role, message, rating, code } = await request.json();
+    const { name, role, message, rating } = await request.json();
     if (!name || !message) {
       return err('NAME_MESSAGE_REQUIRED', 400, lang);
     }

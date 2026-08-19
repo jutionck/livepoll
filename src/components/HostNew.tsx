@@ -152,7 +152,7 @@ export const HostNew: React.FC<HostNewProps> = ({ navigate, theme, toggleTheme }
     if (questions.length > 0) {
       localStorage.setItem('host_session_draft', JSON.stringify({ title, questions, hostName, hostOrg, paceMode }));
     }
-  }, [title, questions, paceMode]);
+  }, [title, questions, hostName, hostOrg, paceMode]);
 
   const addQuestion = (type: 'multiple_choice' | 'multiple_selection' | 'rating') => {
     setQuestions([

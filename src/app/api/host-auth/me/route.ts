@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
-import { getLang, msg, err } from '@/lib/api-errors';
+import { getLang, msg } from '@/lib/api-errors';
 import { hashAuthToken } from '@/lib/host-auth';
 
 export async function GET(request: Request) {

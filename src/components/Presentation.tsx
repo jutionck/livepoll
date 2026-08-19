@@ -177,6 +177,7 @@ export const Presentation: React.FC<PresentationProps> = ({ code, navigate, them
     }, 1000);
 
     return () => clearInterval(timerInterval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session?.active_question_id, session?.active_question_activated_at, session?.status]);
 
   const toggleFullscreen = () => {

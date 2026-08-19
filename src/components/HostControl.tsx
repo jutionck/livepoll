@@ -88,14 +88,16 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
 
   // Session query with 2s polling
   const fetchSession = async (): Promise<Session> => {
-    const headers: Record<string, string> = {};
+    const headers: Record<string, string> = {
+      'X-Require-Host': '1',
+    };
     if (hostTokenSafe) headers['X-Host-Token'] = hostTokenSafe;
     const accountToken = getAuthToken();
     if (accountToken) headers['X-Host-Account-Token'] = accountToken;
 
     const res = await apiFetch(`${API_BASE_URL}/get-session?code=${code}`, { headers });
     const data = await res.json();
-    if (!res.ok) throw new Error(data.error || t('loadSessionError'));
+    if (!res.ok || !data.is_host) throw new Error(data.error || t('errorToken'));
     if (data.title) {
       document.title = `LivePoll Host | ${data.title} (${code})`;
     }
@@ -107,6 +109,7 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
     queryFn: fetchSession,
     refetchInterval: 2000,
     enabled: !!hostTokenSafe || !!getAuthToken(),
+    retry: false,
   });
 
   const session = sessionQuery.data ?? null;
@@ -120,6 +123,7 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
       const first = Object.values(session.questions || {})[0];
       if (first) setSelectedQuestionId(first.id);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session?.active_question_id]);
 
   // Results query with 1s polling
@@ -189,6 +193,7 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
     }, 1000);
 
     return () => clearInterval(timerInterval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session?.active_question_id, session?.active_question_activated_at, session?.status]);
 
   // Clear pending auto-next on unmount
@@ -492,7 +497,13 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
               <Key size={24} />
             </div>
             <h2 className="text-base font-bold mb-1.5">{t('enterTokenTitle')}</h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mb-6 leading-relaxed">{t('enterTokenDesc')}</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mb-4 leading-relaxed">{t('enterTokenDesc')}</p>
+
+            {queryError?.message && (
+              <div className="bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/50 text-red-600 dark:text-red-400 text-xs px-3.5 py-2.5 rounded-xl mb-4 text-center font-medium">
+                {queryError.message}
+              </div>
+            )}
 
             <form
               onSubmit={(e) => {

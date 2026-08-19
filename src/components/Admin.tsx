@@ -35,11 +35,11 @@ export const Admin: React.FC<AdminProps> = ({ navigate }) => {
     if (saved) {
       setToken(saved);
       setIsAuthed(true);
-      loadTestimonials(saved);
+      loadTestimonials();
     }
   }, []);
 
-  const loadTestimonials = async (tkn: string) => {
+  const loadTestimonials = async () => {
     try {
       const res = await apiFetch(`${API_BASE_URL}/testimonials`);
       const data = await res.json();
@@ -69,7 +69,7 @@ export const Admin: React.FC<AdminProps> = ({ navigate }) => {
       sessionStorage.setItem('admin_token', password);
       setIsAuthed(true);
       setError('');
-      loadTestimonials(password);
+      loadTestimonials();
     } catch {
       setError(t('genericError'));
     }
@@ -91,7 +91,7 @@ export const Admin: React.FC<AdminProps> = ({ navigate }) => {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || t('saveError'));
       setForm({ name: '', role: '', message: '', rating: 5, isActive: true });
-      loadTestimonials(token);
+      loadTestimonials();
     } catch (err: any) {
       setError(err.message);
     } finally {

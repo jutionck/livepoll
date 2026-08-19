@@ -75,6 +75,7 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
     const savedName = localStorage.getItem('participant_name') || '';
     if (savedName) setParticipantName(savedName);
     notifyJoin(savedName || undefined);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleSubmitName = () => {
@@ -124,7 +125,7 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
       const done = localStorage.getItem(`self_paced_done_${code}_${session.version}`) === '1';
       setIsSelfPacedCompleted(done);
     }
-  }, [isSelfPaced, code, session?.version]);
+  }, [isSelfPaced, code, session]);
 
   // Countdown timer effect (only in presenter mode)
   useEffect(() => {
@@ -152,6 +153,7 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
     }, 1000);
 
     return () => clearInterval(timerInterval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSelfPaced, session?.active_question_id, session?.active_question_activated_at, session?.status]);
 
   useEffect(() => {
@@ -177,6 +179,7 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
       setSelectedVote(activeQuestion.type === 'multiple_selection' ? [] : null);
       setHasVoted(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeQuestion?.id, isSelfPaced, selfPacedIndex, session?.version]);
 
   const handleSelectionToggle = (optKey: string) => {

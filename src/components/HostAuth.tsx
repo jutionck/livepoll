@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { LogIn, LogOut, UserCheck, Loader2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { API_BASE_URL, apiFetch, getAuthToken, setAuthToken, getAuthEmail, setAuthEmail, getHostId } from '../config';
+import { API_BASE_URL, apiFetch, getAuthToken, setAuthToken, setAuthEmail, getHostId } from '../config';
 
 interface HostAuthProps {
   compact?: boolean;
@@ -107,31 +107,29 @@ export const HostAuth: React.FC<HostAuthProps> = ({ compact = false, onAuthChang
       <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-2">
         {t('title')}
       </p>
-      <div className="grid grid-cols-1 sm:grid-cols-[1fr_1fr_auto] gap-2">
+      <div className={compact ? 'space-y-2' : 'grid grid-cols-1 md:grid-cols-[1fr_1fr_auto] gap-2'}>
         <input
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder={t('emailPlaceholder')}
-          className="px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-lg text-xs bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:border-slate-400"
+          className="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-lg text-xs bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:border-slate-400"
         />
         <input
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           placeholder={t('passwordPlaceholder')}
-          className="px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-lg text-xs bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:border-slate-400"
+          className="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-lg text-xs bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:border-slate-400"
         />
-        <div className="flex gap-1.5">
-          <button
-            type="submit"
-            disabled={loading}
-            className="flex-1 sm:flex-initial flex items-center justify-center gap-1 bg-slate-900 dark:bg-slate-100 hover:bg-slate-800 dark:hover:bg-slate-200 text-white dark:text-slate-900 px-3 py-2 rounded-lg text-xs font-bold transition-colors disabled:opacity-50"
-          >
-            {loading ? <Loader2 size={12} className="animate-spin" /> : <LogIn size={12} />}
-            {mode === 'login' ? t('login') : t('register')}
-          </button>
-        </div>
+        <button
+          type="submit"
+          disabled={loading}
+          className={`${compact ? 'w-full' : 'w-full md:w-auto'} flex items-center justify-center gap-1 bg-slate-900 dark:bg-slate-100 hover:bg-slate-800 dark:hover:bg-slate-200 text-white dark:text-slate-900 px-3.5 py-2 rounded-lg text-xs font-bold transition-colors disabled:opacity-50`}
+        >
+          {loading ? <Loader2 size={12} className="animate-spin" /> : <LogIn size={12} />}
+          {mode === 'login' ? t('login') : t('register')}
+        </button>
       </div>
       <div className="flex items-center justify-between mt-2 gap-2">
         <button

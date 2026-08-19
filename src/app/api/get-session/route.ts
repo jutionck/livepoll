@@ -1,8 +1,6 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { getLang, msg, err } from '@/lib/api-errors';
-import crypto from 'crypto';
-
 import { isHostAuthorized } from '@/lib/host-auth';
 
 export async function GET(request: Request) {
@@ -21,7 +19,17 @@ export async function GET(request: Request) {
     }
 
     // Check host token or host account
+    const requireHost =
+      request.headers.get('X-Require-Host') === '1' ||
+      request.headers.get('X-Host-Token') !== null ||
+      searchParams.get('host_token') !== null ||
+      searchParams.get('token') !== null;
+
     const isHost = await isHostAuthorized(session, request);
+
+    if (requireHost && !isHost) {
+      return err('ACCESS_DENIED', 403, lang);
+    }
 
     if (isHost) {
       // Get all questions
@@ -54,6 +62,7 @@ export async function GET(request: Request) {
         active_question_activated_at: session.activeQuestionActivatedAt,
         questions: questionsMap,
         version: session.version,
+        is_host: true,
       });
     } else {
       const questions = await prisma.question.findMany({
