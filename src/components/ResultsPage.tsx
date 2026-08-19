@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { AlertCircle, Link2, Check, ArrowLeft, Trophy, HelpCircle } from 'lucide-react';
+import { AlertCircle, Link2, Check, ArrowLeft, Trophy, HelpCircle, Download } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { apiFetch, getResultsUrl } from '../config';
 import { ThemeToggle } from './ThemeToggle';
@@ -34,6 +34,24 @@ export const ResultsPage: React.FC<Props> = ({ code, navigate, theme, toggleThem
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     });
+  };
+
+  const handleExport = async () => {
+    try {
+      const res = await apiFetch(`/export-results?code=${code}`);
+      if (!res.ok) throw new Error('Gagal mengunduh');
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `hasil-poll-${code}.xls`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   if (query.error) {
@@ -75,6 +93,13 @@ export const ResultsPage: React.FC<Props> = ({ code, navigate, theme, toggleThem
           </div>
         </div>
         <div className="flex items-center gap-2 shrink-0">
+          <button
+            onClick={handleExport}
+            className="flex items-center gap-1 bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-[10px] font-bold transition-colors"
+            title={t('exportResults')}
+          >
+            <Download size={12} /> {t('exportResults')}
+          </button>
           <button
             onClick={copyLink}
             className="flex items-center gap-1 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 px-3 py-1.5 rounded-lg text-[10px] font-bold"

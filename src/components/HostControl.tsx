@@ -303,6 +303,26 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
     }
   };
 
+  const exportAllResults = async () => {
+    try {
+      const res = await apiFetch(`${API_BASE_URL}/export-results?code=${code}`, {
+        headers: { 'X-Host-Token': hostTokenSafe },
+      });
+      if (!res.ok) throw new Error(await dataError(res));
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `hasil-poll-${code}.xls`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    } catch (err: any) {
+      showNotification(err.message || t('loadSessionError'));
+    }
+  };
+
   const exportExcel = async () => {
     try {
       const res = await apiFetch(`${API_BASE_URL}/quiz-scores?code=${code}&format=xls`, {
@@ -618,6 +638,13 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
               >
                 <Copy size={12} /> {t('cloneSession')}
               </button>
+              <button
+                onClick={exportAllResults}
+                className="bg-white dark:bg-slate-900 hover:bg-emerald-50 dark:hover:bg-emerald-950/20 text-emerald-700 dark:text-emerald-400 border border-slate-200 dark:border-slate-800 px-3 py-1.5 rounded-lg font-semibold text-xs flex items-center gap-1.5 transition-colors"
+                title={t('exportResults')}
+              >
+                <Download size={12} /> {t('exportResults')}
+              </button>
             </div>
           </div>
 
@@ -627,8 +654,17 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
               <h3 className="font-bold text-slate-900 dark:text-white text-xs uppercase tracking-wider">
                 {t('resultsTitle')}
               </h3>
-              <div className="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-bold px-2.5 py-1 rounded text-xs flex items-center gap-1 border border-slate-200 dark:border-slate-700">
-                <Users size={12} /> {totalVotes} {t('responses')}
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={exportAllResults}
+                  className="bg-emerald-50 dark:bg-emerald-950/30 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300 font-bold px-2.5 py-1 rounded text-xs flex items-center gap-1 border border-emerald-200 dark:border-emerald-800 transition-colors"
+                  title={t('exportResults')}
+                >
+                  <Download size={12} /> <span className="hidden sm:inline">{t('exportResults')}</span>
+                </button>
+                <div className="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-bold px-2.5 py-1 rounded text-xs flex items-center gap-1 border border-slate-200 dark:border-slate-700">
+                  <Users size={12} /> {totalVotes} {t('responses')}
+                </div>
               </div>
             </div>
 
