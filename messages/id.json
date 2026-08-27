@@ -152,6 +152,7 @@
     "votingClosedTitle": "Voting Ditutup",
     "votingClosedTime": "Waktu voting telah habis.",
     "votingClosedWait": "Presenter sedang mengulas hasil. Harap tunggu sebentar.",
+    "votingClosedInfo": "Sesi ini telah ditutup oleh presenter.",
     "votedTitle": "Jawaban Terkirim",
     "votedDesc": "Jawaban Anda berhasil disimpan.",
     "yourAnswer": "Jawaban Anda",

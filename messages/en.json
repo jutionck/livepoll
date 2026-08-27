@@ -152,6 +152,7 @@
     "votingClosedTitle": "Voting Closed",
     "votingClosedTime": "Voting time has ended.",
     "votingClosedWait": "The presenter is reviewing results. Please wait a moment.",
+    "votingClosedInfo": "This session has been closed by the presenter.",
     "votedTitle": "Answer Submitted",
     "votedDesc": "Your answer has been saved.",
     "yourAnswer": "Your Answer",
