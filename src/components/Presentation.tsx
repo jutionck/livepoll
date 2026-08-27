@@ -468,14 +468,14 @@ export const Presentation: React.FC<PresentationProps> = ({ code, navigate, them
                         const pct = totalVotes > 0 ? (count / totalVotes) * 100 : 0;
                         return (
                           <div key={key} className="space-y-1 sm:space-y-1.5">
-                            <div className="flex justify-between items-end gap-2">
-                              <span className="text-sm sm:text-base font-bold flex items-center text-slate-800 dark:text-slate-200 truncate">
-                                <span className="inline-flex w-5 h-5 sm:w-6 sm:h-6 rounded bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-white text-[9px] sm:text-[10px] font-black items-center justify-center mr-2 uppercase shrink-0 border border-slate-300 dark:border-slate-700">
+                            <div className="flex justify-between items-start gap-3">
+                              <span className="text-sm sm:text-base font-bold flex items-start text-slate-800 dark:text-slate-200 min-w-0 flex-1 leading-snug">
+                                <span className="inline-flex w-5 h-5 sm:w-6 sm:h-6 rounded bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-white text-[9px] sm:text-[10px] font-black items-center justify-center mr-2.5 uppercase shrink-0 border border-slate-300 dark:border-slate-700 mt-0.5">
                                   {key}
                                 </span>
-                                <span className="truncate">{label as string}</span>
+                                <span className="break-words">{label as string}</span>
                               </span>
-                              <span className="text-sm sm:text-base font-bold text-slate-900 dark:text-white ml-2 shrink-0">
+                              <span className="text-sm sm:text-base font-bold text-slate-900 dark:text-white ml-2 shrink-0 whitespace-nowrap pt-0.5">
                                 {count}{' '}
                                 <span className="text-[10px] sm:text-xs font-semibold text-slate-500 dark:text-slate-500">
                                   ({Math.round(pct)}%)

@@ -509,14 +509,14 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
                       <button
                         key={key}
                         onClick={() => handleSelectionToggle(key)}
-                        className={`w-full text-left p-3.5 rounded-lg border text-xs font-medium transition-all flex items-center gap-3 ${
+                        className={`w-full text-left p-3.5 rounded-lg border text-xs font-medium transition-all flex items-start gap-3 ${
                           isSelected
                             ? 'border-slate-800 dark:border-slate-100 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 font-semibold'
                             : 'border-slate-200 dark:border-slate-800 hover:border-slate-400 dark:hover:border-slate-700 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300'
                         }`}
                       >
                         <span
-                          className={`w-5 h-5 rounded text-[10px] font-black flex items-center justify-center uppercase shrink-0 border ${
+                          className={`w-5 h-5 rounded text-[10px] font-black flex items-center justify-center uppercase shrink-0 border mt-0.5 ${
                             isSelected
                               ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white border-white dark:border-slate-800'
                               : 'bg-slate-50 dark:bg-slate-800 text-slate-400 dark:text-slate-300 border-slate-200 dark:border-slate-700'
@@ -524,7 +524,7 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
                         >
                           {key}
                         </span>
-                        <span className="flex-1 truncate">{label}</span>
+                        <span className="flex-1 break-words leading-relaxed">{label}</span>
                       </button>
                     );
                   })
@@ -597,20 +597,22 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
                     <span className="text-slate-400 dark:text-slate-500 text-[10px] ml-1">({selectedVote}/5)</span>
                   </div>
                 ) : activeQuestion.type === 'multiple_selection' ? (
-                  <div className="flex flex-wrap gap-1">
+                  <div className="flex flex-col gap-1.5">
                     {(selectedVote as string[]).map((v) => (
-                      <span
+                      <div
                         key={v}
-                        className="bg-slate-200/60 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-2 py-0.5 rounded text-[10px] uppercase font-bold border border-slate-200 dark:border-slate-700"
+                        className="bg-slate-200/60 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-2.5 py-1.5 rounded-lg text-xs font-semibold border border-slate-200 dark:border-slate-700 flex items-start gap-2 break-words"
                       >
-                        {v}: {activeQuestion.options[v]}
-                      </span>
+                        <span className="uppercase font-bold shrink-0">{v}:</span>
+                        <span>{activeQuestion.options[v]}</span>
+                      </div>
                     ))}
                   </div>
                 ) : (
-                  <span className="bg-slate-200/60 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-2 py-1 rounded text-[10px] uppercase font-bold border border-slate-200 dark:border-slate-700">
-                    {selectedVote}: {activeQuestion.options[selectedVote]}
-                  </span>
+                  <div className="bg-slate-200/60 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-2.5 py-1.5 rounded-lg text-xs font-semibold border border-slate-200 dark:border-slate-700 flex items-start gap-2 break-words">
+                    <span className="uppercase font-bold shrink-0">{selectedVote}:</span>
+                    <span>{activeQuestion.options[selectedVote]}</span>
+                  </div>
                 )}
               </div>
             </div>
@@ -705,14 +707,14 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
                     <button
                       key={key}
                       onClick={() => handleSelectionToggle(key)}
-                      className={`w-full text-left p-3.5 rounded-lg border text-xs font-medium transition-all flex items-center gap-3 ${
+                      className={`w-full text-left p-3.5 rounded-lg border text-xs font-medium transition-all flex items-start gap-3 ${
                         isSelected
                           ? 'border-slate-800 dark:border-slate-100 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 font-semibold'
                           : 'border-slate-200 dark:border-slate-800 hover:border-slate-400 dark:hover:border-slate-700 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300'
                       }`}
                     >
                       <span
-                        className={`w-5 h-5 rounded text-[10px] font-black flex items-center justify-center uppercase shrink-0 border ${
+                        className={`w-5 h-5 rounded text-[10px] font-black flex items-center justify-center uppercase shrink-0 border mt-0.5 ${
                           isSelected
                             ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white border-white dark:border-slate-800'
                             : 'bg-slate-50 dark:bg-slate-800 text-slate-400 dark:text-slate-300 border-slate-200 dark:border-slate-700'
@@ -720,7 +722,7 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
                       >
                         {key}
                       </span>
-                      <span className="flex-1 truncate">{label}</span>
+                      <span className="flex-1 break-words leading-relaxed">{label}</span>
                     </button>
                   );
                 })

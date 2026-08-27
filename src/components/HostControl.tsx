@@ -917,14 +917,14 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
                     const pct = totalVotes > 0 ? (count / totalVotes) * 100 : 0;
                     return (
                       <div key={key}>
-                        <div className="flex justify-between text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
-                          <span className="flex items-center gap-2 font-medium text-slate-800 dark:text-slate-200">
-                            <span className="w-5 h-5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-[9px] font-black flex items-center justify-center uppercase border border-slate-200 dark:border-slate-700">
+                        <div className="flex justify-between items-start gap-2 text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                          <span className="flex items-start gap-2 font-medium text-slate-800 dark:text-slate-200 min-w-0 flex-1 leading-snug">
+                            <span className="w-5 h-5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-[9px] font-black flex items-center justify-center uppercase border border-slate-200 dark:border-slate-700 shrink-0 mt-0.5">
                               {key}
                             </span>
-                            {label}
+                            <span className="break-words">{label}</span>
                           </span>
-                          <span className="text-slate-500 dark:text-slate-500 font-bold">
+                          <span className="text-slate-500 dark:text-slate-500 font-bold shrink-0 whitespace-nowrap ml-2">
                             {count} ({Math.round(pct)}%)
                           </span>
                         </div>
