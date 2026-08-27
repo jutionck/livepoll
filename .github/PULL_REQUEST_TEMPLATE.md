@@ -18,6 +18,7 @@
 
 - [ ] `npm run lint` passes
 - [ ] `npx tsc --noEmit` passes with no errors
+- [ ] `npm test` passes (add tests for new logic in `src/lib/`, if applicable)
 - [ ] `npm run build` succeeds locally
 - [ ] Tested manually in the browser (describe what you tested below)
 - [ ] Checked both light and dark mode, if this touches UI

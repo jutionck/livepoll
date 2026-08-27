@@ -8,7 +8,7 @@ Thank you for your interest in contributing to LivePoll! Here is a quick guide.
 2. **Clone** your fork
 3. Create a new **feature branch**
 4. Make your changes
-5. Run `npm run build` to ensure there are no errors
+5. Run `npm run lint`, `npm test`, and `npm run build` to make sure everything still passes
 6. Submit a **Pull Request**
 
 ## Guidelines
@@ -16,6 +16,7 @@ Thank you for your interest in contributing to LivePoll! Here is a quick guide.
 - Follow the existing code style (Prettier + ESLint)
 - Ensure there are no TypeScript errors (`tsc -b`)
 - Write clean, readable code
+- Add tests for new logic in `src/lib/` (see `src/lib/__tests__/` for examples). CI runs `npm test` on every PR.
 
 ## Development Setup
 
