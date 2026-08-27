@@ -176,6 +176,7 @@
     "testimonialPrompt": "Did this poll help you?",
     "testimonialDesc": "Leave a rating to support LivePoll.",
     "testimonialSend": "Send Testimonial",
+    "testimonialPlaceholder": "Share your experience using LivePoll...",
     "testimonialSent": "Thank you! Your testimonial has been sent.",
     "skip": "Skip",
     "shareTitle": "Share LivePoll",

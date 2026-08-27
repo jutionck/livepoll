@@ -49,6 +49,14 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
   const [selfPacedIndex, setSelfPacedIndex] = useState(0);
   const [isSelfPacedCompleted, setIsSelfPacedCompleted] = useState(false);
 
+  const [testimonialDone, setTestimonialDone] = useState(() =>
+    typeof window !== 'undefined' ? localStorage.getItem(`participant_testimonial_done_${code}`) === '1' : false,
+  );
+  const [testimonialRating, setTestimonialRating] = useState(5);
+  const [testimonialMsg, setTestimonialMsg] = useState('');
+  const [testimonialSending, setTestimonialSending] = useState(false);
+  const [testimonialSent, setTestimonialSent] = useState(false);
+
   const notifyJoin = async (name?: string) => {
     try {
       await apiFetch(`${API_BASE_URL}/join-session`, {
@@ -288,6 +296,38 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
     }
   };
 
+  const handleSkipTestimonial = () => {
+    localStorage.setItem(`participant_testimonial_done_${code}`, '1');
+    setTestimonialDone(true);
+  };
+
+  const handleSubmitTestimonial = async () => {
+    if (!testimonialMsg.trim()) return;
+    setTestimonialSending(true);
+    try {
+      const response = await apiFetch(`${API_BASE_URL}/testimonial-public`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: participantName.trim() || t('badge'),
+          role: session?.title || '',
+          message: testimonialMsg.trim(),
+          rating: testimonialRating,
+          code,
+        }),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'Gagal.');
+      localStorage.setItem(`participant_testimonial_done_${code}`, '1');
+      setTestimonialDone(true);
+      setTestimonialSent(true);
+    } catch (err: any) {
+      alert(err.message || t('sendError'));
+    } finally {
+      setTestimonialSending(false);
+    }
+  };
+
   if (error) {
     return (
       <div className="min-h-screen bg-dots flex items-center justify-center p-6">
@@ -418,7 +458,7 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
               >
                 {t('reviewAnswers')}
               </button>
-              <div className="border-t border-slate-100 dark:border-slate-800 pt-4">
+              <div className="border-t border-slate-100 dark:border-slate-800 pt-4 mb-4">
                 <button
                   type="button"
                   onClick={() => setShowShareModal(true)}
@@ -428,6 +468,62 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
                   <span>{t('share')}</span>
                 </button>
               </div>
+
+              {!testimonialDone && (
+                <div className="border-t border-slate-100 dark:border-slate-800 pt-4 text-left">
+                  <h3 className="text-xs font-bold text-slate-900 dark:text-white mb-1">{t('testimonialPrompt')}</h3>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mb-3">{t('testimonialDesc')}</p>
+
+                  <div className="flex items-center justify-center gap-1 mb-3">
+                    {[1, 2, 3, 4, 5].map((n) => (
+                      <button
+                        key={n}
+                        type="button"
+                        onClick={() => setTestimonialRating(n)}
+                        className="p-0.5"
+                        aria-label={`${n} star`}
+                      >
+                        <Star
+                          size={22}
+                          className={`${n <= testimonialRating ? 'fill-amber-400 text-amber-400' : 'text-slate-300 dark:text-slate-600'}`}
+                        />
+                      </button>
+                    ))}
+                  </div>
+
+                  <textarea
+                    value={testimonialMsg}
+                    onChange={(e) => setTestimonialMsg(e.target.value)}
+                    rows={3}
+                    placeholder={t('testimonialPlaceholder')}
+                    className="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-lg text-xs bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:border-slate-400 resize-none mb-3"
+                  />
+
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={handleSkipTestimonial}
+                      className="flex-1 px-3 py-2 text-xs font-semibold border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 rounded-lg bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+                    >
+                      {t('skip')}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleSubmitTestimonial}
+                      disabled={testimonialSending || !testimonialMsg.trim()}
+                      className="flex-1 px-3 py-2 text-xs font-semibold text-white dark:text-slate-900 rounded-lg bg-slate-900 dark:bg-slate-100 hover:bg-slate-800 dark:hover:bg-slate-200 transition-colors disabled:opacity-50"
+                    >
+                      {testimonialSending ? t('sending') : t('testimonialSend')}
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {testimonialDone && testimonialSent && (
+                <p className="text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold text-center border-t border-slate-100 dark:border-slate-800 pt-4">
+                  {t('testimonialSent')}
+                </p>
+              )}
             </div>
           ) : !activeQuestion ? (
             <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-6 text-center shadow-sm">

@@ -176,6 +176,7 @@
     "testimonialPrompt": "Apakah polling ini membantu?",
     "testimonialDesc": "Berikan penilaian Anda untuk mendukung LivePoll.",
     "testimonialSend": "Kirim Testimoni",
+    "testimonialPlaceholder": "Bagikan pengalaman Anda menggunakan LivePoll...",
     "testimonialSent": "Terima kasih! Testimoni Anda terkirim.",
     "skip": "Lewati",
     "shareTitle": "Bagikan LivePoll",
