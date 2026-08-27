@@ -20,7 +20,7 @@ Thank you for your interest in contributing to LivePoll! Here is a quick guide.
 
 ## Development Setup
 
-Requires Node.js >= 20.9 (see `.nvmrc` — run `nvm use` if you use nvm).
+Requires Node.js >= 24 (see `.nvmrc` — run `nvm use` if you use nvm).
 
 ```bash
 git clone https://github.com/jutionck/livepoll.git
