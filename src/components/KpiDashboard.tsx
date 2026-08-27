@@ -78,6 +78,8 @@ interface TrafficDay {
 interface Traffic {
   connected: boolean;
   error: boolean;
+  status?: number;
+  detail?: string;
   pageviews?: number;
   visitors?: number;
   trend?: TrafficDay[];
@@ -667,7 +669,16 @@ export const KpiDashboard: React.FC<KpiDashboardProps> = ({ token, theme }) => {
         ) : traffic.error ? (
           <div className="flex items-start gap-2.5 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/40 rounded-lg p-3">
             <AlertCircle size={14} className="text-amber-500 mt-0.5 shrink-0" />
-            <p className="text-[11px] text-amber-700 dark:text-amber-400 leading-relaxed">{t('kpiTrafficError')}</p>
+            <div className="text-[11px] text-amber-700 dark:text-amber-400 leading-relaxed">
+              <p>{t('kpiTrafficError')}</p>
+              {(traffic.status || traffic.detail) && (
+                <p className="mt-1 font-mono text-[10px] opacity-80 break-all">
+                  {traffic.status ? `HTTP ${traffic.status}` : ''}
+                  {traffic.status && traffic.detail ? ' — ' : ''}
+                  {traffic.detail}
+                </p>
+              )}
+            </div>
           </div>
         ) : (
           <>

@@ -142,7 +142,12 @@ async function fetchVercelTraffic(since: Date, until: Date, granularity: Granula
       fetch(aggregateUrl, { headers: { Authorization: `Bearer ${token}` }, next: { revalidate: 0 } }),
     ]);
 
-    if (!countRes.ok || !aggregateRes.ok) return { connected: true, error: true } as const;
+    if (!countRes.ok || !aggregateRes.ok) {
+      const failed = !countRes.ok ? countRes : aggregateRes;
+      const body = await failed.text().catch(() => '');
+      console.error('[kpi] Vercel Web Analytics request failed', failed.status, body);
+      return { connected: true, error: true, status: failed.status, detail: body.slice(0, 300) } as const;
+    }
 
     const countData = await countRes.json();
     const aggregateData = await aggregateRes.json();
@@ -165,8 +170,9 @@ async function fetchVercelTraffic(since: Date, until: Date, granularity: Granula
       visitors: countData.data?.visitors || 0,
       trend,
     } as const;
-  } catch {
-    return { connected: true, error: true } as const;
+  } catch (e: any) {
+    console.error('[kpi] Vercel Web Analytics fetch threw', e);
+    return { connected: true, error: true, status: 0, detail: e?.message || 'Network error' } as const;
   }
 }
 
