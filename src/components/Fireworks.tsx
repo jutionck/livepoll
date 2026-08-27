@@ -28,6 +28,9 @@ interface FireworksProps {
 const random = (min: number, max: number) => min + Math.random() * (max - min);
 
 export const Fireworks: React.FC<FireworksProps> = ({ size = 2 }) => {
+  const prefersReducedMotion =
+    typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
   const bursts = useMemo<Burst[]>(() => {
     const groups: Burst[] = [];
     const burstCount = size >= 3 ? 3 : size === 2 ? 2 : 1;
@@ -53,6 +56,8 @@ export const Fireworks: React.FC<FireworksProps> = ({ size = 2 }) => {
 
     return groups;
   }, [size]);
+
+  if (prefersReducedMotion) return null;
 
   return (
     <div className="pointer-events-none fixed inset-0 z-50 overflow-hidden">

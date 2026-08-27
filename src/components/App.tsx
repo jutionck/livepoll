@@ -59,7 +59,7 @@ export default function App() {
   }
 
   if (pathname === '/admin') {
-    return <Admin navigate={navigate} />;
+    return <Admin navigate={navigate} theme={theme} toggleTheme={toggleTheme} />;
   }
 
   const hostMatch = pathname.match(/^\/host\/([A-Za-z0-9]+)$/);

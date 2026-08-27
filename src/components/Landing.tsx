@@ -38,12 +38,37 @@ interface LandingProps {
   toggleTheme: () => void;
 }
 
+const LinkedinIcon: React.FC<{ size: number; className?: string }> = ({ size, className }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden="true">
+    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 1 1 0-4.124 2.062 2.062 0 0 1 0 4.124zM7.114 20.452H3.558V9h3.556v11.452z" />
+  </svg>
+);
+
+const TestimonialCard: React.FC<{
+  item: { id: string; name: string; role: string; message: string; rating: number };
+}> = ({ item }) => (
+  <div className="h-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5">
+    <div className="flex gap-0.5 text-amber-400 mb-3">
+      {Array.from({ length: item.rating }).map((_, i) => (
+        <Star key={i} size={14} className="fill-amber-400 text-amber-400" />
+      ))}
+    </div>
+    <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed mb-4">&ldquo;{item.message}&rdquo;</p>
+    <div>
+      <p className="text-sm font-bold text-slate-900 dark:text-white">{item.name}</p>
+      {item.role && <p className="text-[10px] text-slate-400">{item.role}</p>}
+    </div>
+  </div>
+);
+
 export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }) => {
   const [code, setCode] = useState('');
   const [activeStep, setActiveStep] = useState(1);
   const [stats, setStats] = useState<{ sessions: number; votes: number } | null>(null);
   const [demoLoading, setDemoLoading] = useState(false);
   const [stars, setStars] = useState<number | null>(null);
+  const [copied, setCopied] = useState(false);
+  const [showShareMore, setShowShareMore] = useState(false);
   const [testimonials, setTestimonials] = useState<
     { id: string; name: string; role: string; message: string; rating: number }[]
   >([]);
@@ -82,6 +107,13 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
     if (code.trim()) {
       navigate(`/join/${code.trim().toUpperCase()}`);
     }
+  };
+
+  const handleCopyShareLink = () => {
+    navigator.clipboard.writeText(siteUrl).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
   };
 
   const handleDemo = async () => {
@@ -318,50 +350,50 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
             <div className="pt-6 h-full flex flex-col justify-center flex-grow">
               {activeStep === 1 && (
                 <div className="space-y-4 animate-fade-in text-left">
-                  <div className="border border-slate-200 rounded-lg p-4 bg-white space-y-3 shadow-xs">
+                  <div className="border border-slate-200 dark:border-slate-700 rounded-lg p-4 bg-white dark:bg-slate-800 space-y-3 shadow-xs">
                     <div>
-                      <label className="block text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-1">
+                      <label className="block text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1">
                         {t('mockupQuestionLabel')}
                       </label>
-                      <div className="px-3 py-2 border border-slate-200 rounded-lg text-xs font-semibold bg-slate-50">
+                      <div className="px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-semibold bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white">
                         {t('mockupQuestion')}
                       </div>
                     </div>
                     <div className="grid grid-cols-2 gap-3">
                       <div>
-                        <label className="block text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-1">
+                        <label className="block text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1">
                           {t('mockupTypeLabel')}
                         </label>
-                        <div className="px-3 py-1.5 border border-slate-200 rounded-lg text-[10px] font-bold bg-white">
+                        <div className="px-3 py-1.5 border border-slate-200 dark:border-slate-700 rounded-lg text-[10px] font-bold bg-white dark:bg-slate-800 text-slate-900 dark:text-white">
                           {t('mockupTypeSingle')}
                         </div>
                       </div>
                       <div>
-                        <label className="block text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-1">
+                        <label className="block text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1">
                           {t('mockupTimerLabel')}
                         </label>
-                        <div className="px-3 py-1.5 border border-slate-200 rounded-lg text-[10px] font-bold bg-white">
+                        <div className="px-3 py-1.5 border border-slate-200 dark:border-slate-700 rounded-lg text-[10px] font-bold bg-white dark:bg-slate-800 text-slate-900 dark:text-white">
                           {t('mockupTimer30')}
                         </div>
                       </div>
                     </div>
                     <div className="space-y-1.5 pt-1.5">
-                      <label className="block text-[9px] font-bold text-slate-400 uppercase tracking-wider">
+                      <label className="block text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
                         {t('mockupOptionsLabel')}
                       </label>
                       <div className="flex items-center gap-2">
-                        <span className="w-5 h-5 rounded bg-slate-100 text-slate-400 text-[9px] font-black flex items-center justify-center border border-slate-200">
+                        <span className="w-5 h-5 rounded bg-slate-100 dark:bg-slate-900 text-slate-400 dark:text-slate-500 text-[9px] font-black flex items-center justify-center border border-slate-200 dark:border-slate-700">
                           A
                         </span>
-                        <div className="flex-1 px-3 py-1 border border-slate-200 rounded-lg text-[10px] bg-white font-medium">
+                        <div className="flex-1 px-3 py-1 border border-slate-200 dark:border-slate-700 rounded-lg text-[10px] bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-medium">
                           {t('mockupOptionA')}
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="w-5 h-5 rounded bg-slate-100 text-slate-400 text-[9px] font-black flex items-center justify-center border border-slate-200">
+                        <span className="w-5 h-5 rounded bg-slate-100 dark:bg-slate-900 text-slate-400 dark:text-slate-500 text-[9px] font-black flex items-center justify-center border border-slate-200 dark:border-slate-700">
                           B
                         </span>
-                        <div className="flex-1 px-3 py-1 border border-slate-200 rounded-lg text-[10px] bg-white font-medium">
+                        <div className="flex-1 px-3 py-1 border border-slate-200 dark:border-slate-700 rounded-lg text-[10px] bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-medium">
                           {t('mockupOptionB')}
                         </div>
                       </div>
@@ -372,10 +404,11 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
 
               {activeStep === 2 && (
                 <div className="space-y-4 animate-fade-in text-left max-w-sm mx-auto w-full">
-                  <div className="bg-white border border-slate-200 p-5 rounded-xl text-center flex flex-col items-center shadow-xs">
-                    <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-3">
+                  <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-5 rounded-xl text-center flex flex-col items-center shadow-xs">
+                    <h4 className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-3">
                       {t('mockupJoinInfo')}
                     </h4>
+                    {/* Kept light intentionally — mimics a real QR code, which needs a light quiet-zone to stay scannable. */}
                     <div className="bg-slate-50 p-3 rounded-lg border border-slate-100 mb-4">
                       <svg
                         width="110"
@@ -394,19 +427,19 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
                       </svg>
                     </div>
                     <div className="w-full">
-                      <div className="bg-slate-50 px-2.5 py-1.5 border border-slate-100 rounded-lg flex items-center justify-between gap-2 mb-3">
-                        <span className="text-slate-500 text-[10px] font-mono truncate">
+                      <div className="bg-slate-50 dark:bg-slate-900 px-2.5 py-1.5 border border-slate-100 dark:border-slate-700 rounded-lg flex items-center justify-between gap-2 mb-3">
+                        <span className="text-slate-500 dark:text-slate-400 text-[10px] font-mono truncate">
                           {window.location.host}/{locale}/join/MG84BX
                         </span>
-                        <div className="text-slate-400 p-1 shrink-0">
+                        <div className="text-slate-400 dark:text-slate-500 p-1 shrink-0">
                           <Copy size={12} />
                         </div>
                       </div>
-                      <div className="w-full border-t border-slate-100 pt-3 flex items-center justify-between">
-                        <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">
+                      <div className="w-full border-t border-slate-100 dark:border-slate-700 pt-3 flex items-center justify-between">
+                        <span className="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
                           {t('mockupSessionCode')}
                         </span>
-                        <span className="bg-slate-900 text-white font-bold px-2 py-0.5 rounded text-[10px] tracking-widest">
+                        <span className="bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 font-bold px-2 py-0.5 rounded text-[10px] tracking-widest">
                           MG84BX
                         </span>
                       </div>
@@ -648,34 +681,80 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
           </h2>
           <p className="text-xs text-slate-500 dark:text-slate-400 mb-8">{t('shareDesc')}</p>
 
-          <div className="flex flex-wrap items-center justify-center gap-3">
+          <div className="flex items-center justify-center gap-3">
             <a
               href={`https://wa.me/?text=${encodeURIComponent('LivePoll — ' + siteUrl)}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white font-bold px-5 py-2.5 rounded-lg text-sm transition-all"
+              className="inline-flex items-center gap-2 border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 font-bold px-5 py-2.5 rounded-lg text-sm transition-all"
             >
-              <MessageCircle size={16} />
+              <MessageCircle size={16} className="text-emerald-500" />
               {t('shareWhatsapp')}
             </a>
-            <a
-              href={`https://t.me/share/url?url=${encodeURIComponent(siteUrl)}&text=LivePoll`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 bg-sky-500 hover:bg-sky-600 text-white font-bold px-5 py-2.5 rounded-lg text-sm transition-all"
+            <button
+              type="button"
+              onClick={handleCopyShareLink}
+              className="inline-flex items-center gap-2 border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 font-bold px-5 py-2.5 rounded-lg text-sm transition-all"
             >
-              <Send size={16} />
-              {t('shareTelegram')}
-            </a>
-            <a
-              href={`https://twitter.com/intent/tweet?text=${encodeURIComponent('LivePoll — Real-time interactive polling')}&url=${encodeURIComponent(siteUrl)}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 bg-slate-900 dark:bg-slate-100 hover:bg-slate-800 dark:hover:bg-slate-200 text-white dark:text-slate-900 font-bold px-5 py-2.5 rounded-lg text-sm transition-all"
-            >
-              <Share2 size={16} />
-              {t('shareX')}
-            </a>
+              {copied ? (
+                <Check size={16} className="text-emerald-500" />
+              ) : (
+                <Copy size={16} className="text-slate-500 dark:text-slate-400" />
+              )}
+              {copied ? t('shareCopied') : t('shareCopyLink')}
+            </button>
+
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setShowShareMore((v) => !v)}
+                className="inline-flex items-center gap-1.5 border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 font-bold px-5 py-2.5 rounded-lg text-sm transition-all"
+              >
+                {t('shareMore')}
+                <ChevronDown
+                  size={14}
+                  className={`text-slate-400 transition-transform duration-200 ${showShareMore ? 'rotate-180' : ''}`}
+                />
+              </button>
+
+              {showShareMore && (
+                <>
+                  <div className="fixed inset-0 z-10" onClick={() => setShowShareMore(false)} />
+                  <div className="absolute z-20 top-full mt-2 left-1/2 -translate-x-1/2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-lg p-1.5 flex flex-col gap-0.5 min-w-[180px] animate-fade-in">
+                    <a
+                      href={`https://t.me/share/url?url=${encodeURIComponent(siteUrl)}&text=LivePoll`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={() => setShowShareMore(false)}
+                      className="flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-200 transition-colors"
+                    >
+                      <Send size={15} className="text-sky-500" />
+                      {t('shareTelegram')}
+                    </a>
+                    <a
+                      href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(siteUrl)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={() => setShowShareMore(false)}
+                      className="flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-200 transition-colors"
+                    >
+                      <LinkedinIcon size={15} className="text-[#0A66C2]" />
+                      {t('shareLinkedin')}
+                    </a>
+                    <a
+                      href={`https://twitter.com/intent/tweet?text=${encodeURIComponent('LivePoll — Real-time interactive polling')}&url=${encodeURIComponent(siteUrl)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={() => setShowShareMore(false)}
+                      className="flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-200 transition-colors"
+                    >
+                      <Share2 size={15} className="text-slate-900 dark:text-white" />
+                      {t('shareX')}
+                    </a>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
         </div>
       </section>
@@ -695,27 +774,31 @@ export const Landing: React.FC<LandingProps> = ({ navigate, theme, toggleTheme }
                 {t('testimonialPlaceholder')}
               </p>
             </div>
-          ) : (
+          ) : testimonials.length < 4 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
               {testimonials.map((item) => (
-                <div
-                  key={item.id}
-                  className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5"
-                >
-                  <div className="flex gap-0.5 text-amber-400 mb-3">
-                    {Array.from({ length: item.rating }).map((_, i) => (
-                      <Star key={i} size={14} className="fill-amber-400 text-amber-400" />
-                    ))}
-                  </div>
-                  <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed mb-4">
-                    &ldquo;{item.message}&rdquo;
-                  </p>
-                  <div>
-                    <p className="text-sm font-bold text-slate-900 dark:text-white">{item.name}</p>
-                    {item.role && <p className="text-[10px] text-slate-400">{item.role}</p>}
-                  </div>
-                </div>
+                <TestimonialCard key={item.id} item={item} />
               ))}
+            </div>
+          ) : (
+            <div className="space-y-4 [-webkit-mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)] [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)]">
+              {[testimonials.filter((_, i) => i % 2 === 0), testimonials.filter((_, i) => i % 2 === 1)].map(
+                (row, rowIdx) =>
+                  row.length > 0 && (
+                    <div key={rowIdx} className="marquee-row overflow-hidden">
+                      <div
+                        className={`marquee-track gap-4 ${rowIdx === 1 ? 'marquee-track-reverse' : ''}`}
+                        style={{ animationDuration: `${row.length * 9}s` }}
+                      >
+                        {[...row, ...row].map((item, i) => (
+                          <div key={`${item.id}-${i}`} className="w-72 sm:w-80 shrink-0 text-left">
+                            <TestimonialCard item={item} />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ),
+              )}
             </div>
           )}
         </div>

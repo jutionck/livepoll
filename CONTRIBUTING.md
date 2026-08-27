@@ -19,6 +19,8 @@ Thank you for your interest in contributing to LivePoll! Here is a quick guide.
 
 ## Development Setup
 
+Requires Node.js >= 20.9 (see `.nvmrc` — run `nvm use` if you use nvm).
+
 ```bash
 git clone https://github.com/jutionck/livepoll.git
 cd livepoll
@@ -30,4 +32,8 @@ npm run dev
 
 ## Reporting Issues
 
-Use the provided issue templates on GitHub.
+Open a [new issue](https://github.com/jutionck/livepoll/issues/new/choose) and pick the Bug report or Feature request template.
+
+## Submitting a Pull Request
+
+Fill in the PR template — it includes a checklist for lint/typecheck/build and a note to test both light/dark mode and both locales (`/id`, `/en`) if your change touches the UI.

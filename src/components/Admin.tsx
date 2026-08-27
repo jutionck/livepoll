@@ -5,9 +5,12 @@ import { ArrowLeft, Lock, Plus, Trash2, Star, LogOut } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { API_BASE_URL, apiFetch } from '../config';
 import { LanguageToggle } from './LanguageToggle';
+import { ThemeToggle } from './ThemeToggle';
 
 interface AdminProps {
   navigate: (path: string) => void;
+  theme: 'light' | 'dark';
+  toggleTheme: () => void;
 }
 
 interface TestimonialItem {
@@ -20,7 +23,7 @@ interface TestimonialItem {
   createdAt: string;
 }
 
-export const Admin: React.FC<AdminProps> = ({ navigate }) => {
+export const Admin: React.FC<AdminProps> = ({ navigate, theme, toggleTheme }) => {
   const t = useTranslations('admin');
   const [token, setToken] = useState('');
   const [password, setPassword] = useState('');
@@ -132,7 +135,10 @@ export const Admin: React.FC<AdminProps> = ({ navigate }) => {
               <ArrowLeft size={16} /> {t('back')}
             </button>
             <h1 className="text-sm font-bold text-slate-900 dark:text-white">{t('title')}</h1>
-            <LanguageToggle />
+            <div className="flex items-center gap-2">
+              <LanguageToggle />
+              <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
+            </div>
           </div>
         </header>
 
@@ -181,6 +187,7 @@ export const Admin: React.FC<AdminProps> = ({ navigate }) => {
           <h1 className="text-sm font-bold text-slate-900 dark:text-white">{t('manage')}</h1>
           <div className="flex items-center gap-2">
             <LanguageToggle />
+            <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
             <button
               onClick={handleLogout}
               className="flex items-center gap-1 text-red-500 hover:text-red-600 text-xs font-semibold transition-colors"

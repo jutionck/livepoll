@@ -658,6 +658,8 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
                 <span className="text-slate-500 dark:text-slate-400 text-[10px] font-mono truncate">{joinUrl}</span>
                 <button
                   onClick={copyUrl}
+                  aria-label={t('copyJoinLink')}
+                  title={t('copyJoinLink')}
                   className="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-300 p-1 shrink-0"
                 >
                   {copied ? <Check size={14} /> : <Copy size={14} />}
@@ -1027,6 +1029,7 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
                 </button>
                 <button
                   onClick={() => setShowLeaderboard(false)}
+                  aria-label={t('close')}
                   className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 text-xs font-bold transition-colors"
                 >
                   <X size={15} aria-hidden="true" />
@@ -1210,6 +1213,7 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
               </div>
               <button
                 onClick={() => setShowTokenModal(false)}
+                aria-label={t('close')}
                 className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xs font-bold p-1"
               >
                 <X size={15} aria-hidden="true" />

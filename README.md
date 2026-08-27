@@ -2,6 +2,7 @@
 
 Interactive polling platform for webinars, seminars, training, and presentations. Participants join via QR code from their phones, and results appear instantly on the presenter's screen in real-time.
 
+[![CI](https://github.com/jutionck/livepoll/actions/workflows/ci.yml/badge.svg)](https://github.com/jutionck/livepoll/actions/workflows/ci.yml)
 ![Next.js](https://img.shields.io/badge/Next.js-16-000)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791)
@@ -93,6 +94,10 @@ Open [http://localhost:3000](http://localhost:3000).
 5. Deploy
 
 > **Note:** Passwords with special characters (`@`, `?`, etc.) in `DATABASE_URL` are automatically URL-encoded by the app, no manual encoding needed.
+
+## Contributing
+
+Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for the development setup, coding guidelines, and how to open issues/PRs.
 
 ## Support
 
