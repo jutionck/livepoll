@@ -1,11 +1,12 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Lock, Plus, Trash2, Star, LogOut } from 'lucide-react';
+import { ArrowLeft, Lock, Plus, Trash2, Star, LogOut, LayoutDashboard, MessageSquare, Check } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { API_BASE_URL, apiFetch } from '../config';
 import { LanguageToggle } from './LanguageToggle';
 import { ThemeToggle } from './ThemeToggle';
+import { KpiDashboard } from './KpiDashboard';
 
 interface AdminProps {
   navigate: (path: string) => void;
@@ -32,6 +33,7 @@ export const Admin: React.FC<AdminProps> = ({ navigate, theme, toggleTheme }) =>
   const [testimonials, setTestimonials] = useState<TestimonialItem[]>([]);
   const [form, setForm] = useState({ name: '', role: '', message: '', rating: 5, isActive: true });
   const [saving, setSaving] = useState(false);
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'testimonials'>('dashboard');
 
   useEffect(() => {
     const saved = sessionStorage.getItem('admin_token');
@@ -165,7 +167,7 @@ export const Admin: React.FC<AdminProps> = ({ navigate, theme, toggleTheme }) =>
                 type="submit"
                 className="w-full bg-slate-900 dark:bg-slate-100 hover:bg-slate-800 dark:hover:bg-slate-200 text-white dark:text-slate-900 font-bold text-sm py-3 rounded-lg transition-colors"
               >
-                Masuk
+                {t('loginButton')}
               </button>
             </form>
           </div>
@@ -198,132 +200,168 @@ export const Admin: React.FC<AdminProps> = ({ navigate, theme, toggleTheme }) =>
         </div>
       </header>
 
-      <main className="max-w-3xl w-full mx-auto px-4 py-8 space-y-8">
-        {error && (
-          <div className="bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/50 rounded-lg p-3 text-xs text-red-700 dark:text-red-400">
-            {error}
-          </div>
-        )}
-
-        {/* Add form */}
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-6 shadow-sm">
-          <h2 className="text-sm font-bold text-slate-900 dark:text-white mb-4">{t('addTitle')}</h2>
-          <form onSubmit={handleSubmit} className="space-y-3">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
-                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
-                  {t('nameLabel')}
-                </label>
-                <input
-                  type="text"
-                  value={form.name}
-                  onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  className="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-lg text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:border-slate-400"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
-                  Peran/Instansi
-                </label>
-                <input
-                  type="text"
-                  value={form.role}
-                  onChange={(e) => setForm({ ...form, role: e.target.value })}
-                  className="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-lg text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:border-slate-400"
-                />
-              </div>
-            </div>
-            <div>
-              <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
-                {t('messageLabel')}
-              </label>
-              <textarea
-                value={form.message}
-                onChange={(e) => setForm({ ...form, message: e.target.value })}
-                rows={3}
-                className="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-lg text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:border-slate-400 resize-none"
-                required
-              />
-            </div>
-            <div className="flex items-center gap-6">
-              <div>
-                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
-                  Rating
-                </label>
-                <div className="flex items-center gap-1">
-                  {[1, 2, 3, 4, 5].map((n) => (
-                    <button
-                      key={n}
-                      type="button"
-                      onClick={() => setForm({ ...form, rating: n })}
-                      className="p-0.5"
-                      aria-label={`${n} star`}
-                    >
-                      <Star
-                        size={20}
-                        className={`${n <= form.rating ? 'fill-amber-400 text-amber-400' : 'text-slate-300 dark:text-slate-600'}`}
-                      />
-                    </button>
-                  ))}
-                </div>
-              </div>
-              <label className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={form.isActive}
-                  onChange={(e) => setForm({ ...form, isActive: e.target.checked })}
-                  className="accent-slate-900"
-                />
-                Aktif
-              </label>
-            </div>
-            <button
-              type="submit"
-              disabled={saving}
-              className="inline-flex items-center gap-2 bg-slate-900 dark:bg-slate-100 hover:bg-slate-800 dark:hover:bg-slate-200 text-white dark:text-slate-900 font-bold text-sm px-5 py-2.5 rounded-lg transition-colors disabled:opacity-50"
-            >
-              <Plus size={16} /> {saving ? t('saving') : t('saveButton')}
-            </button>
-          </form>
+      <main className="max-w-3xl w-full mx-auto px-4 py-8 space-y-6">
+        <div className="flex items-center gap-2 border-b border-slate-200 dark:border-slate-800">
+          <button
+            type="button"
+            onClick={() => setActiveTab('dashboard')}
+            className={`flex items-center gap-1.5 px-3 py-2.5 text-xs font-bold border-b-2 -mb-px transition-colors ${
+              activeTab === 'dashboard'
+                ? 'border-slate-900 dark:border-white text-slate-900 dark:text-white'
+                : 'border-transparent text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'
+            }`}
+          >
+            <LayoutDashboard size={14} /> {t('tabDashboard')}
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab('testimonials')}
+            className={`flex items-center gap-1.5 px-3 py-2.5 text-xs font-bold border-b-2 -mb-px transition-colors ${
+              activeTab === 'testimonials'
+                ? 'border-slate-900 dark:border-white text-slate-900 dark:text-white'
+                : 'border-transparent text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'
+            }`}
+          >
+            <MessageSquare size={14} /> {t('tabTestimonials')}
+          </button>
         </div>
 
-        {/* List */}
-        <div className="space-y-3">
-          <h2 className="text-sm font-bold text-slate-900 dark:text-white">
-            {t('listTitle', { count: testimonials.length })}
-          </h2>
-          {testimonials.length === 0 ? (
-            <p className="text-xs text-slate-400">{t('empty')}</p>
-          ) : (
-            testimonials.map((item) => (
-              <div
-                key={item.id}
-                className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4 flex items-start justify-between gap-3"
-              >
-                <div className="min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-sm font-bold text-slate-900 dark:text-white">{item.name}</span>
-                    <span className="text-[10px] text-slate-400">{item.role}</span>
-                    <span className="flex gap-0.5 text-amber-400">
-                      {Array.from({ length: item.rating }).map((_, i) => (
-                        <Star key={i} size={12} className="fill-amber-400 text-amber-400" />
-                      ))}
-                    </span>
+        {activeTab === 'dashboard' && <KpiDashboard token={token} theme={theme} />}
+
+        {activeTab === 'testimonials' && (
+          <div className="space-y-8">
+            {error && (
+              <div className="bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/50 rounded-lg p-3 text-xs text-red-700 dark:text-red-400">
+                {error}
+              </div>
+            )}
+
+            {/* Add form */}
+            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-6 shadow-sm">
+              <h2 className="text-sm font-bold text-slate-900 dark:text-white mb-4">{t('addTitle')}</h2>
+              <form onSubmit={handleSubmit} className="space-y-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
+                      {t('nameLabel')}
+                    </label>
+                    <input
+                      type="text"
+                      value={form.name}
+                      onChange={(e) => setForm({ ...form, name: e.target.value })}
+                      className="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-lg text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:border-slate-400"
+                      required
+                    />
                   </div>
-                  <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">{item.message}</p>
+                  <div>
+                    <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
+                      {t('roleLabel')}
+                    </label>
+                    <input
+                      type="text"
+                      value={form.role}
+                      onChange={(e) => setForm({ ...form, role: e.target.value })}
+                      className="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-lg text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:border-slate-400"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
+                    {t('messageLabel')}
+                  </label>
+                  <textarea
+                    value={form.message}
+                    onChange={(e) => setForm({ ...form, message: e.target.value })}
+                    rows={3}
+                    className="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-lg text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:border-slate-400 resize-none"
+                    required
+                  />
+                </div>
+                <div className="flex items-center gap-6">
+                  <div>
+                    <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
+                      {t('ratingLabel')}
+                    </label>
+                    <div className="flex items-center gap-1">
+                      {[1, 2, 3, 4, 5].map((n) => (
+                        <button
+                          key={n}
+                          type="button"
+                          onClick={() => setForm({ ...form, rating: n })}
+                          className="p-0.5"
+                          aria-label={`${n} star`}
+                        >
+                          <Star
+                            size={20}
+                            className={`${n <= form.rating ? 'fill-amber-400 text-amber-400' : 'text-slate-300 dark:text-slate-600'}`}
+                          />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <label className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300 cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      checked={form.isActive}
+                      onChange={(e) => setForm({ ...form, isActive: e.target.checked })}
+                      className="peer sr-only"
+                    />
+                    <span className="w-5 h-5 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 peer-checked:bg-slate-900 peer-checked:border-slate-900 dark:peer-checked:bg-slate-100 dark:peer-checked:border-slate-100 peer-focus-visible:ring-2 peer-focus-visible:ring-slate-400 dark:peer-focus-visible:ring-slate-500 transition-colors flex items-center justify-center shrink-0">
+                      {form.isActive && <Check size={13} strokeWidth={3} className="text-white dark:text-slate-900" />}
+                    </span>
+                    {t('activeLabel')}
+                  </label>
                 </div>
                 <button
-                  onClick={() => handleDelete(item.id)}
-                  className="text-slate-300 hover:text-red-500 p-1.5 shrink-0 transition-colors"
-                  aria-label={t('delete')}
+                  type="submit"
+                  disabled={saving}
+                  className="inline-flex items-center gap-2 bg-slate-900 dark:bg-slate-100 hover:bg-slate-800 dark:hover:bg-slate-200 text-white dark:text-slate-900 font-bold text-sm px-5 py-2.5 rounded-lg transition-colors disabled:opacity-50"
                 >
-                  <Trash2 size={16} />
+                  <Plus size={16} /> {saving ? t('saving') : t('saveButton')}
                 </button>
-              </div>
-            ))
-          )}
-        </div>
+              </form>
+            </div>
+
+            {/* List */}
+            <div className="space-y-3">
+              <h2 className="text-sm font-bold text-slate-900 dark:text-white">
+                {t('listTitle', { count: testimonials.length })}
+              </h2>
+              {testimonials.length === 0 ? (
+                <p className="text-xs text-slate-400">{t('empty')}</p>
+              ) : (
+                <div className="max-h-[480px] overflow-y-auto pr-1 space-y-3">
+                  {testimonials.map((item) => (
+                    <div
+                      key={item.id}
+                      className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4 flex items-start justify-between gap-3"
+                    >
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="text-sm font-bold text-slate-900 dark:text-white">{item.name}</span>
+                          <span className="text-[10px] text-slate-400">{item.role}</span>
+                          <span className="flex gap-0.5 text-amber-400">
+                            {Array.from({ length: item.rating }).map((_, i) => (
+                              <Star key={i} size={12} className="fill-amber-400 text-amber-400" />
+                            ))}
+                          </span>
+                        </div>
+                        <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">{item.message}</p>
+                      </div>
+                      <button
+                        onClick={() => handleDelete(item.id)}
+                        className="text-slate-300 hover:text-red-500 p-1.5 shrink-0 transition-colors"
+                        aria-label={t('delete')}
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </main>
     </div>
   );
