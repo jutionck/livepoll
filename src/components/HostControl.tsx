@@ -582,7 +582,7 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
   return (
     <div className="min-h-screen bg-dots flex flex-col font-sans">
       {/* Top Navbar */}
-      <header className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 py-3 px-4 sm:px-6 flex items-center justify-between sticky top-0 z-20 gap-2">
+      <header className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 py-3 px-4 sm:px-6 flex items-center justify-between flex-wrap sticky top-0 z-20 gap-y-1.5 gap-x-2">
         <div className="flex items-center gap-2 sm:gap-3 min-w-0">
           <span className="bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 font-bold px-2 py-1 rounded text-xs tracking-wider shrink-0">
             {code}
@@ -601,7 +601,7 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
             </div>
           </div>
         </div>
-        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+        <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap justify-end shrink-0">
           <button
             onClick={() => setShowTokenModal(true)}
             className="flex items-center gap-1.5 px-2 sm:px-2.5 py-1.5 rounded-lg text-xs font-bold border bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800 hover:bg-amber-100 dark:hover:bg-amber-900/40 transition-colors"
@@ -620,7 +620,9 @@ export const HostControl: React.FC<HostControlProps> = ({ code, navigate, theme,
             title={session.pace_mode === 'self_paced' ? t('switchToPresenter') : t('switchToSelfPaced')}
           >
             {session.pace_mode === 'self_paced' ? <FileText size={13} /> : <Mic2 size={13} />}
-            <span>{session.pace_mode === 'self_paced' ? t('modeSelfPaced') : t('modePresenter')}</span>
+            <span className="hidden sm:inline">
+              {session.pace_mode === 'self_paced' ? t('modeSelfPaced') : t('modePresenter')}
+            </span>
           </button>
           <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
           <LanguageToggle />
