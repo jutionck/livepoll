@@ -439,6 +439,8 @@
     "kpiEndDate": "End date",
     "cancel": "Cancel",
     "apply": "Apply",
+    "kpiRefresh": "Refresh",
+    "kpiLastUpdated": "Updated {time}",
     "loginTitle": "Admin Login",
     "loginDesc": "Enter the admin password to manage testimonials.",
     "passwordPlaceholder": "Password",

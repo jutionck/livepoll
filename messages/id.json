@@ -441,6 +441,8 @@
     "kpiEndDate": "Tanggal Akhir",
     "cancel": "Batal",
     "apply": "Terapkan",
+    "kpiRefresh": "Muat Ulang",
+    "kpiLastUpdated": "Diperbarui {time}",
     "loginTitle": "Masuk Admin",
     "loginDesc": "Masukkan password admin untuk mengelola testimoni.",
     "passwordPlaceholder": "Password",

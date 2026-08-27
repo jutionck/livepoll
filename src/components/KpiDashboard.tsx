@@ -14,6 +14,7 @@ import {
   Check,
   ChevronDown,
   Calendar,
+  RefreshCw,
 } from 'lucide-react';
 import { API_BASE_URL, apiFetch } from '../config';
 
@@ -505,27 +506,39 @@ export const KpiDashboard: React.FC<KpiDashboardProps> = ({ token, theme }) => {
   const [showModal, setShowModal] = useState(false);
   const [data, setData] = useState<KpiData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState('');
+  const [refreshKey, setRefreshKey] = useState(0);
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
   useEffect(() => {
     let cancelled = false;
-    setLoading(true);
+    if (data) setRefreshing(true);
+    else setLoading(true);
     apiFetch(`${API_BASE_URL}/admin/kpi?${rangeQuery(range)}`, { headers: { 'X-Admin-Token': token } })
       .then(async (res) => {
         const json = await res.json();
         if (!res.ok) throw new Error(json.error || 'Failed to load KPI data');
-        if (!cancelled) setData(json);
+        if (!cancelled) {
+          setData(json);
+          setError('');
+          setLastUpdated(new Date());
+        }
       })
       .catch((err) => {
         if (!cancelled) setError(err.message);
       })
       .finally(() => {
-        if (!cancelled) setLoading(false);
+        if (!cancelled) {
+          setLoading(false);
+          setRefreshing(false);
+        }
       });
     return () => {
       cancelled = true;
     };
-  }, [token, range]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token, range, refreshKey]);
 
   const fmt = (n: number) => n.toLocaleString(locale === 'id' ? 'id-ID' : 'en-US');
 
@@ -540,41 +553,66 @@ export const KpiDashboard: React.FC<KpiDashboardProps> = ({ token, theme }) => {
   const moreLabel = isMoreActive ? activeRangeLabel : t('kpiMore');
 
   const rangeFilter = (
-    <div className="flex items-center gap-2 flex-wrap">
-      <div className="inline-flex items-center rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-0.5">
-        {PRIMARY_RANGE_OPTIONS.map((opt) => {
-          const active = range.key === opt.value;
-          return (
-            <button
-              key={opt.value}
-              type="button"
-              onClick={() => setRangeState({ key: opt.value })}
-              className={`flex items-center gap-1 px-2.5 py-1.5 rounded-md text-[11px] font-bold transition-colors ${
-                active
-                  ? 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white'
-                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
-              }`}
-            >
-              {active && <Check size={11} />}
-              {t(opt.labelKey)}
-            </button>
-          );
-        })}
+    <div className="flex items-center justify-between gap-2 flex-wrap">
+      <div className="flex items-center gap-2 flex-wrap">
+        <div className="inline-flex items-center rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-0.5">
+          {PRIMARY_RANGE_OPTIONS.map((opt) => {
+            const active = range.key === opt.value;
+            return (
+              <button
+                key={opt.value}
+                type="button"
+                onClick={() => setRangeState({ key: opt.value })}
+                className={`flex items-center gap-1 px-2.5 py-1.5 rounded-md text-[11px] font-bold transition-colors ${
+                  active
+                    ? 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white'
+                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
+                }`}
+              >
+                {active && <Check size={11} />}
+                {t(opt.labelKey)}
+              </button>
+            );
+          })}
+        </div>
+
+        <button
+          type="button"
+          onClick={() => setShowModal(true)}
+          className={`flex items-center gap-1 px-2.5 py-2 rounded-lg border text-[11px] font-bold transition-colors ${
+            isMoreActive
+              ? 'border-slate-900 dark:border-white bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white'
+              : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
+          }`}
+        >
+          {isMoreActive ? <Check size={11} /> : <Calendar size={11} />}
+          <span className="max-w-[160px] truncate">{moreLabel}</span>
+          <ChevronDown size={12} />
+        </button>
       </div>
 
-      <button
-        type="button"
-        onClick={() => setShowModal(true)}
-        className={`flex items-center gap-1 px-2.5 py-2 rounded-lg border text-[11px] font-bold transition-colors ${
-          isMoreActive
-            ? 'border-slate-900 dark:border-white bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white'
-            : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
-        }`}
-      >
-        {isMoreActive ? <Check size={11} /> : <Calendar size={11} />}
-        <span className="max-w-[160px] truncate">{moreLabel}</span>
-        <ChevronDown size={12} />
-      </button>
+      <div className="flex items-center gap-2">
+        {lastUpdated && (
+          <span className="text-[10px] text-slate-400 dark:text-slate-500 hidden sm:inline">
+            {t('kpiLastUpdated', {
+              time: lastUpdated.toLocaleTimeString(locale === 'id' ? 'id-ID' : 'en-US', {
+                hour: '2-digit',
+                minute: '2-digit',
+              }),
+            })}
+          </span>
+        )}
+        <button
+          type="button"
+          onClick={() => setRefreshKey((k) => k + 1)}
+          disabled={refreshing || loading}
+          aria-label={t('kpiRefresh')}
+          title={t('kpiRefresh')}
+          className="flex items-center justify-center w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 disabled:opacity-50 transition-colors"
+        >
+          <RefreshCw size={13} className={refreshing ? 'animate-spin' : ''} />
+        </button>
+      </div>
     </div>
   );
 
