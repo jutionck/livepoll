@@ -525,6 +525,12 @@ export const JoinSession: React.FC<JoinSessionProps> = ({ code, navigate, theme,
                 </p>
               )}
             </div>
+          ) : isSessionClosed ? (
+            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-6 text-center shadow-sm">
+              <Clock className="text-slate-400 dark:text-slate-500 mx-auto mb-3" size={28} />
+              <h2 className="text-sm font-bold text-slate-900 dark:text-white mb-1">{t('votingClosedTitle')}</h2>
+              <p className="text-xs text-slate-500 dark:text-slate-400">{t('votingClosedWait')}</p>
+            </div>
           ) : !activeQuestion ? (
             <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-6 text-center shadow-sm">
               <Users className="text-slate-300 dark:text-slate-600 mx-auto mb-3 animate-pulse" size={28} />
