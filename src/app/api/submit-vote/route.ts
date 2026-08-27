@@ -90,29 +90,23 @@ export async function POST(request: Request) {
     const hasChanged = !existingVote || JSON.stringify(existingVote.vote) !== JSON.stringify(vote);
 
     if (hasChanged) {
-      await prisma.$transaction([
-        prisma.vote.upsert({
-          where: {
-            sessionCode_questionId_participantId: {
-              sessionCode: code.toUpperCase(),
-              questionId: question_id,
-              participantId: participant_id,
-            },
-          },
-          update: { vote },
-          create: {
+      await prisma.vote.upsert({
+        where: {
+          sessionCode_questionId_participantId: {
             sessionCode: code.toUpperCase(),
             questionId: question_id,
             participantId: participant_id,
-            participantName: participant_name ? String(participant_name).slice(0, 100) : null,
-            vote,
           },
-        }),
-        prisma.session.update({
-          where: { code: code.toUpperCase() },
-          data: { version: { increment: 1 } },
-        }),
-      ]);
+        },
+        update: { vote },
+        create: {
+          sessionCode: code.toUpperCase(),
+          questionId: question_id,
+          participantId: participant_id,
+          participantName: participant_name ? String(participant_name).slice(0, 100) : null,
+          vote,
+        },
+      });
     }
 
     return NextResponse.json({ success: true });
