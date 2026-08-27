@@ -530,11 +530,14 @@ export const KpiDashboard: React.FC<KpiDashboardProps> = ({ token, theme }) => {
   const fmt = (n: number) => n.toLocaleString(locale === 'id' ? 'id-ID' : 'en-US');
 
   const isMoreActive = range.key === 'custom' || MORE_RANGE_OPTIONS.some((o) => o.value === range.key);
-  const moreLabel = isMoreActive
-    ? range.key === 'custom'
+  const activeRangeLabel =
+    range.key === 'custom'
       ? `${range.from} — ${range.to}`
-      : t(MORE_RANGE_OPTIONS.find((o) => o.value === range.key)!.labelKey)
-    : t('kpiMore');
+      : t(
+          (PRIMARY_RANGE_OPTIONS.find((o) => o.value === range.key) ||
+            MORE_RANGE_OPTIONS.find((o) => o.value === range.key))!.labelKey,
+        );
+  const moreLabel = isMoreActive ? activeRangeLabel : t('kpiMore');
 
   const rangeFilter = (
     <div className="flex items-center gap-2 flex-wrap">
@@ -647,7 +650,9 @@ export const KpiDashboard: React.FC<KpiDashboardProps> = ({ token, theme }) => {
       </div>
 
       <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5">
-        <h3 className="text-xs font-bold text-slate-900 dark:text-white mb-3">{t('kpiSessionsTrend')}</h3>
+        <h3 className="text-xs font-bold text-slate-900 dark:text-white mb-3">
+          {t('kpiSessionsTrend', { range: activeRangeLabel })}
+        </h3>
         <TrendBarChart
           data={sessionsTrend}
           theme={theme}
@@ -706,7 +711,7 @@ export const KpiDashboard: React.FC<KpiDashboardProps> = ({ token, theme }) => {
               </span>
             </div>
             <h4 className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-2">
-              {t('kpiTrafficTrend')}
+              {t('kpiTrafficTrend', { range: activeRangeLabel })}
             </h4>
             <TrendLineChart
               data={traffic.trend || []}
